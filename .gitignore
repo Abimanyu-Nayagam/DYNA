@@ -1,0 +1,8 @@
+/venv
+.env
+pycache
+migrations/
+instance/
+config.json
+logs
+node_modules/
