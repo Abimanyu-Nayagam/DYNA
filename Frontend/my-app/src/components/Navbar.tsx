@@ -11,7 +11,10 @@ const Navbar = () => {
   return (
     <> 
     <nav className="navbar" id="navbar">
-      <div className="logo">DYNA</div>
+      <div className="logo">
+        <img src="/DYNA.png" alt="DYNA Logo" className="logo-img" />
+        <span className="logo-text">DYNA</span>
+      </div>
       <ul className="nav-links">
         {navLinks.map((link) => (
           <li key={link.name}>
