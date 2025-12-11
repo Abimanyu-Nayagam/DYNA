@@ -23,6 +23,14 @@
     margin-right: 40%;
     position: relative;
     z-index: 1;
+    transition: transform 0.3s ease;
+}
+
+.controller-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
 .title{
@@ -56,4 +64,95 @@
     letter-spacing: 3px;
     opacity: 0.9;
     cursor: pointer;
+}
+
+/* Tablet and smaller laptops (1024px and below) */
+@media (max-width: 1024px) {
+    .controller {
+        margin-right: 30%;
+    }
+    
+    .title {
+        font-size: 140px;
+        left: 55%;
+        top: 42%;
+    }
+    
+    .caption {
+        font-size: 16px;
+        left: 60%;
+        top: 52%;
+    }
+}
+
+/* Tablets (768px and below) */
+@media (max-width: 768px) {
+    .hero-section {
+        flex-direction: column;
+        justify-content: center;
+        gap: 40px;
+    }
+    
+    .controller {
+        margin-right: 0;
+        position: relative;
+    }
+    
+    .title {
+        font-size: 80px;
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        filter: drop-shadow(0 0 30px rgba(177, 158, 237, 0.3));
+        text-align: center;
+    }
+    
+    .title:hover {
+        filter: drop-shadow(0 0 30px rgba(217, 114, 233, 0.5));
+    }
+    
+    .caption {
+        font-size: 14px;
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        letter-spacing: 2px;
+        text-align: center;
+    }
+}
+
+/* Mobile devices (480px and below) */
+@media (max-width: 480px) {
+    .hero-section {
+        padding: 20px;
+        gap: 30px;
+    }
+    
+    .title {
+        font-size: 60px;
+        filter: drop-shadow(0 0 20px rgba(177, 158, 237, 0.3));
+    }
+    
+    .caption {
+        font-size: 11px;
+        letter-spacing: 1.5px;
+    }
+}
+
+/* Small mobile devices (360px and below) */
+@media (max-width: 360px) {
+    .hero-section {
+        gap: 20px;
+    }
+    
+    .title {
+        font-size: 48px;
+    }
+    
+    .caption {
+        font-size: 9px;
+        letter-spacing: 1px;
+    }
 }

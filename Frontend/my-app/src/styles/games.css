@@ -17,6 +17,22 @@
     -webkit-text-fill-color: transparent;
 }
 
+/* 🔍 Breakdown of your code
+1) background: linear-gradient(...)
+
+Creates a gradient.
+
+2) -webkit-background-clip: text;
+
+Clips the gradient inside the shape of the text.
+
+3) -webkit-text-fill-color: transparent;
+
+Makes the actual text color invisible so the gradient shows through.
+
+Together → Gradient Text Effect 🎨🔥 */
+
+
 .games-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
