@@ -1,5 +1,7 @@
 from app.config import Config
-from flask import Flask,jsonify
+from flask import Flask, jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 from .utils.logger import setup_logging
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy

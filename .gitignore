@@ -1,6 +1,6 @@
 /venv
 .env
-pycache
+__pycache__/
 migrations/
 instance/
 config.json
