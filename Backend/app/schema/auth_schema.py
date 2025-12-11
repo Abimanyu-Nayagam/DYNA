@@ -1,7 +1,7 @@
 from pydantic import BaseModel, EmailStr , Field
 
 class SignUpSchema(BaseModel):
-    name: str = Field(..., min_length=3)
+    user_name: str = Field(..., min_length=3)
     email: EmailStr
     password: str = Field(..., min_length=6)
 
