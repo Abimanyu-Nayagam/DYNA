@@ -7,6 +7,8 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
+
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -31,4 +33,11 @@ def create_app():
     # importing and registering the blueprints
     from app.routes import register_routes
     register_routes(app)
+    CORS(
+    app,
+    resources={r"/auth/*": {"origins": "http://localhost:5173"}},
+    supports_credentials=True,
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS" ]
+    )
     return app
