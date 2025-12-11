@@ -1,0 +1,71 @@
+.hero-section{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.controller{
+    margin-right: 40%;
+    position: relative;
+    z-index: 1;
+}
+
+.title{
+    font-size: 190px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #ffffff, #8b5cf6, #d946ef);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: absolute;
+    top: 40%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    text-transform: uppercase;
+    letter-spacing: -5px;
+    text-shadow: 0 0 80px rgba(139, 92, 246, 0.5);
+    filter: drop-shadow(0 0 30px rgba(217, 70, 239, 0.3));
+    animation: titleGlow 3s ease-in-out infinite;
+}
+
+@keyframes titleGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 30px rgba(217, 70, 239, 0.3));
+    }
+    50% {
+        filter: drop-shadow(0 0 50px rgba(139, 92, 246, 0.6));
+    }
+}
+
+.main-title {
+  font-size: 8rem;
+  font-weight: 900;
+  letter-spacing: 0.5rem;
+  background: linear-gradient(135deg, #00ffff, #ff00ff, #00ffff);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease infinite;
+  text-shadow: 0 0 40px rgba(0, 255, 255, 0.5);
+  margin-bottom: 1rem;
+}
+
+.caption {
+    position: absolute;
+    top: 58%;
+    left: 55%;
+    transform: translateX(-50%);
+    z-index: 10;
+    color: #aaa;
+    font-size: 18px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
