@@ -1,0 +1,42 @@
+.games-section {
+    min-height: 100vh;
+    padding: 80px 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.games-heading {
+    font-size: 64px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    margin-bottom: 60px;
+    background: linear-gradient(135deg, #e846a7, #8b5cf6, #d946ef);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    max-width: 1600px;
+    width: 100%;
+    padding: 20px;
+}
+
+@media (max-width: 768px) {
+    .games-heading {
+        font-size: 48px;
+    }
+    
+    .games-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .games-section {
+        padding: 60px 20px;
+    }
+}

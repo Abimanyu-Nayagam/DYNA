@@ -4,22 +4,19 @@ import '../styles/Navbar.css'
 const Navbar = () => {
 
     const navLinks = [
-    { name: 'Home', href: '#home', hasDropdown: false },
-    { name: 'Games', href: '#games', hasDropdown: true },
-    { name: '🔎︎ Players', href: '#search', hasDropdown: false },
+    { name: 'Home', href: '#home'},
+    { name: 'Games', href: '#games'},
+    { name: '🔎︎ Players', href: '#search'},
   ];
-    const [activeDropdown, setActiveDropdown] = React.useState<string | null>(null);
   return (
     <> 
-    <nav className="navbar">
+    <nav className="navbar" id="navbar">
       <div className="logo">DYNA</div>
       <ul className="nav-links">
         {navLinks.map((link) => (
           <li key={link.name}>
             <a
               href={link.href}
-              onMouseEnter={() => link.hasDropdown && setActiveDropdown(link.name)}
-              onMouseLeave={() => setActiveDropdown(null)}
             >
               {link.name}
             </a>

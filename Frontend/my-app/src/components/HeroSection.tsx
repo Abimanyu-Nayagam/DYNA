@@ -4,7 +4,8 @@ import '@/styles/HeroSection.css'
 
 const HeroSection = () => {
   return (
-    <div><div className='hero-section'>
+    <div className='hero-section' id='hero-section'>
+        <div className='hero-background'></div>
         <div className='controller'>
         <Controller/>
         </div>
@@ -12,9 +13,9 @@ const HeroSection = () => {
             DYNA
         </div>
         <div className='caption'>
-            Dominate Your Arena
+            DOMINATE YOUR NEXT ARENA
         </div>
-    </div></div>
+    </div>
   )
 }
 
