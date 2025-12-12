@@ -1,3 +1,25 @@
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fade-up {
+    0% {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 body {
   font-family: 'Poppins', sans-serif;
 }
@@ -28,6 +50,7 @@ body {
     position: relative;
     z-index: 1;
     transition: transform 0.3s ease;
+    animation: fade-up 2s ease-in-out;
 }
 
 .controller-wrapper {
@@ -52,6 +75,7 @@ body {
     filter: drop-shadow(30px 0 30px rgba(177, 158, 237, 0.3));
     transition: filter 0.4s ease;
     cursor: pointer;
+    animation: fade-in 1s ease-in-out;
 }
 
 .title:hover {
@@ -68,6 +92,7 @@ body {
     letter-spacing: 3px;
     opacity: 0.9;
     cursor: pointer;
+    animation: fade-in 4s ease-in-out;
 }
 
 /* Tablet and smaller laptops (1024px and below) */

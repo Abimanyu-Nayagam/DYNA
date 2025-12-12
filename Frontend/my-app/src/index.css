@@ -15,3 +15,13 @@ body {
   min-height: 100vh;
   font-family: 'Poppins', sans-serif;
 }
+
+/* Fade-in animation */
+@keyframes fadein {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.animate-fadein {
+  animation: fadein 1s ease-out forwards;
+}
