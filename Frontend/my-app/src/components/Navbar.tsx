@@ -5,7 +5,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: 'Home', href: '#home'},
+    { name: 'Home', href: '/'},
     { name: 'Games', href: '#games'},
     { name: '🔎︎ Players', href: '#search'},
   ];

@@ -5,15 +5,17 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import Navbar from './components/Navbar'
 import Home from './pages/Home'
+import LoLPortfolio from './pages/LoLPortfolio'
 
 
 function App() {
   return (
     <>
-        <Navbar />
         <Router>
+          <Navbar />
           <Routes>
             <Route path='/' element={<Home/>}/>
+            <Route path='/lol' element={<LoLPortfolio/>}/>
           </Routes>
         </Router>
     </>
