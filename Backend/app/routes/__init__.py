@@ -1,6 +1,9 @@
 from flask import Blueprint
 
 def register_routes(app):
+    
+    from app.routes.auth_routes import auth_bp
+    app.register_blueprint(auth_bp, url_prefix='/auth')
 
     # from app.routes.auth_routes import auth_bp
     from Backend.app.routes.pubg_routes import pubg_bp
@@ -13,3 +16,6 @@ def register_routes(app):
     @app.route("/")
     def home():
         return "home"
+    
+    from app.routes.league_routes import lol_bp
+    app.register_blueprint(lol_bp, url_prefix='/api/lol')
