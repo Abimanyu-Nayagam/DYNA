@@ -1,3 +1,7 @@
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
 .games-section {
     min-height: 100vh;
     padding: 80px 40px;
@@ -42,6 +46,43 @@ Together → Gradient Text Effect 🎨🔥 */
     padding: 20px;
 }
 
+
+/* Small Laptop */
+@media (max-width: 1024px) {
+    .games-heading {
+        font-size: 56px;
+        letter-spacing: 3px;
+        margin-bottom: 50px;
+    }
+    
+    .games-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 35px;
+    }
+    
+    .games-section {
+        padding: 70px 30px;
+    }
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+      .games-heading {
+        font-size: 48px;
+    }
+    
+    .games-grid {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .games-section {
+        padding: 60px 20px;
+    }
+}
+
+
+/* Small Mobile */
 @media (max-width: 768px) {
     .games-heading {
         font-size: 48px;
