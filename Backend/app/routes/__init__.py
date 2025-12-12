@@ -8,3 +8,6 @@ def register_routes(app):
     @app.route("/")
     def home():
         return "home"
+    
+    from app.routes.league_routes import lol_bp
+    app.register_blueprint(lol_bp, url_prefix='/api/lol')
