@@ -6,5 +6,8 @@ class LeagueBaseSchema(BaseModel):
     cur_rank: str
     peak_rank: str
     main_role: str
-    cs_per_min: float
-    
+    avg_kda: float
+    avg_kp_percent: float
+    cs_per_min: float | None = None
+    avg_dmg: float | None = None
+    avg_vision_score: float | None = None
