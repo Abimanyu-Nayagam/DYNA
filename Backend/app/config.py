@@ -11,10 +11,10 @@ class Config:
     MYSQL_DB = os.getenv('MYSQL_DB', 'dyna')
     MYSQL_PORT = os.getenv('MYSQL_PORT', '3306')
 
-    # SQLALCHEMY_DATABASE_URI = (
-    #     f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    #     )
-    SQLALCHEMY_DATABASE_URI = os.getenv("SQLALCHEMY_DATABASE_URI")
+    # Build the database URI with URL-encoded password
+    encoded_password = quote_plus(MYSQL_PASSWORD)
+    SQLALCHEMY_DATABASE_URI = f"mysql+pymysql://{MYSQL_USER}:{encoded_password}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
+    
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY','secret-key')
     LOG_FILE = os.getenv('LOG_FILE')
