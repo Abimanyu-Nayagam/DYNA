@@ -5,4 +5,5 @@ migrations/
 instance/
 config.json
 logs
+app.log
 node_modules/
