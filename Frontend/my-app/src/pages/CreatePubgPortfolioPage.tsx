@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import '@/styles/createportfolio.css'
 
 interface PubgFormData {
@@ -18,7 +19,8 @@ interface PubgFormData {
   avg_survival_time: number | string;
 }
 
-const CreatePubgPortfolio = ({ onClose }: { onClose: () => void }) => {
+const CreatePubgPortfolioPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState<PubgFormData>({
     username: '',
     in_game_id: '',
@@ -49,20 +51,55 @@ const CreatePubgPortfolio = ({ onClose }: { onClose: () => void }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // TODO: Add API call to create PUBG stats
-    console.log('Form submitted:', formData);
-    
-    // For now, just show success message
-    alert('Portfolio created successfully!');
-    onClose();
+    try {
+      const response = await fetch('http://localhost:5000/games/pubg/stats', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: 1, // TODO: Replace with actual logged-in user ID
+          username: formData.username,
+          in_game_id: formData.in_game_id,
+          fd_ratio: Number(formData.fd_ratio) || 0,
+          current_rank: formData.current_rank,
+          highest_rank: formData.highest_rank,
+          headshot_rate: Number(formData.headshot_rate) || 0,
+          headshots: Number(formData.headshots) || 0,
+          eliminations: Number(formData.eliminations) || 0,
+          most_eliminations: Number(formData.most_eliminations) || 0,
+          matches_played: Number(formData.matches_played) || 0,
+          wins: Number(formData.wins) || 0,
+          top_10: Number(formData.top_10) || 0,
+          avg_damage: Number(formData.avg_damage) || 0,
+          avg_survival_time: Number(formData.avg_survival_time) || 0,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create portfolio');
+      }
+
+      const data = await response.json();
+      console.log('Portfolio created:', data);
+      
+      alert('Portfolio created successfully!');
+      navigate('/players/pubg');
+    } catch (error) {
+      console.error('Error creating portfolio:', error);
+      alert(error instanceof Error ? error.message : 'Failed to create portfolio. Please try again.');
+    }
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>Create PUBG Portfolio</h2>
-          <button className="close-btn" onClick={onClose}>&times;</button>
+    <div className="create-portfolio-page">
+      <div className="page-container">
+        <div className="page-header">
+          <h1>Create PUBG Portfolio</h1>
+          <button className="back-btn" onClick={() => navigate('/players/pubg')}>
+            ← Back to Players
+          </button>
         </div>
         
         <form onSubmit={handleSubmit} className="portfolio-form">
@@ -273,7 +310,7 @@ const CreatePubgPortfolio = ({ onClose }: { onClose: () => void }) => {
           </div>
 
           <div className="form-actions">
-            <button type="button" className="cancel-btn" onClick={onClose}>
+            <button type="button" className="cancel-btn" onClick={() => navigate('/players/pubg')}>
               Cancel
             </button>
             <button type="submit" className="submit-btn">
@@ -286,4 +323,4 @@ const CreatePubgPortfolio = ({ onClose }: { onClose: () => void }) => {
   )
 }
 
-export default CreatePubgPortfolio
+export default CreatePubgPortfolioPage

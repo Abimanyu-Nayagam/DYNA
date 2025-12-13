@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PlayerCard from '@/components/ui/PlayerCard'
-import CreatePubgPortfolio from '@/components/CreatePubgPortfolio'
 import '@/styles/playerspage.css'
 
 interface PubgPlayer {
@@ -16,9 +15,8 @@ const PubgPlayersPage = () => {
   const [players, setPlayers] = useState<PubgPlayer[]>([]);
   const [filteredPlayers, setFilteredPlayers] = useState<PubgPlayer[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [showCreateForm, setShowCreateForm] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoggedIn] = useState(false); // TODO: Replace with actual auth check
+  const [isLoggedIn] = useState(true); // Placeholder for actual auth state
 
   useEffect(() => {
     fetchPlayers();
@@ -65,7 +63,7 @@ const PubgPlayersPage = () => {
       // TODO: Replace with actual login page route
       navigate('/login');
     } else {
-      setShowCreateForm(true);
+      navigate('/players/pubg/create');
     }
   };
 
@@ -124,10 +122,6 @@ const PubgPlayersPage = () => {
             </>
           )}
         </>
-      )}
-
-      {showCreateForm && (
-        <CreatePubgPortfolio onClose={() => setShowCreateForm(false)} />
       )}
     </div>
   )
