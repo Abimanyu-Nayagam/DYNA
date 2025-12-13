@@ -15,11 +15,6 @@ const PubgPortfolio = () => {
   if (isLoading) {
     return (
       <div className="pubg-loading-screen">
-        <img
-          src="/pubg-loading.gif"
-          alt="Loading"
-          className="loading-gif"
-        />
       </div>
     );
   }

@@ -8,6 +8,7 @@ import PubgPlayersPage from "./pages/PubgPlayersPage";
 import CreatePubgPortfolioPage from "./pages/CreatePubgPortfolioPage";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import PubgPortfolio from './pages/PubgPortfolio'
+import AllUsersPage from "./pages/AllUsersPage";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
               path="/players/pubg/create"
               element={<CreatePubgPortfolioPage />}
             />
+          <Route path="/players" element={<AllUsersPage />} />
           </Routes>
         </AuthProvider>
       </Router>

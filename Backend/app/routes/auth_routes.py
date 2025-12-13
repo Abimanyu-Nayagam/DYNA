@@ -128,4 +128,3 @@ def update_current_user():
         db.session.rollback()
         logger.error(f"Failed to update user {user_id}.")
         return error_response(f"Update failed: {str(e)}",500)
-

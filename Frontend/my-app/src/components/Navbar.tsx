@@ -12,7 +12,7 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Home', section: 'hero-section'},
     { name: 'Games', section: 'games'},
-    { name: 'Players', section: 'search'},
+    { name: 'Players', path: '/players'},
   ];
 
   const toggleMenu = () => {
@@ -23,19 +23,28 @@ const Navbar = () => {
     setIsMenuOpen(false);
   };
 
-  const handleNavClick = (section: string) => {
+  const handleNavClick = (link: { section?: string; path?: string }) => {
     closeMenu();
 
-    // If not on home page, navigate to home first
-    if (location.pathname !== "/") {
-      navigate("/");
-      // Wait for navigation then scroll
-      setTimeout(() => {
-        scrollToSection(section);
-      }, 100);
-    } else {
-      // Already on home page, just scroll
-      scrollToSection(section);
+    // If it has a path, navigate to that route
+    if (link.path) {
+      navigate(link.path);
+      return;
+    }
+
+    // If it has a section, scroll to it
+    if (link.section) {
+      // If not on home page, navigate to home first
+      if (location.pathname !== "/") {
+        navigate("/");
+        // Wait for navigation then scroll
+        setTimeout(() => {
+          scrollToSection(link.section!);
+        }, 100);
+      } else {
+        // Already on home page, just scroll
+        scrollToSection(link.section);
+      }
     }
   };
 
@@ -79,7 +88,7 @@ const Navbar = () => {
         <ul className={`nav-links ${isMenuOpen ? "active" : ""}`}>
           {navLinks.map((link) => (
             <li key={link.name}>
-              <a onClick={() => handleNavClick(link.section)}>{link.name}</a>
+              <a onClick={() => handleNavClick(link)}>{link.name}</a>
             </li>
           ))}
         </ul>
