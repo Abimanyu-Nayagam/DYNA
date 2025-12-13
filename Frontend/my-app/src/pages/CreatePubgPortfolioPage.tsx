@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/contexts/AuthContext'
 import '@/styles/createportfolio.css'
 
 interface PubgFormData {
@@ -21,6 +22,7 @@ interface PubgFormData {
 
 const CreatePubgPortfolioPage = () => {
   const navigate = useNavigate();
+  const { user, token, loading } = useAuth();
   const [formData, setFormData] = useState<PubgFormData>({
     username: '',
     in_game_id: '',
@@ -38,6 +40,13 @@ const CreatePubgPortfolioPage = () => {
     avg_survival_time: ''
   });
   const [videoFile, setVideoFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      alert('Please login to create a portfolio');
+      navigate('/login');
+    }
+  }, [user, loading, navigate]);
 
   const ranks = ['Gold', 'Platinum', 'Diamond', 'Crown', 'Ace', 'Conqueror'];
 
@@ -86,14 +95,20 @@ const CreatePubgPortfolioPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!token || !user) {
+      alert('Please login to create a portfolio');
+      navigate('/login');
+      return;
+    }
+    
     try {
       const response = await fetch('http://localhost:5000/games/pubg/stats', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({
-          user_id: 1, // TODO: Replace with actual logged-in user ID
           username: formData.username,
           in_game_id: formData.in_game_id,
           fd_ratio: Number(formData.fd_ratio) || 0,
@@ -132,6 +147,20 @@ const CreatePubgPortfolioPage = () => {
       alert(error instanceof Error ? error.message : 'Failed to create portfolio. Please try again.');
     }
   };
+
+  if (loading) {
+    return (
+      <div className="create-portfolio-page">
+        <div className="page-container">
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="create-portfolio-page">

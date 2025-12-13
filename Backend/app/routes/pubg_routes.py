@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models.pubg import PubgPlayerStats
 from app import db
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -9,14 +10,17 @@ pubg_bp = Blueprint('pubg_bp', __name__)
 @jwt_required()
 def create_pubg_stats():
     """Create a new PUBG stats entry."""
-    current_user_id = get_jwt_identity()
+    # Get authenticated user ID from JWT token
+    user_id = get_jwt_identity()
     
     data = request.get_json()
     if not data:
-        return jsonify({'error': 'Request must be JSON'}), 400 
+        return jsonify({'error': 'Request must be JSON'}), 400
     
-    # Use the authenticated user's ID
-    user_id = current_user_id
+    # Check if in_game_id already exists
+    existing_stats = PubgPlayerStats.query.filter_by(in_game_id=data.get('in_game_id')).first()
+    if existing_stats:
+        return jsonify({'error': 'A portfolio with this In-Game ID already exists.'}), 400
     
     # Create new stats object
     new_stats = PubgPlayerStats()
@@ -76,9 +80,8 @@ def update_pubg_stats(stats_id):
         return jsonify({'error': 'Stats not found'}), 404
     
     # Ensure user can only update their own stats
-    if stats.user_id != current_user_id:
+    if str(stats.user_id) != str(current_user_id):
         return jsonify({'error': 'Unauthorized: You can only update your own stats'}), 403
-    
     # Update only provided fields
     for field in ['username', 'in_game_id', 'fd_ratio', 'current_rank', 'highest_rank',
                   'headshot_rate', 'headshots', 'eliminations', 'most_eliminations',
