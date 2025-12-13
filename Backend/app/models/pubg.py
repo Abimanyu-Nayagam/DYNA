@@ -28,11 +28,11 @@ class PubgPlayerStats(db.Model):
     # Match statistics
     matches_played = db.Column(db.Integer, default=0)
     wins = db.Column(db.Integer, default=0)
-    top_10 = db.Column(db.Integer, default=0)  # Top 10 finishes
+    top_10 = db.Column(db.Integer, default=0)  
     
     # Performance averages
-    avg_damage = db.Column(db.Float, nullable=True)  # Average damage per match
-    avg_survival_time = db.Column(db.Float, nullable=True)  # Average survival time in minutes
+    avg_damage = db.Column(db.Float, nullable=True)  
+    avg_survival_time = db.Column(db.Float, nullable=True)
     
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))

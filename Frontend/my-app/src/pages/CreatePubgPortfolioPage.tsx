@@ -37,6 +37,7 @@ const CreatePubgPortfolioPage = () => {
     avg_damage: '',
     avg_survival_time: ''
   });
+  const [videoFile, setVideoFile] = useState<File | null>(null);
 
   const ranks = ['Gold', 'Platinum', 'Diamond', 'Crown', 'Ace', 'Conqueror'];
 
@@ -46,6 +47,40 @@ const CreatePubgPortfolioPage = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('video/')) {
+        alert('Please select a valid video file');
+        return;
+      }
+      // Validate file size (max 100MB)
+      const maxSize = 100 * 1024 * 1024; // 100MB in bytes
+      if (file.size > maxSize) {
+        alert('Video file size must be less than 100MB');
+        return;
+      }
+      setVideoFile(file);
+    }
+  };
+
+  const saveVideoLocally = async (file: File, userId: number) => {
+    // Create a download link to save the file with the correct name
+    const blob = new Blob([file], { type: file.type });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${userId}.mp4`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    // Note: After download, manually move the file to Frontend/my-app/public/Pubg-Highlights/
+    alert(`Video downloaded as ${userId}.mp4. Please move it to the public/Pubg-Highlights folder.`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -83,6 +118,12 @@ const CreatePubgPortfolioPage = () => {
 
       const data = await response.json();
       console.log('Portfolio created:', data);
+      
+      // Handle video file if selected
+      if (videoFile) {
+        const userId = 1; // TODO: Use actual user_id from response or context
+        await saveVideoLocally(videoFile, userId);
+      }
       
       alert('Portfolio created successfully!');
       navigate('/players/pubg');
@@ -248,6 +289,22 @@ const CreatePubgPortfolioPage = () => {
                   value={formData.avg_damage}
                   onChange={handleChange}
                   placeholder="0.0"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="form-section">
+            <h3>Gameplay Highlights</h3>
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="highlight_video">Best Gameplay Highlights (MP4 Video)</label>
+                <input
+                  type="file"
+                  id="highlight_video"
+                  name="highlight_video"
+                  accept="video/mp4,video/*"
+                  onChange={handleVideoChange}
                 />
               </div>
             </div>

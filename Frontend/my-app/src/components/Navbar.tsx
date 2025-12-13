@@ -10,7 +10,7 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Home', section: 'hero-section'},
     { name: 'Games', section: 'games'},
-    { name: '🔎︎ Players', section: 'search'},
+    { name: 'Players', section: 'search'},
   ];
 
   const toggleMenu = () => {
