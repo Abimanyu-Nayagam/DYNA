@@ -41,12 +41,20 @@ def create_pubg_stats():
 
 @pubg_bp.route('/', methods=['GET'])
 # @jwt_required()
-def get_pubg_stats(stats_id):
+def get_pubg_stats():
     """Retrieve all PUBG players Stats."""
-    stats = PubgPlayerStats.query.get(stats_id)
+    stats_list = PubgPlayerStats.query.all()
+    return jsonify([stats.to_dict() for stats in stats_list]), 200
+
+@pubg_bp.route('/stats/<int:user_id>', methods=['GET'])
+# @jwt_required()
+def get_pubg_stats_by_user(user_id):
+    """Retrieve PUBG stats by user ID."""
+    stats = PubgPlayerStats.query.filter_by(user_id=user_id).first()
     if not stats:
-        return jsonify({'error': 'Players not found'}), 404
+        return jsonify({'error': 'Stats not found'}), 404
     return jsonify(stats.to_dict()), 200
+
 
 @pubg_bp.route('/stats/<int:stats_id>', methods=['PATCH'])
 # @jwt_required()

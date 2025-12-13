@@ -9,7 +9,6 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
-
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 migrate = Migrate()
@@ -20,6 +19,9 @@ def create_app():
  
     # loading the config file
     app.config.from_object(Config)
+  
+    # Enable CORS for all routes
+    CORS(app)
   
     # setting up logging
     setup_logging(app)
@@ -33,11 +35,4 @@ def create_app():
     # importing and registering the blueprints
     from app.routes import register_routes
     register_routes(app)
-    CORS(
-    app,
-    resources={r"/auth/*": {"origins": "http://localhost:5173"}},
-    supports_credentials=True,
-    allow_headers=["Content-Type", "Authorization"],
-    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS" ]
-    )
     return app

@@ -1,21 +1,57 @@
-import React from "react";
+import { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/Navbar.css";
-import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 
 const Navbar = () => {
-  const { user, logout } = useAuth();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { user, logout } = useAuth();
 
   const navLinks = [
-    { name: "Home", href: "#home", hasDropdown: false },
-    { name: "Games", href: "#games", hasDropdown: true },
-    { name: "🔎︎ Players", href: "#search", hasDropdown: false },
+    { name: "Home", section: "hero-section" },
+    { name: "Games", section: "games" },
+    { name: "🔎︎ Players", section: "search" },
   ];
 
-  const [activeDropdown, setActiveDropdown] = React.useState<string | null>(
-    null
-  );
+  const toggleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
+
+  const handleNavClick = (section: string) => {
+    closeMenu();
+
+    // If not on home page, navigate to home first
+    if (location.pathname !== "/") {
+      navigate("/");
+      // Wait for navigation then scroll
+      setTimeout(() => {
+        scrollToSection(section);
+      }, 100);
+    } else {
+      // Already on home page, just scroll
+      scrollToSection(section);
+    }
+  };
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  const handleLogoClick = () => {
+    navigate("/");
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }, 100);
+  };
 
   const handleLogout = () => {
     logout();
@@ -24,39 +60,46 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="navbar">
-        <div className="logo">DYNA</div>
+      <nav className="navbar" id="navbar">
+        <div className="logo" onClick={handleLogoClick}>
+          <img src="/DYNA.png" alt="DYNA Logo" className="logo-img" />
+          <span className="logo-text">DYNA</span>
+        </div>
 
-        <ul className="nav-links">
+        {/* Hamburger Menu */}
+        <div
+          className={`hamburger ${isMenuOpen ? "active" : ""}`}
+          onClick={toggleMenu}
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+
+        <ul className={`nav-links ${isMenuOpen ? "active" : ""}`}>
           {navLinks.map((link) => (
             <li key={link.name}>
-              <a
-                href={link.href}
-                onMouseEnter={() =>
-                  link.hasDropdown && setActiveDropdown(link.name)
-                }
-                onMouseLeave={() => setActiveDropdown(null)}
-              >
-                {link.name}
-              </a>
+              <a onClick={() => handleNavClick(link.section)}>{link.name}</a>
             </li>
           ))}
         </ul>
 
-        {!user ? (
-          <>
-            <Link to="/login" className="btn">
-              LOGIN
-            </Link>
-            <Link to="/signup" className="btn">
-              REGISTER
-            </Link>
-          </>
-        ) : (
-          <button onClick={handleLogout} className="btn">
-            LOGOUT
-          </button>
-        )}
+        <div className={`Nav-btns ${isMenuOpen ? "active" : ""}`}>
+          {!user ? (
+            <>
+              <Link to="/login" className="btn">
+                LOGIN
+              </Link>
+              <Link to="/signup" className="btn">
+                REGISTER
+              </Link>
+            </>
+          ) : (
+            <button onClick={handleLogout} className="btn">
+              LOGOUT
+            </button>
+          )}
+        </div>
       </nav>
     </>
   );
