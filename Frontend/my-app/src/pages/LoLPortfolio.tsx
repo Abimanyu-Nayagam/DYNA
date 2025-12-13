@@ -72,6 +72,24 @@ const LoLPortfolio: React.FC = () => {
                 <div className="stats-section mt-12 px-6">
                     <h2 className="text-3xl font-bold mb-6 text-white">Performance Stats</h2>
                 </div>
+                <div className="cards-section mt-12 px-6">
+                <h2 className="text-3xl font-bold mb-6 text-white fade-up">Highlights</h2>
+                <div className="cards-grid">
+                  <div className="card fade-up">
+                    <h3 className="card-title"></h3>
+                    <p className="card-content">Zed, 56% win rate</p>
+                  </div>
+                  <div className="card fade-up" style={{ animationDelay: "0.2s" }}>
+                    <h3 className="card-title">Main Role</h3>
+                    <p className="card-content">{data!.main_role}</p>
+                  </div>
+                  <div className="card fade-up" style={{ animationDelay: "0.4s" }}>
+                    <h3 className="card-title">Peak Rank</h3>
+                    <p className="card-content">{data!.peak_rank}</p>
+                  </div>
+                </div>
+              </div>
+
             </div>
         )}
       </main>
