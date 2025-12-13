@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models.pubg import PubgPlayerStats
+from app.schema.pubg_schema import PubgBaseSchema
 from app import db
 import logging
 
@@ -21,6 +22,13 @@ def create_pubg_stats():
     if not data:
         logger.warning("PUBG stats creation failed - no JSON data provided")
         return jsonify({'error': 'Request must be JSON'}), 400
+    
+    # Pydantic validation
+    try:
+        pubg_data = PubgBaseSchema(**data)
+    except Exception as e:
+        logger.warning(f"PUBG stats validation failed: {str(e)}")
+        return jsonify({'error': str(e)}), 400
     
     in_game_id = data.get('in_game_id')
     # Check if in_game_id already exists
@@ -94,6 +102,13 @@ def update_pubg_stats(stats_id):
     if not data:
         logger.warning(f"PUBG stats update failed - no JSON data provided for stats_id: {stats_id}")
         return jsonify({'error': 'Request must be JSON'}), 400
+    
+    # Pydantic validation
+    try:
+        pubg_data = PubgBaseSchema(**data)
+    except Exception as e:
+        logger.warning(f"PUBG stats validation failed: {str(e)}")
+        return jsonify({'error': str(e)}), 400
     
     stats = PubgPlayerStats.query.get(stats_id)
     if not stats:
