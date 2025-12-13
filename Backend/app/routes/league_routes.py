@@ -33,7 +33,11 @@ def create_portfolio():
         cur_rank = data["cur_rank"],
         peak_rank = data["peak_rank"],
         main_role = data["main_role"],
-        cs_per_min = data["cs_per_min"]
+        avg_kda = data["avg_kda"],
+        avg_kp_percent = data["avg_kp_percent"],
+        cs_per_min = data["cs_per_min"],
+        avg_dmg = data["avg_dmg"],
+        avg_vision_score = data.get("avg_vision_score")
     )
 
     try:
@@ -58,7 +62,11 @@ def get_portfolio():
         "cur_rank": form.cur_rank,
         "peak_rank": form.peak_rank,
         "main_role": form.main_role,
-        "cs_per_min": form.cs_per_min
+        "avg_kda": form.avg_kda,
+        "avg_kp_percent": form.avg_kp_percent,
+        "cs_per_min": form.cs_per_min,
+        "avg_dmg": form.avg_dmg,
+        "avg_vision_score": form.avg_vision_score
     }
     return jsonify(form_data), 200
 
@@ -74,7 +82,11 @@ def get_all_portfolios():
             "cur_rank": form.cur_rank,
             "peak_rank": form.peak_rank,
             "main_role": form.main_role,
-            "cs_per_min": form.cs_per_min
+            "avg_kda": form.avg_kda,
+            "avg_kp_percent": form.avg_kp_percent,
+            "cs_per_min": form.cs_per_min,
+            "avg_dmg": form.avg_dmg,
+            "avg_vision_score": form.avg_vision_score
         }
         all_forms.append(form_data)
     return jsonify(all_forms), 200
@@ -98,7 +110,11 @@ def update_portfolio():
     form.cur_rank = data.get('cur_rank', form.cur_rank)
     form.peak_rank = data.get('peak_rank', form.peak_rank)
     form.main_role = data.get('main_role', form.main_role)
+    form.avg_kda = data.get('avg_kda', form.avg_kda)
+    form.avg_kp_percent = data.get('avg_kp_percent', form.avg_kp_percent)
     form.cs_per_min = data.get('cs_per_min', form.cs_per_min)
+    form.avg_dmg = data.get('avg_dmg', form.avg_dmg)
+    form.avg_vision_score = data.get('avg_vision_score', form.avg_vision_score)
     
     try:
         db.session.commit()
