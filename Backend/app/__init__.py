@@ -7,6 +7,7 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -18,6 +19,9 @@ def create_app():
  
     # loading the config file
     app.config.from_object(Config)
+  
+    # Enable CORS for all routes
+    CORS(app)
   
     # setting up logging
     setup_logging(app)

@@ -1,0 +1,211 @@
+/* Page Layout */
+.create-portfolio-page {
+    min-height: 100vh;
+    background: #0d0a15;
+    padding: 40px 20px 60px;
+    position: relative;
+}
+
+.create-portfolio-page::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('/pubg-bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    opacity: 0.05;
+}
+
+.create-portfolio-page > * {
+    position: relative;
+    z-index: 1;
+}
+
+.page-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(154, 120, 233, 0.3);
+}
+
+.page-header h1 {
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, #ac4dbb, #8b5cf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.back-btn {
+    padding: 10px 20px;
+    background: transparent;
+    border: 1px solid rgba(154, 120, 233, 0.3);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    border-color: #8b5cf6;
+}
+
+.form-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #ac4dbb;
+    margin: 0 0 20px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8);
+    letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group select {
+    padding: 14px 20px;
+    background: transparent;
+    border: 1px solid rgba(154, 120, 233, 0.3);
+    border-radius: 0;
+    color: #fff;
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #8b5cf6;
+}
+
+.form-group input::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.form-group select {
+    cursor: pointer;
+    background-color: transparent;
+}
+
+.form-group select option {
+    background: #1a0f2e;
+    color: #fff;
+}
+
+.form-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: flex-end;
+    padding-top: 24px;
+    border-top: 1px solid rgba(154, 120, 233, 0.3);
+}
+
+.cancel-btn,
+.submit-btn {
+    padding: 12px 32px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.cancel-btn {
+    background: transparent;
+    border: 2px solid rgba(154, 120, 233, 0.3);
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.cancel-btn:hover {
+    border-color: #8b5cf6;
+    color: #fff;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #602469, #8b5cf6);
+    color: #fff;
+    border: none;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 10px 10px rgba(217, 70, 239, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    
+    .back-btn {
+        width: 100%;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .form-actions {
+        flex-direction: column-reverse;
+    }
+    
+    .cancel-btn,
+    .submit-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .create-portfolio-page {
+        padding: 20px 15px 40px;
+    }
+    
+    .page-header h1 {
+        font-size: 24px;
+        letter-spacing: 2px;
+    }
+    
+    .form-section h3 {
+        font-size: 16px;
+    }
+}
