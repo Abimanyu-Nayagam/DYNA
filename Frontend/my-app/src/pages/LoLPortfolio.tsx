@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import ProductCarousel from "@/components/CarouselScroll";
 import "@/styles/LoLPortfolio.css";
 import RankAnimation from "@/components/RankAnimation";
+import ScrollFadeIn from "@/components/ScrollFadeIn";
 
 
 interface PlayerData {
@@ -10,6 +11,7 @@ interface PlayerData {
   cur_rank: string;
   peak_rank: string;
   main_role: string;
+  player_since: string;
   cs_per_min: number;
   avg_dmg: number;
   avg_kda: number;
@@ -27,8 +29,9 @@ const LoLPortfolio: React.FC = () => {
         user_name: "42Raven42",
         cur_rank: "Gold 2",
         peak_rank: "Platinum 4",
-        main_role: "Mid",
-        cs_per_min: 7.5,
+        main_role: "Bottom",
+        player_since: "Season 10",
+        cs_per_min: 6.5,
         avg_dmg: 25000,
         avg_kda: 3.5,
         avg_kp_percent: 65.0,
@@ -69,15 +72,11 @@ const LoLPortfolio: React.FC = () => {
                         </p>
                     </div>
                 </div>
-                <div className="stats-section mt-12 px-6">
-                    <h2 className="text-3xl font-bold mb-6 text-white">Performance Stats</h2>
-                </div>
                 <div className="cards-section mt-12 px-6">
-                <h2 className="text-3xl font-bold mb-6 text-white fade-up">Highlights</h2>
                 <div className="cards-grid">
                   <div className="card fade-up">
-                    <h3 className="card-title"></h3>
-                    <p className="card-content">Zed, 56% win rate</p>
+                    <h3 className="card-title">Player Since</h3>
+                    <p className="card-content">{data!.player_since}</p>
                   </div>
                   <div className="card fade-up" style={{ animationDelay: "0.2s" }}>
                     <h3 className="card-title">Main Role</h3>
@@ -89,7 +88,11 @@ const LoLPortfolio: React.FC = () => {
                   </div>
                 </div>
               </div>
-
+              <ScrollFadeIn>
+                <div className="stats-section mt-12 px-6">
+                      <h2 className="text-3xl font-bold mb-6 text-white">Performance Stats</h2>
+                </div>
+              </ScrollFadeIn>
             </div>
         )}
       </main>
