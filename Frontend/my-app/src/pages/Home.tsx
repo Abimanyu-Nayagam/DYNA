@@ -5,10 +5,12 @@ import Footer from '@/components/Footer'
 
 const Home = () => {
   return (
-    <div id='home'>
-    <HeroSection/>
-    <Games/>
-    <Footer/>
+    <div>
+      <div id='hero-section'>
+        <HeroSection/>
+      </div>
+      <Games/>
+      <Footer/>
     </div>
   )
 }
