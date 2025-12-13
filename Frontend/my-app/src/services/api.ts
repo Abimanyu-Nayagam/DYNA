@@ -4,7 +4,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL as string;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -43,7 +43,7 @@ api.interceptors.response.use(
 
 // Types
 export interface SignupPayload {
-  first_name: string;
+  user_name: string;
   email: string;
   password: string;
 }

@@ -67,7 +67,7 @@ def login():
             "access_token": access_token,
             "user": {
                 "user_id": user.user_id,
-                "User_name": user.user_name,
+                "user_name": user.user_name,
                 "email": user.email
             }
         }), 200
