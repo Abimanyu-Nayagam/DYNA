@@ -4,7 +4,7 @@ import '@/styles/HeroSection.css'
 
 const HeroSection = () => {
   return (
-    <div className='hero-section' id='hero-section'>
+    <div className='hero-section'>
         <div className='hero-background'></div>
         <div className='controller'>
         <Controller/>
