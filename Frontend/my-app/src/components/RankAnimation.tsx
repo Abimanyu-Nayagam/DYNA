@@ -70,7 +70,7 @@ export default function RankAnimation({ rank }: RankAnimationProps) {
       autoPlay
       muted
       playsInline
-      className="w-full max-w-[800px] mx-auto"
+      className="w-full h-full object-contain"
     />
   );
 }
