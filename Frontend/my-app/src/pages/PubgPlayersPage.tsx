@@ -5,6 +5,7 @@ import '@/styles/playerspage.css'
 
 interface PubgPlayer {
   id: number;
+  user_id: number;
   username: string;
   in_game_id: string;
   current_rank: string;
@@ -113,9 +114,11 @@ const PubgPlayersPage = () => {
                 {filteredPlayers.map((player) => (
                   <PlayerCard
                     key={player.id}
+                    user_id={player.user_id}
                     username={player.username}
                     in_game_id={player.in_game_id}
                     current_rank={player.current_rank}
+                    onClick={() => navigate(`/players/${player.user_id}`)}
                   />
                 ))}
               </div>

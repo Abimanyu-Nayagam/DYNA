@@ -5,15 +5,18 @@ interface PlayerCardProps {
   username: string;
   in_game_id: string;
   current_rank: string;
+  user_id: number;
+  onClick?: () => void;
 }
 
 const PlayerCard: React.FC<PlayerCardProps> = ({ 
   username, 
   in_game_id, 
-  current_rank, 
+  current_rank,
+  onClick
 }) => {
   return (
-    <div className="player-card">
+    <div className="player-card" onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
       <div className="player-card-header">
         <div className="player-avatar">
           {username.charAt(0).toUpperCase()}
