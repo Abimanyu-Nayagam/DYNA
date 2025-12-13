@@ -12,9 +12,22 @@ def create_pubg_stats():
     if not data:
         return jsonify({'error': 'Request must be JSON'}), 400 
     
+    user_id = data.get('user_id')
+    
+    # Check if user exists
+    from app.models.user import User
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'error': f'User with ID {user_id} does not exist. Please create a user account first.'}), 400
+    
+    # Check if in_game_id already exists
+    existing_stats = PubgPlayerStats.query.filter_by(in_game_id=data.get('in_game_id')).first()
+    if existing_stats:
+        return jsonify({'error': 'A portfolio with this In-Game ID already exists.'}), 400
+    
     # Create new stats object
     new_stats = PubgPlayerStats()
-    new_stats.user_id = data.get('user_id')
+    new_stats.user_id = user_id
     new_stats.username = data.get('username')
     new_stats.in_game_id = data.get('in_game_id')
     new_stats.fd_ratio = data.get('fd_ratio', 0)
