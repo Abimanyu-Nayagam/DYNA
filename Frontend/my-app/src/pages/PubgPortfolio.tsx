@@ -42,7 +42,7 @@ const PubgPortfolio = () => {
         const data = await pubgAPI.getStatsByUser(parseInt(userId));
         setStats(data);
       } catch (err) {
-        setError('Failed to load PUBG stats');
+        setError('No PUBG stats Availaible');
         console.error(err);
       }
     };
