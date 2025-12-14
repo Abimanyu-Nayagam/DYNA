@@ -4,6 +4,8 @@ from app.models.pubg import PubgPlayerStats
 from app.schema.pubg_schema import PubgBaseSchema
 from app import db
 import logging
+from app.utils.s3 import upload_video_to_s3 ,delete_from_s3
+
 
 logger = logging.getLogger(__name__)
 
@@ -18,19 +20,20 @@ def create_pubg_stats():
     user_id = get_jwt_identity()
     logger.info(f"Creating PUBG stats for user_id: {user_id}")
     
-    data = request.get_json()
+    data = request.form
     if not data:
         logger.warning("PUBG stats creation failed - no JSON data provided")
         return jsonify({'error': 'Request must be JSON'}), 400
     
     # Pydantic validation
     try:
-        pubg_data = PubgBaseSchema(**data)
+        data = PubgBaseSchema(**data.to_dict())
     except Exception as e:
         logger.warning(f"PUBG stats validation failed: {str(e)}")
         return jsonify({'error': str(e)}), 400
     
-    in_game_id = data.get('in_game_id')
+    
+    in_game_id = data.in_game_id
     # Check if user already has a portfolio
     existing_user_stats = PubgPlayerStats.query.filter_by(user_id=user_id).first()
     if existing_user_stats:
@@ -43,23 +46,36 @@ def create_pubg_stats():
         logger.warning(f"PUBG stats creation failed - in_game_id already exists: {in_game_id}")
         return jsonify({'error': 'A portfolio with this In-Game ID already exists.'}), 400
     
+    # Upload video (optional)
+    video = request.files.get("video")
+    video_url = None
+    if video:
+        video_url = upload_video_to_s3(video, in_game_id, "pubg")
+
     # Create new stats object
-    new_stats = PubgPlayerStats()
-    new_stats.user_id = user_id
-    new_stats.username = data.get('username')
-    new_stats.in_game_id = in_game_id
-    new_stats.fd_ratio = data.get('fd_ratio', 0)
-    new_stats.current_rank = data.get('current_rank', 'Bronze')
-    new_stats.highest_rank = data.get('highest_rank', 'Bronze')
-    new_stats.headshot_rate = data.get('headshot_rate', 0)
-    new_stats.headshots = data.get('headshots', 0)
-    new_stats.eliminations = data.get('eliminations', 0)
-    new_stats.most_eliminations = data.get('most_eliminations', 0)
-    new_stats.matches_played = data.get('matches_played', 0)
-    new_stats.wins = data.get('wins', 0)
-    new_stats.top_10 = data.get('top_10', 0)
-    new_stats.avg_damage = data.get('avg_damage', 0)
-    new_stats.avg_survival_time = data.get('avg_survival_time', 0)
+    new_stats = PubgPlayerStats(
+        user_id=user_id,
+        username=data.username,
+        in_game_id=in_game_id,
+        video_url=video_url,
+
+        fd_ratio=data.fd_ratio or 0,
+        current_rank=data.current_rank or "Gold 5",
+        highest_rank=data.highest_rank or "Gold 5",
+
+        headshot_rate=data.headshot_rate or 0,
+        headshots=data.headshots or 0,
+        eliminations=data.eliminations or 0,
+        most_eliminations=data.most_eliminations or 0,
+
+        matches_played=data.matches_played or 0,
+        wins=data.wins or 0,
+        top_10=data.top_10 or 0,
+
+        avg_damage=data.avg_damage or 0,
+        avg_survival_time=data.avg_survival_time or 0,
+    )
+
     
     try:
         db.session.add(new_stats) 
@@ -97,46 +113,47 @@ def get_pubg_stats_by_user(user_id):
     return jsonify(stats.to_dict()), 200
 
 
-@pubg_bp.route('/stats/<int:stats_id>', methods=['PATCH'])
+@pubg_bp.route("/stats/<int:stats_id>", methods=["PATCH"])
 @jwt_required()
 def update_pubg_stats(stats_id):
-    """Update an existing entry or Hidden or not provided fields by ID."""
     current_user_id = get_jwt_identity()
-    logger.info(f"PUBG stats update attempt for stats_id: {stats_id} by user_id: {current_user_id}")
-    
-    data = request.get_json()
-    if not data:
-        logger.warning(f"PUBG stats update failed - no JSON data provided for stats_id: {stats_id}")
-        return jsonify({'error': 'Request must be JSON'}), 400
-    
-    # Pydantic validation
-    try:
-        pubg_data = PubgBaseSchema(**data)
-    except Exception as e:
-        logger.warning(f"PUBG stats validation failed: {str(e)}")
-        return jsonify({'error': str(e)}), 400
-    
+    data = request.form
+
     stats = PubgPlayerStats.query.get(stats_id)
     if not stats:
-        logger.warning(f"PUBG stats not found for stats_id: {stats_id}")
-        return jsonify({'error': 'Stats not found'}), 404
-    
-    # Ensure user can only update their own stats
+        return jsonify({"error": "Stats not found"}), 404
+
     if str(stats.user_id) != str(current_user_id):
-        logger.warning(f"Unauthorized update attempt - user_id: {current_user_id} tried to update stats_id: {stats_id} owned by user_id: {stats.user_id}")
-        return jsonify({'error': 'Unauthorized: You can only update your own stats'}), 403
-    
-    # Update only provided fields
-    for field in ['username', 'in_game_id', 'fd_ratio', 'current_rank', 'highest_rank',
-                  'headshot_rate', 'headshots', 'eliminations', 'most_eliminations',
-                  'matches_played', 'wins', 'top_10', 'avg_damage',  'avg_survival_time', 'ishidden']:
+        return jsonify({"error": "Unauthorized"}), 403
+
+    # Update fields
+    updatable_fields = [
+        "username", "in_game_id", "fd_ratio",
+        "current_rank", "highest_rank",
+        "headshot_rate", "headshots",
+        "eliminations", "most_eliminations",
+        "matches_played", "wins", "top_10",
+        "avg_damage", "avg_survival_time",
+        "ishidden"
+    ]
+    for field in updatable_fields:
         if field in data:
-            setattr(stats, field, data[field])
+            setattr(stats, field, data.get(field))
+
+    # Optional video upload: delete old video first
+    video = request.files.get("video")
+    if video:
+        if stats.video_url:
+            delete_from_s3(stats.video_url)  # delete previous video
+        video_url = upload_video_to_s3(video, stats.in_game_id, "pubg")
+        if not video_url:
+            return jsonify({"error": "Video upload failed"}), 500
+        stats.video_url = video_url
+
     try:
         db.session.commit()
-        logger.info(f"PUBG stats updated successfully for stats_id: {stats_id} by user_id: {current_user_id}")
-    except Exception as exc:
+    except Exception as e:
         db.session.rollback()
-        logger.error(f"Database error while updating PUBG stats for stats_id: {stats_id}")
-        return jsonify({'error': 'Database error', 'details': str(exc)}), 500
+        return jsonify({"error": "Database error", "details": str(e)}), 500
+
     return jsonify(stats.to_dict()), 200

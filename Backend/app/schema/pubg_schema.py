@@ -5,6 +5,7 @@ class PubgBaseSchema(BaseModel):
 
     username: str
     in_game_id: str
+    video_url: str | None = None
     fd_ratio: float | None = None
     current_rank: str | None = None
     highest_rank: str | None = None
