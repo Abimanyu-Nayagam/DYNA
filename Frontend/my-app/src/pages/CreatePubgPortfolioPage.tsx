@@ -95,7 +95,7 @@ const CreatePubgPortfolioPage = () => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -117,89 +117,77 @@ const CreatePubgPortfolioPage = () => {
     }
   };
 
-  const saveVideoLocally = async (file: File, userId: number) => {
-    // Create a download link to save the file with the correct name
-    const blob = new Blob([file], { type: file.type });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${userId}.mp4`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    
-    // Note: After download, manually move the file to Frontend/my-app/public/Pubg-Highlights/
-    alert(`Video downloaded as ${userId}.mp4. Please move it to the public/Pubg-Highlights folder.`);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!token || !user) {
-      alert('Please login to create a portfolio');
-      navigate('/login');
+      alert("Please login to create a portfolio");
+      navigate("/login");
       return;
     }
-    
-    try {
-      const payload = {
-        username: formData.username,
-        in_game_id: formData.in_game_id,
-        fd_ratio: Number(formData.fd_ratio) || 0,
-        current_rank: formData.current_rank,
-        highest_rank: formData.highest_rank,
-        headshot_rate: Number(formData.headshot_rate) || 0,
-        headshots: Number(formData.headshots) || 0,
-        eliminations: Number(formData.eliminations) || 0,
-        most_eliminations: Number(formData.most_eliminations) || 0,
-        matches_played: Number(formData.matches_played) || 0,
-        wins: Number(formData.wins) || 0,
-        top_10: Number(formData.top_10) || 0,
-        avg_damage: Number(formData.avg_damage) || 0,
-        avg_survival_time: Number(formData.avg_survival_time) || 0,
-      };
 
-      let response;
-      if (isUpdate && existingStatsId) {
-        response = await fetch(`http://localhost:5000/games/pubg/stats/${existingStatsId}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        });
-      } else {
-        response = await fetch('http://localhost:5000/games/pubg/stats', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        });
+    try {
+      const form = new FormData();
+
+      // Convert empty strings to 0 for number fields
+      const numberFields = [
+        "fd_ratio",
+        "headshot_rate",
+        "headshots",
+        "eliminations",
+        "most_eliminations",
+        "matches_played",
+        "wins",
+        "top_10",
+        "avg_damage",
+        "avg_survival_time",
+      ];
+
+      Object.entries(formData).forEach(([key, value]) => {
+        if (numberFields.includes(key)) {
+          form.append(key, value === "" ? "0" : value.toString());
+        } else {
+          form.append(key, value.toString());
+        }
+      });
+
+      // Add video if selected
+      if (videoFile) {
+        form.append("video", videoFile);
       }
+
+      const url =
+        isUpdate && existingStatsId
+          ? `http://localhost:5000/games/pubg/stats/${existingStatsId}`
+          : `http://localhost:5000/games/pubg/stats`;
+
+      const response = await fetch(url, {
+        method: isUpdate ? "PATCH" : "POST",
+        headers: {
+          Authorization: `Bearer ${token}`, // Do NOT set Content-Type manually
+        },
+        body: form,
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save portfolio');
+        throw new Error(errorData.error || "Failed to save portfolio");
       }
 
       const data = await response.json();
-      console.log('Portfolio saved:', data);
-      
-      // Handle video file if selected
-      if (videoFile) {
-        const userId = user.user_id;
-        await saveVideoLocally(videoFile, userId);
-      }
-      
-      alert(isUpdate ? 'Portfolio updated successfully!' : 'Portfolio created successfully!');
-      navigate('/players/pubg');
+      alert(
+        isUpdate
+          ? "Portfolio updated successfully!"
+          : "Portfolio created successfully!"
+      );
+      navigate("/players/pubg");
     } catch (error) {
-      console.error('Error saving portfolio:', error);
-      alert(error instanceof Error ? error.message : 'Failed to save portfolio. Please try again.');
+      console.error("Error saving portfolio:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to save portfolio. Please try again."
+      );
     }
   };
 
@@ -231,7 +219,7 @@ const CreatePubgPortfolioPage = () => {
             ← Back to Players
           </button>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="portfolio-form">
           <div className="form-section">
             <h3>Player Information</h3>
@@ -248,7 +236,7 @@ const CreatePubgPortfolioPage = () => {
                   placeholder="Enter your username"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="in_game_id">In-Game ID *</label>
                 <input
@@ -281,7 +269,7 @@ const CreatePubgPortfolioPage = () => {
                   ))}
                 </select>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="highest_rank">Highest Rank *</label>
                 <select
@@ -314,7 +302,7 @@ const CreatePubgPortfolioPage = () => {
                   placeholder="0.00"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="eliminations">Total Eliminations</label>
                 <input
@@ -327,7 +315,7 @@ const CreatePubgPortfolioPage = () => {
                 />
               </div>
             </div>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="headshots">Headshots</label>
@@ -340,7 +328,7 @@ const CreatePubgPortfolioPage = () => {
                   placeholder="0"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="headshot_rate">Headshot Rate (%)</label>
                 <input
@@ -354,7 +342,7 @@ const CreatePubgPortfolioPage = () => {
                 />
               </div>
             </div>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="most_eliminations">Most Eliminations (Single Match)</label>
@@ -367,7 +355,7 @@ const CreatePubgPortfolioPage = () => {
                   placeholder="0"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="avg_damage">Average Damage</label>
                 <input
@@ -413,7 +401,7 @@ const CreatePubgPortfolioPage = () => {
                   placeholder="0"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="wins">Wins</label>
                 <input
@@ -426,7 +414,7 @@ const CreatePubgPortfolioPage = () => {
                 />
               </div>
             </div>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="top_10">Top 10 Finishes</label>
@@ -439,7 +427,7 @@ const CreatePubgPortfolioPage = () => {
                   placeholder="0"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="avg_survival_time">Avg Survival Time (min)</label>
                 <input
