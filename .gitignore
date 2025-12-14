@@ -1,11 +1,12 @@
 /venv
 venv
 .env
-pycache
+__pycache__/
 migrations/
 instance/
 config.json
 logs
+app.log
 node_modules/
 manage.py
 __pycache__

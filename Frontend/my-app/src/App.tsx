@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import { Signup } from "./pages/SignUp";
+import { Login } from "./pages/Login";
+import { AuthProvider } from "./contexts/AuthProvider";
+import PubgPlayersPage from "./pages/PubgPlayersPage";
+import CreatePubgPortfolioPage from "./pages/CreatePubgPortfolioPage";
+import CsgoPlayersPage from "./pages/CsgoPlayersPage";
+import CreateCsgoPortfolioPage from "./pages/CreateCsgoPortfolioPage";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import PubgPortfolio from './pages/PubgPortfolio'
+import AllUsersPage from "./pages/AllUsersPage";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Router>
+        <AuthProvider>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/players/pubg" element={<PubgPlayersPage />} />
+             <Route path='/players/:userId' element={<PubgPortfolio/>}/>
+            <Route path="/players/csgo" element={<CsgoPlayersPage />} />
+            <Route
+              path="/players/pubg/create"
+              element={<CreatePubgPortfolioPage />}
+            />
+          <Route path="/players" element={<AllUsersPage />} />
+            <Route
+              path="/players/csgo/create"
+              element={<CreateCsgoPortfolioPage />}
+            />
+          </Routes>
+        </AuthProvider>
+      </Router>
     </>
-  )
+  );
 }
-
-export default App
+export default App;
