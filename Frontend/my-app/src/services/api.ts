@@ -71,6 +71,7 @@ export interface PubgStatsData {
   avg_damage: number | null;
   avg_survival_time: number | null;
   ishidden: boolean;
+  video_url: string | null;
   created_at: string | null;
   updated_at: string | null;
 }

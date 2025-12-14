@@ -1,0 +1,303 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import "@/styles/createportfolio.css";
+
+interface CsgoFormData {
+  username: string;
+  in_game_id: string;
+  current_rank: string;
+  highest_rank: string;
+  mm_rank: string;
+  faceit_level: number | string;
+  elo: number | string;
+  kd_ratio: number | string;
+  headshot_percentage: number | string;
+  kills: number | string;
+  deaths: number | string;
+  assists: number | string;
+  mvps: number | string;
+  matches_played: number | string;
+  wins: number | string;
+  win_rate: number | string;
+  avg_damage_per_round: number | string;
+  avg_kills_per_round: number | string;
+  rounds_played: number | string;
+  bomb_plants: number | string;
+  bomb_defuses: number | string;
+  flash_assists: number | string;
+}
+
+type FieldConfig = {
+  name: keyof CsgoFormData;
+  label: string;
+  type: "text" | "number" | "select";
+  required?: boolean;
+  placeholder?: string;
+  step?: string;
+  options?: string[];
+};
+
+const CreateCsgoPortfolioPage = () => {
+  const navigate = useNavigate();
+  const { user, token, loading } = useAuth();
+
+  const [formData, setFormData] = useState<CsgoFormData>({
+    username: "",
+    in_game_id: "",
+    current_rank: "Silver I",
+    highest_rank: "Silver I",
+    mm_rank: "Silver I",
+    faceit_level: "",
+    elo: "",
+    kd_ratio: "",
+    headshot_percentage: "",
+    kills: "",
+    deaths: "",
+    assists: "",
+    mvps: "",
+    matches_played: "",
+    wins: "",
+    win_rate: "",
+    avg_damage_per_round: "",
+    avg_kills_per_round: "",
+    rounds_played: "",
+    bomb_plants: "",
+    bomb_defuses: "",
+    flash_assists: "",
+  });
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate("/login");
+    }
+  }, [user, loading, navigate]);
+
+  const ranks = [
+    "Silver I",
+    "Silver II",
+    "Silver III",
+    "Silver IV",
+    "Silver Elite",
+    "Silver Elite Master",
+    "Gold Nova I",
+    "Gold Nova II",
+    "Gold Nova III",
+    "Gold Nova Master",
+    "Master Guardian I",
+    "Master Guardian II",
+    "Master Guardian Elite",
+    "Distinguished Master Guardian",
+    "Legendary Eagle",
+    "Legendary Eagle Master",
+    "Supreme Master First Class",
+    "Global Elite",
+  ];
+
+  const csgoFields: Record<string, FieldConfig[]> = {
+    player: [
+      { name: "username", label: "Username *", type: "text", required: true },
+      {
+        name: "in_game_id",
+        label: "In-Game ID *",
+        type: "text",
+        required: true,
+      },
+    ],
+    ranking: [
+      {
+        name: "current_rank",
+        label: "Current Rank",
+        type: "select",
+        options: ranks,
+      },
+      {
+        name: "highest_rank",
+        label: "Highest Rank",
+        type: "select",
+        options: ranks,
+      },
+      { name: "mm_rank", label: "MM Rank", type: "select", options: ranks },
+      { name: "faceit_level", label: "FACEIT Level", type: "number" },
+      { name: "elo", label: "ELO", type: "number" },
+    ],
+    combat: [
+      { name: "kd_ratio", label: "K/D Ratio", type: "number", step: "0.01" },
+      {
+        name: "headshot_percentage",
+        label: "Headshot %",
+        type: "number",
+        step: "0.1",
+      },
+      { name: "kills", label: "Kills", type: "number" },
+      { name: "deaths", label: "Deaths", type: "number" },
+      { name: "assists", label: "Assists", type: "number" },
+      { name: "mvps", label: "MVPs", type: "number" },
+    ],
+    matches: [
+      { name: "matches_played", label: "Matches Played", type: "number" },
+      { name: "wins", label: "Wins", type: "number" },
+      { name: "win_rate", label: "Win Rate %", type: "number", step: "0.1" },
+      { name: "rounds_played", label: "Rounds Played", type: "number" },
+    ],
+    averages: [
+      {
+        name: "avg_damage_per_round",
+        label: "Avg Damage / Round",
+        type: "number",
+      },
+      {
+        name: "avg_kills_per_round",
+        label: "Avg Kills / Round",
+        type: "number",
+      },
+    ],
+    utility: [
+      { name: "bomb_plants", label: "Bomb Plants", type: "number" },
+      { name: "bomb_defuses", label: "Bomb Defuses", type: "number" },
+      { name: "flash_assists", label: "Flash Assists", type: "number" },
+    ],
+  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!token || !user) {
+      alert("Please login to create a portfolio");
+      navigate("/login");
+      return;
+    }
+
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("username", formData.username);
+      formDataToSend.append("in_game_id", formData.in_game_id);
+      formDataToSend.append("current_rank", formData.current_rank);
+      formDataToSend.append("highest_rank", formData.highest_rank);
+      formDataToSend.append("mm_rank", formData.mm_rank);
+      formDataToSend.append("faceit_level", String(Number(formData.faceit_level) || 0));
+      formDataToSend.append("elo", String(Number(formData.elo) || 0));
+      formDataToSend.append("kd_ratio", String(Number(formData.kd_ratio) || 0));
+      formDataToSend.append("headshot_percentage", String(Number(formData.headshot_percentage) || 0));
+      formDataToSend.append("kills", String(Number(formData.kills) || 0));
+      formDataToSend.append("deaths", String(Number(formData.deaths) || 0));
+      formDataToSend.append("assists", String(Number(formData.assists) || 0));
+      formDataToSend.append("mvps", String(Number(formData.mvps) || 0));
+      formDataToSend.append("matches_played", String(Number(formData.matches_played) || 0));
+      formDataToSend.append("wins", String(Number(formData.wins) || 0));
+      formDataToSend.append("win_rate", String(Number(formData.win_rate) || 0));
+      formDataToSend.append("avg_damage_per_round", String(Number(formData.avg_damage_per_round) || 0));
+      formDataToSend.append("avg_kills_per_round", String(Number(formData.avg_kills_per_round) || 0));
+      formDataToSend.append("rounds_played", String(Number(formData.rounds_played) || 0));
+      formDataToSend.append("bomb_plants", String(Number(formData.bomb_plants) || 0));
+      formDataToSend.append("bomb_defuses", String(Number(formData.bomb_defuses) || 0));
+      formDataToSend.append("flash_assists", String(Number(formData.flash_assists) || 0));
+
+      const response = await fetch("http://localhost:5000/games/csgo/stats", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formDataToSend,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to create portfolio");
+      }
+
+      const data = await response.json();
+      console.log("Portfolio created:", data);
+
+      alert("Portfolio created successfully!");
+      navigate("/players/csgo");
+    } catch (error) {
+      console.error("Error creating portfolio:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to create portfolio. Please try again."
+      );
+    }
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const FormInput = ({ field }: { field: FieldConfig }) => (
+    <div className="form-group">
+      <label htmlFor={field.name}>{field.label}</label>
+
+      {field.type === "select" ? (
+        <select
+          id={field.name}
+          name={field.name}
+          value={formData[field.name]}
+          onChange={handleChange}
+        >
+          {field.options!.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      ) : (
+        <input
+          id={field.name}
+          name={field.name}
+          type={field.type}
+          step={field.step}
+          required={field.required}
+          value={formData[field.name]}
+          onChange={handleChange}
+        />
+      )}
+    </div>
+  );
+
+  return (
+    <div className="create-portfolio-page-csgo ">
+      <div className="page-container">
+        <div className="page-header">
+          <h1>Create CSGO Portfolio</h1>
+          <button
+            className="back-btn"
+            onClick={() => navigate("/players/csgo")}
+          >
+            ← Back to Players
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="portfolio-form">
+          {Object.entries(csgoFields).map(([section, fields]) => (
+            <div className="form-section" key={section}>
+              <h3>{section.toUpperCase()}</h3>
+              <div className="form-row">
+                {fields.map((field) => (
+                  <FormInput key={field.name} field={field} />
+                ))}
+              </div>
+            </div>
+          ))}
+          <div className="form-actions">
+            <button
+              type="button"
+              className="cancel-btn"
+              onClick={() => navigate("/players/csgo")}
+            >
+              Cancel
+            </button>
+            <button type="submit" className="submit-btn">
+              Create Portfolio
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default CreateCsgoPortfolioPage;
