@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
+import { pubgAPI } from '@/services/api'
 import '@/styles/createportfolio.css'
 
 interface PubgFormData {
@@ -39,13 +40,54 @@ const CreatePubgPortfolioPage = () => {
     avg_damage: '',
     avg_survival_time: ''
   });
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [existingStatsId, setExistingStatsId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
       alert('Please login to create a portfolio');
       navigate('/login');
+      return;
+    }
+
+    // Check if user already has a portfolio
+    if (!loading && user && user.user_id) {
+      checkExistingPortfolio();
     }
   }, [user, loading, navigate]);
+
+  const checkExistingPortfolio = async () => {
+    if (!user?.user_id) return;
+
+    try {
+      const existingStats = await pubgAPI.getStatsByUser(user.user_id);
+      if (existingStats) {
+        // Populate form with existing data
+        setFormData({
+          username: existingStats.username || '',
+          in_game_id: existingStats.in_game_id || '',
+          fd_ratio: existingStats.fd_ratio?.toString() || '',
+          current_rank: existingStats.current_rank || 'Gold',
+          highest_rank: existingStats.highest_rank || 'Gold',
+          headshot_rate: existingStats.headshot_rate?.toString() || '',
+          headshots: existingStats.headshots?.toString() || '',
+          eliminations: existingStats.eliminations?.toString() || '',
+          most_eliminations: existingStats.most_eliminations?.toString() || '',
+          matches_played: existingStats.matches_played?.toString() || '',
+          wins: existingStats.wins?.toString() || '',
+          top_10: existingStats.top_10?.toString() || '',
+          avg_damage: existingStats.avg_damage?.toString() || '',
+          avg_survival_time: existingStats.avg_survival_time?.toString() || ''
+        });
+        setExistingStatsId(existingStats.id);
+        setIsUpdate(true);
+      }
+    } catch (error) {
+      // No existing portfolio, continue with creation
+      console.log('No existing portfolio found, proceeding with creation');
+    }
+  };
 
   const ranks = ['Gold', 'Platinum', 'Diamond', 'Crown', 'Ace', 'Conqueror'];
 
@@ -55,6 +97,40 @@ const CreatePubgPortfolioPage = () => {
       ...prev,
       [name]: value
     }));
+  };
+
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('video/')) {
+        alert('Please select a valid video file');
+        return;
+      }
+      // Validate file size (max 100MB)
+      const maxSize = 100 * 1024 * 1024; // 100MB in bytes
+      if (file.size > maxSize) {
+        alert('Video file size must be less than 100MB');
+        return;
+      }
+      setVideoFile(file);
+    }
+  };
+
+  const saveVideoLocally = async (file: File, userId: number) => {
+    // Create a download link to save the file with the correct name
+    const blob = new Blob([file], { type: file.type });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${userId}.mp4`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    // Note: After download, manually move the file to Frontend/my-app/public/Pubg-Highlights/
+    alert(`Video downloaded as ${userId}.mp4. Please move it to the public/Pubg-Highlights folder.`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -67,43 +143,63 @@ const CreatePubgPortfolioPage = () => {
     }
     
     try {
-      const response = await fetch('http://localhost:5000/games/pubg/stats', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          username: formData.username,
-          in_game_id: formData.in_game_id,
-          fd_ratio: Number(formData.fd_ratio) || 0,
-          current_rank: formData.current_rank,
-          highest_rank: formData.highest_rank,
-          headshot_rate: Number(formData.headshot_rate) || 0,
-          headshots: Number(formData.headshots) || 0,
-          eliminations: Number(formData.eliminations) || 0,
-          most_eliminations: Number(formData.most_eliminations) || 0,
-          matches_played: Number(formData.matches_played) || 0,
-          wins: Number(formData.wins) || 0,
-          top_10: Number(formData.top_10) || 0,
-          avg_damage: Number(formData.avg_damage) || 0,
-          avg_survival_time: Number(formData.avg_survival_time) || 0,
-        }),
-      });
+      const payload = {
+        username: formData.username,
+        in_game_id: formData.in_game_id,
+        fd_ratio: Number(formData.fd_ratio) || 0,
+        current_rank: formData.current_rank,
+        highest_rank: formData.highest_rank,
+        headshot_rate: Number(formData.headshot_rate) || 0,
+        headshots: Number(formData.headshots) || 0,
+        eliminations: Number(formData.eliminations) || 0,
+        most_eliminations: Number(formData.most_eliminations) || 0,
+        matches_played: Number(formData.matches_played) || 0,
+        wins: Number(formData.wins) || 0,
+        top_10: Number(formData.top_10) || 0,
+        avg_damage: Number(formData.avg_damage) || 0,
+        avg_survival_time: Number(formData.avg_survival_time) || 0,
+      };
+
+      let response;
+      if (isUpdate && existingStatsId) {
+        response = await fetch(`http://localhost:5000/games/pubg/stats/${existingStatsId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+      } else {
+        response = await fetch('http://localhost:5000/games/pubg/stats', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(payload),
+        });
+      }
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create portfolio');
+        throw new Error(errorData.error || 'Failed to save portfolio');
       }
 
       const data = await response.json();
-      console.log('Portfolio created:', data);
+      console.log('Portfolio saved:', data);
       
-      alert('Portfolio created successfully!');
+      // Handle video file if selected
+      if (videoFile) {
+        const userId = user.user_id;
+        await saveVideoLocally(videoFile, userId);
+      }
+      
+      alert(isUpdate ? 'Portfolio updated successfully!' : 'Portfolio created successfully!');
       navigate('/players/pubg');
     } catch (error) {
-      console.error('Error creating portfolio:', error);
-      alert(error instanceof Error ? error.message : 'Failed to create portfolio. Please try again.');
+      console.error('Error saving portfolio:', error);
+      alert(error instanceof Error ? error.message : 'Failed to save portfolio. Please try again.');
     }
   };
 
@@ -125,7 +221,12 @@ const CreatePubgPortfolioPage = () => {
     <div className="create-portfolio-page">
       <div className="page-container">
         <div className="page-header">
-          <h1>Create PUBG Portfolio</h1>
+          <h1>{isUpdate ? 'Update PUBG Portfolio' : 'Create PUBG Portfolio'}</h1>
+          {isUpdate && (
+            <div className="update-message">
+              You can have only one portfolio per game, update details if needed
+            </div>
+          )}
           <button className="back-btn" onClick={() => navigate('/players/pubg')}>
             ← Back to Players
           </button>
@@ -283,6 +384,22 @@ const CreatePubgPortfolioPage = () => {
           </div>
 
           <div className="form-section">
+            <h3>Gameplay Highlights</h3>
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="highlight_video">Best Gameplay Highlights (MP4 Video)</label>
+                <input
+                  type="file"
+                  id="highlight_video"
+                  name="highlight_video"
+                  accept="video/mp4,video/*"
+                  onChange={handleVideoChange}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="form-section">
             <h3>Match Statistics</h3>
             <div className="form-row">
               <div className="form-group">
@@ -343,7 +460,7 @@ const CreatePubgPortfolioPage = () => {
               Cancel
             </button>
             <button type="submit" className="submit-btn">
-              Create Portfolio
+              {isUpdate ? 'Update Portfolio' : 'Create Portfolio'}
             </button>
           </div>
         </form>

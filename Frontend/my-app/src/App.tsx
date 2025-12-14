@@ -1,4 +1,3 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -9,6 +8,9 @@ import PubgPlayersPage from "./pages/PubgPlayersPage";
 import CreatePubgPortfolioPage from "./pages/CreatePubgPortfolioPage";
 import CsgoPlayersPage from "./pages/CsgoPlayersPage";
 import CreateCsgoPortfolioPage from "./pages/CreateCsgoPortfolioPage";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
+import PubgPortfolio from './pages/PubgPortfolio'
+import AllUsersPage from "./pages/AllUsersPage";
 
 function App() {
   return (
@@ -21,11 +23,13 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/players/pubg" element={<PubgPlayersPage />} />
+             <Route path='/players/:userId' element={<PubgPortfolio/>}/>
             <Route path="/players/csgo" element={<CsgoPlayersPage />} />
             <Route
               path="/players/pubg/create"
               element={<CreatePubgPortfolioPage />}
             />
+          <Route path="/players" element={<AllUsersPage />} />
             <Route
               path="/players/csgo/create"
               element={<CreateCsgoPortfolioPage />}

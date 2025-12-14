@@ -23,3 +23,6 @@ def register_routes(app):
 
     from app.routes.csgo_routes import csgo_bp
     app.register_blueprint(csgo_bp,url_prefix='/games/csgo')
+    
+    from app.routes.user_routes import user_bp
+    app.register_blueprint(user_bp)
