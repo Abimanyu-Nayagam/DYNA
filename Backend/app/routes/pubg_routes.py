@@ -110,7 +110,9 @@ def get_pubg_stats_by_user(user_id):
         logger.warning(f"PUBG stats not found for user_id: {user_id}")
         return jsonify({'error': 'Stats not found'}), 404
     logger.info(f"Successfully fetched PUBG stats for user_id: {user_id}")
-    return jsonify(stats.to_dict()), 200
+    stats_dict = stats.to_dict()
+    logger.info(f"Returning stats with video_url: {stats_dict.get('video_url')}")
+    return jsonify(stats_dict), 200
 
 
 @pubg_bp.route("/stats/<int:stats_id>", methods=["PATCH"])
