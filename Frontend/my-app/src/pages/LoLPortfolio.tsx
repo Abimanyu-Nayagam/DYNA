@@ -163,14 +163,16 @@ const LoLPortfolio: React.FC = () => {
                   </div>
                 </div>
               </div>
-              {highlightVideos.length > 0 && (
-                <div className="mt-16 w-full max-w-[1200px]">
-                  <h2 className="text-3xl font-bold mb-6 text-white">
-                    Highlights
-                  </h2>
-                  <VideoCarousel videos={highlightVideos} />
-                </div>
-              )}
+                {highlightVideos.length > 0 && (
+                  <section className="mt-16 w-full px-6">
+                    <h2 className="text-3xl font-bold mb-6 text-white">
+                      Highlights
+                    </h2>
+                    <ScrollFadeIn>
+                      <VideoCarousel videos={highlightVideos} />
+                    </ScrollFadeIn>
+                  </section>
+                )}
             </div>
         )}
       </main>

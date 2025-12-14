@@ -11,7 +11,7 @@ export default function ScrollFadeIn({ children }) {
                     ref.current.classList.add("animate-fadein")
                 }
             },
-            {threshold: 0.1}
+            {threshold: 0.4}
         )
         if (ref.current) observer.observe(ref.current)
             return () => observer.disconnect()
