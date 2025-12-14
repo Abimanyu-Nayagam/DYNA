@@ -1,0 +1,35 @@
+/* Center the login form on the page */
+.signup-container {
+  min-height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #0d0a15;
+  padding: 40px;
+}
+
+/* Card Wrapper */
+.signup-card {
+  font-family: 'Poppins', sans-serif;
+  padding: 30px;
+  width: 100%;
+  max-width: 430px;
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.1);
+}
+
+
+/* Inputs styling */
+.signup-card input {
+  width: 100%;
+  padding: 12px 14px;
+  margin: 1px 0 1px;
+  border: 1px solid #3a3247;
+  background-color: #0d0a15;
+  color: #fff;
+  transition: border 0.3s ease;
+}
+
+.login-card input:focus {
+  border-color: #8b5cf6;
+  outline: none;
+}
