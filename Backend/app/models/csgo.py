@@ -67,6 +67,7 @@ class CsgoPlayerStats(db.Model):
             'user_id': self.user_id,
             'username': self.username,
             'in_game_id': self.in_game_id,
+            'video_url':self.video_url,
             'current_rank': self.current_rank,
             'highest_rank': self.highest_rank,
             'mm_rank': self.mm_rank,

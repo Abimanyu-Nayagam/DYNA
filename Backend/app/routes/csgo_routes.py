@@ -103,7 +103,9 @@ def get_csgo_stats_by_user(user_id):
     """Retrieve CSGO stats by user ID."""
     stats = CsgoPlayerStats.query.filter_by(user_id=user_id).first()
     if not stats:
-        return jsonify({'error': 'Stats not found'}), 404
+        stats_dict = stats.to_dict()
+        logger.info(f"Returning stats with video_url: {stats_dict.get('video_url')}")
+        return jsonify(stats_dict), 200
     return jsonify(stats.to_dict()), 200
 
 
