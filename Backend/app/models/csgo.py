@@ -8,8 +8,8 @@ class CsgoPlayerStats(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
     
     # Foreign key to User model
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
-    
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False,unique=True)
+    video_url = db.Column(db.String(1000),nullable=True)
     # Player identification
     username = db.Column(db.String(100), nullable=False)
     in_game_id = db.Column(db.String(100), nullable=False, unique=True)

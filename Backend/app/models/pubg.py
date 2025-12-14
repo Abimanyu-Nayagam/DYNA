@@ -13,6 +13,7 @@ class PubgPlayerStats(db.Model):
     # Player identification
     username = db.Column(db.String(100), nullable=False)
     in_game_id = db.Column(db.String(100), nullable=False, unique=True)
+    video_url = db.Column(db.String(1000),nullable=True)
     
     # Performance ratios and rankings
     fd_ratio = db.Column(db.Float, nullable=True)
