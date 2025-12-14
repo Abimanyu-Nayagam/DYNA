@@ -234,3 +234,140 @@
     display: block;
     background: black;
 }
+
+/* =========================
+   General Stats (50/50)
+   ========================= */
+.general-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.general-stat {
+  background: linear-gradient(135deg, #1f1f1f, #2c2c2c);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  flex: 1 1 45%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.general-stat:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.8);
+}
+
+.general-stat h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.general-stat p {
+  color: #ccc;
+}
+
+/* =========================
+   Role Specific Stats (Alternating)
+   ========================= */
+.role-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.role-stat {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.role-stat.flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.stat-info {
+  flex: 1 1 45%;
+}
+
+.stat-info h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.stat-info p {
+  color: #ccc;
+  margin-bottom: 4px;
+}
+
+.stat-info p:first-of-type {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.stat-media {
+  flex: 1 1 45%;
+}
+
+.stat-media img {
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  object-fit: cover;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-media img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.8);
+}
+
+/* =========================
+   Responsive
+   ========================= */
+@media screen and (max-width: 1024px) {
+  .general-stats {
+    flex-direction: column;
+  }
+
+  .general-stat {
+    flex: 1 1 100%;
+  }
+
+  .role-stat {
+    flex-direction: column !important;
+  }
+
+  .stat-info, .stat-media {
+    flex: 1 1 100%;
+  }
+
+  .stat-info p:first-of-type {
+    font-size: 2rem;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .general-stat {
+    padding: 16px;
+  }
+
+  .stat-info h2 {
+    font-size: 1.5rem;
+  }
+
+  .stat-info p:first-of-type {
+    font-size: 1.75rem;
+  }
+}

@@ -41,13 +41,17 @@ interface PlayerData {
   user_name: string;
   cur_rank: string;
   peak_rank: string;
+  last_season_rank: string;
   main_role: string;
   server: string;
   player_since: string;
   cs_per_min: number;
-  avg_dmg: number;
-  avg_kda: number;
-  avg_kp_percent: number;
+  avg_total_dmg: number;
+  avg_kills: number;
+  avg_deaths: number;
+  avg_assists: number;
+  avg_
+  avg_game_duration: number;
   avg_vision_score: number;
 }
 
@@ -59,17 +63,27 @@ const LoLPortfolio: React.FC = () => {
     setTimeout(() => {
       const json: PlayerData = {
         user_name: "42Raven42",
-        cur_rank: "Gold 2",
-        peak_rank: "Platinum 4",
-        main_role: "Bottom",
+        cur_rank: "Challenger",
+        peak_rank: "Challenger 4",
+        last_season_rank: "Grandmaster 1",
+        main_role: "Support",
         server: "SEA",
         player_since: "Season 10",
         cs_per_min: 6.5,
-        avg_dmg: 25000,
-        avg_kda: 3.5,
-        avg_kp_percent: 65.0,
+        avg_total_dmg: 25000,
+        avg_kills: 8,
+        avg_deaths: 5,
+        avg_assists: 10,
+        avg_game_duration: 35,
         avg_vision_score: 18,
       };
+
+      // Calculate avg kda, combat participation(avg (K + A)), avg dmg per min, avg vision score per min, assist ratio (A / (K + A))
+      json["avg_kda"] = parseFloat(((json.avg_kills + json.avg_assists) / Math.max(1, json.avg_deaths)).toFixed(2));
+      json["avg_dmg_per_min"] = parseFloat((json.avg_total_dmg / json.avg_game_duration).toFixed(2));
+      json["avg_vision_score_per_min"] = parseFloat((json.avg_vision_score / json.avg_game_duration).toFixed(2));
+      json["avg_assist_ratio"] = parseFloat((json.avg_assists / Math.max(1, (json.avg_kills + json.avg_assists))).toFixed(2));
+      json["combat_participation_per_min"] = parseFloat(((json.avg_kills + json.avg_assists) / json.avg_game_duration).toFixed(2));
 
       setData(json);
       setLoading(false);
@@ -114,7 +128,7 @@ const LoLPortfolio: React.FC = () => {
                     <h3 className="card-title">Last Season Rank</h3>
                     <img
                       src={
-                        rankIconMap[data!.peak_rank.split(' ')[0].toLowerCase()]
+                        rankIconMap[data!.last_season_rank.split(' ')[0].toLowerCase()]
                       }
                       alt={data!.peak_rank}
                       className="rank-icon"
@@ -163,6 +177,77 @@ const LoLPortfolio: React.FC = () => {
                   </div>
                 </div>
               </div>
+              {/* ===== GENERAL STATS ===== */}
+              <div className="general-stats">
+                {/* Avg KDA */}
+                <div className="general-stat">
+                  <h2>Average KDA</h2>
+                  <p>{data!.avg_kda}</p>
+                </div>
+
+                {/* Combat Participation or Assist Ratio */}
+                <div className="general-stat">
+                  <h2>{data!.main_role.toLowerCase() === "support" ? "Assist Ratio" : "Combat Participation"}</h2>
+                  <p>{data!.main_role.toLowerCase() === "support" ? data!.avg_assist_ratio : data!.combat_participation_per_min}</p>
+                </div>
+              </div>
+
+              {/* ===== ROLE SPECIFIC STATS ===== */}
+              <div className="role-stats">
+                {data!.main_role.toLowerCase() !== "support" ? (
+                  <>
+                    {/* CS / Min */}
+                    <div className="role-stat">
+                      <div className="stat-info">
+                        <h2>CS per Minute</h2>
+                        <p>{data!.cs_per_min}</p>
+                        <p>Tracks your farming efficiency</p>
+                      </div>
+                      <div className="stat-media">
+                        <img src="/images/league-user-stats/cs_image.png" alt="CS" />
+                      </div>
+                    </div>
+
+                    {/* DMG / Min */}
+                    <div className="role-stat flex-row-reverse">
+                      <div className="stat-info">
+                        <h2>Damage per Minute</h2>
+                        <p>{data!.avg_dmg_per_min}</p>
+                        <p>How much damage you deal every minute</p>
+                      </div>
+                      <div className="stat-media">
+                        <img src="/images/league-user-stats/dmg_image.png" alt="Damage" />
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* Vision Score / Min */}
+                    <div className="role-stat">
+                      <div className="stat-info">
+                        <h2>Vision Score per Minute</h2>
+                        <p>{data!.avg_vision_score_per_min}</p>
+                        <p>Tracks how much you help your team with vision</p>
+                      </div>
+                      <div className="stat-media">
+                        <img src="/images/league-user-stats/vision_image.png" alt="Vision" />
+                      </div>
+                    </div>
+
+                    {/* Assist Ratio */}
+                    <div className="role-stat flex-row-reverse">
+                      <div className="stat-info">
+                        <h2>Assist Ratio</h2>
+                        <p>{data!.avg_assist_ratio}</p>
+                        <p>Percentage of kills you assisted in</p>
+                      </div>
+                      <div className="stat-media">
+                        <img src="/images/league-user-stats/assist_image.png" alt="Assist" />
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
                 {highlightVideos.length > 0 && (
                   <section className="mt-16 w-full px-6">
                     <h2 className="text-3xl font-bold mb-6 text-white">
@@ -173,6 +258,68 @@ const LoLPortfolio: React.FC = () => {
                     </ScrollFadeIn>
                   </section>
                 )}
+                <section className="full-stats-section mt-16 px-6">
+                <h2 className="text-3xl font-bold mb-6 text-white">Full Stats</h2>
+
+                <div className="full-stats-grid grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {/* Each stat as a card */}
+                  <div className="stat-card">
+                    <p className="stat-name">Average KDA</p>
+                    <p className="stat-value">{data!.avg_kda}</p>
+                  </div>
+
+                  <div className="stat-card">
+                    <p className="stat-name">Average Combat Participation / Min</p>
+                    <p className="stat-value">{data!.combat_participation_per_min}</p>
+                  </div>
+
+                  <div className="stat-card">
+                    <p className="stat-name">Average Assist Ratio</p>
+                    <p className="stat-value">{data!.avg_assist_ratio}</p>
+                  </div>
+
+                  <div className="stat-card">
+                    <p className="stat-name">CS / Min</p>
+                    <p className="stat-value">{data!.cs_per_min}</p>
+                  </div>
+
+                  <div className="stat-card">
+                    <p className="stat-name">Average Damage / Min</p>
+                    <p className="stat-value">{data!.avg_dmg_per_min}</p>
+                  </div>
+
+                  <div className="stat-card">
+                    <p className="stat-name">Average Vision Score / Min</p>
+                    <p className="stat-value">{data!.avg_vision_score_per_min}</p>
+                  </div>
+
+                  <div className="stat-card">
+                    <p className="stat-name">Average Game Duration</p>
+                    <p className="stat-value">{data!.avg_game_duration} min</p>
+                  </div>
+
+                  <div className="stat-card">
+                    <p className="stat-name">Average Kills</p>
+                    <p className="stat-value">{data!.avg_kills}</p>
+                  </div>
+
+                  <div className="stat-card">
+                    <p className="stat-name">Average Deaths</p>
+                    <p className="stat-value">{data!.avg_deaths}</p>
+                  </div>
+
+                  <div className="stat-card">
+                    <p className="stat-name">Average Assists</p>
+                    <p className="stat-value">{data!.avg_assists}</p>
+                  </div>
+
+                  <div className="stat-card">
+                    <p className="stat-name">Average Total Damage</p>
+                    <p className="stat-value">{data!.avg_total_dmg}</p>
+                  </div>
+                </div>
+              </section>
+
             </div>
         )}
       </main>
