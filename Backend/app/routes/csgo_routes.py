@@ -4,7 +4,7 @@ from app.models.csgo import CsgoPlayerStats
 from app import db
 from app.schema.csgo_schema import CsgoBaseSchema
 import logging
-from app.utils.s3 import upload_video_to_s3
+from app.utils.s3 import upload_video_to_s3,delete_from_s3
 from pydantic import ValidationError
 
 logger = logging.getLogger(__name__)
@@ -112,87 +112,49 @@ def get_csgo_stats_by_user(user_id):
 def update_csgo_stats(stats_id):
     """Update existing CSGO stats (partial update + optional video)."""
     current_user_id = get_jwt_identity()
-    logger.info(
-        f"CSGO stats update attempt for stats_id={stats_id} by user_id={current_user_id}"
-    )
-
     data = request.form
-    if not data:
-        return jsonify({"error": "Request must be form-data"}), 400
-
-    # ---- validate provided fields only ----
-    try:
-        csgo_data = CsgoBaseSchema(**data.to_dict())
-    except Exception as e:
-        logger.warning(f"CSGO stats validation failed: {str(e)}")
-        return jsonify({"error": str(e)}), 400
 
     stats = CsgoPlayerStats.query.get(stats_id)
     if not stats:
         return jsonify({"error": "Stats not found"}), 404
 
-    # ---- ownership check ----
     if str(stats.user_id) != str(current_user_id):
-        return jsonify({
-            "error": "Unauthorized: You can only update your own stats"
-        }), 403
+        return jsonify({"error": "Unauthorized"}), 403
 
-    # ---- update scalar fields (only if provided) ----
+    # Validate provided fields only
+    try:
+        csgo_data = CsgoBaseSchema(**data.to_dict())
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+
+    # Update scalar fields
     updatable_fields = [
-        "username",
-        "in_game_id",
-        "current_rank",
-        "highest_rank",
-        "mm_rank",
-        "faceit_level",
-        "elo",
-        "kd_ratio",
-        "headshot_percentage",
-        "kills",
-        "deaths",
-        "assists",
-        "mvps",
-        "matches_played",
-        "wins",
-        "win_rate",
-        "avg_damage_per_round",
-        "avg_kills_per_round",
-        "rounds_played",
-        "bomb_plants",
-        "bomb_defuses",
-        "flash_assists",
-        "ishidden",
+        "username", "in_game_id", "current_rank", "highest_rank",
+        "mm_rank", "faceit_level", "elo", "kd_ratio", "headshot_percentage",
+        "kills", "deaths", "assists", "mvps", "matches_played", "wins",
+        "win_rate", "avg_damage_per_round", "avg_kills_per_round",
+        "rounds_played", "bomb_plants", "bomb_defuses", "flash_assists",
+        "ishidden"
     ]
 
     for field in updatable_fields:
         if field in data:
             setattr(stats, field, getattr(csgo_data, field))
 
-    # ---- upload video (optional) ----
+    # Optional video upload: delete previous video first
     video = request.files.get("video")
     if video:
-        try:
-            stats.video_url = upload_video_to_s3(
-                video,
-                stats.in_game_id,
-                "csgo"
-            )
-        except Exception as e:
-            return jsonify({
-                "error": f"Video upload failed: {str(e)}"
-            }), 500
+        if stats.video_url:
+            delete_from_s3(stats.video_url)
+        video_url = upload_video_to_s3(video, stats.in_game_id, "csgo")
+        if not video_url:
+            return jsonify({"error": "Video upload failed"}), 500
+        stats.video_url = video_url
 
-    # ---- commit ----
     try:
         db.session.commit()
-        logger.info(
-            f"CSGO stats updated successfully for stats_id={stats_id}"
-        )
     except Exception as exc:
         db.session.rollback()
-        return jsonify({
-            "error": "Database error",
-            "details": str(exc)
-        }), 500
+        return jsonify({"error": "Database error", "details": str(exc)}), 500
 
     return jsonify(stats.to_dict()), 200

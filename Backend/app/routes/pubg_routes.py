@@ -4,7 +4,7 @@ from app.models.pubg import PubgPlayerStats
 from app.schema.pubg_schema import PubgBaseSchema
 from app import db
 import logging
-from app.utils.s3 import upload_video_to_s3
+from app.utils.s3 import upload_video_to_s3 ,delete_from_s3
 
 
 logger = logging.getLogger(__name__)
@@ -117,17 +117,7 @@ def get_pubg_stats_by_user(user_id):
 @jwt_required()
 def update_pubg_stats(stats_id):
     current_user_id = get_jwt_identity()
-    logger.info(f"PUBG stats update attempt for stats_id={stats_id}, user_id={current_user_id}")
-
     data = request.form
-    if not data:
-        return jsonify({"error": "Request must be form-data"}), 400
-
-    # Pydantic validation (partial update)
-    try:
-        pubg_data = PubgBaseSchema(**data.to_dict())
-    except Exception as e:
-        return jsonify({"error": str(e)}), 400
 
     stats = PubgPlayerStats.query.get(stats_id)
     if not stats:
@@ -136,7 +126,7 @@ def update_pubg_stats(stats_id):
     if str(stats.user_id) != str(current_user_id):
         return jsonify({"error": "Unauthorized"}), 403
 
-    # Update only provided fields
+    # Update fields
     updatable_fields = [
         "username", "in_game_id", "fd_ratio",
         "current_rank", "highest_rank",
@@ -146,19 +136,16 @@ def update_pubg_stats(stats_id):
         "avg_damage", "avg_survival_time",
         "ishidden"
     ]
-
     for field in updatable_fields:
         if field in data:
             setattr(stats, field, data.get(field))
 
-    # ---- optional video upload ----
+    # Optional video upload: delete old video first
     video = request.files.get("video")
     if video:
-        video_url = upload_video_to_s3(
-            video,
-            stats.in_game_id,
-            "pubg"
-        )
+        if stats.video_url:
+            delete_from_s3(stats.video_url)  # delete previous video
+        video_url = upload_video_to_s3(video, stats.in_game_id, "pubg")
         if not video_url:
             return jsonify({"error": "Video upload failed"}), 500
         stats.video_url = video_url

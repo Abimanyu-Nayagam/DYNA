@@ -49,3 +49,26 @@ def upload_video_to_s3(file, in_game_id: str, game: str) -> str:
     except Exception as e:
         logger.error(f"S3 upload failed: {str(e)}")
         raise
+
+from urllib.parse import urlparse
+
+def delete_from_s3(file_url: str):
+    """Deletes a file from S3 given its full URL."""
+    if not file_url:
+        return
+    try:
+        s3 = boto3.client(
+            "s3",
+            aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
+            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+            region_name=os.getenv("AWS_REGION"),
+        )
+        bucket_name = os.getenv("AWS_S3_BUCKET_NAME")
+
+        parsed = urlparse(file_url)
+        key = parsed.path.lstrip("/")  # remove leading slash
+
+        s3.delete_object(Bucket=bucket_name, Key=key)
+        print(f"Deleted S3 file: {key}")
+    except Exception as e:
+        print(f"Error deleting file from S3: {e}")
