@@ -1,22 +1,21 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '@/contexts/AuthContext'
-import PlayerCard from '@/components/ui/PlayerCard'
+import UserCard from '@/components/ui/UserCard'
 import '@/styles/playerspage.css'
 
-interface PubgPlayer {
-  id: number;
+interface Player {
   user_id: number;
-  username: string;
-  in_game_id: string;
-  current_rank: string;
+  user_name: string;
+  email: string;
+  provider: string;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
-const PubgPlayersPage = () => {
+const PlayersPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [players, setPlayers] = useState<PubgPlayer[]>([]);
-  const [filteredPlayers, setFilteredPlayers] = useState<PubgPlayer[]>([]);
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [filteredPlayers, setFilteredPlayers] = useState<Player[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -30,9 +29,8 @@ const PubgPlayersPage = () => {
       setFilteredPlayers(players);
     } else {
       const filtered = players.filter(player =>
-        player.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        player.in_game_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        player.current_rank.toLowerCase().includes(searchTerm.toLowerCase())
+        player.user_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        player.user_id.toString().includes(searchTerm)
       );
       setFilteredPlayers(filtered);
     }
@@ -41,15 +39,17 @@ const PubgPlayersPage = () => {
   const fetchPlayers = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:5000/games/pubg/');
+      const response = await fetch('http://localhost:5000/players');
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       
-      const data = await response.json();
-      setPlayers(data);
-      setFilteredPlayers(data);
+      const result = await response.json();
+      // Extract data array from the response object
+      const playersData = result.data || [];
+      setPlayers(playersData);
+      setFilteredPlayers(playersData);
     } catch (error) {
       console.error('Error fetching players:', error);
       // Fallback to empty array on error
@@ -60,19 +60,11 @@ const PubgPlayersPage = () => {
     }
   };
 
-  const handleCreatePortfolio = () => {
-    if (!user) {
-      navigate('/login');
-    } else {
-      navigate('/players/pubg/create');
-    }
-  };
-
   return (
     <div className="players-page">
       <div className="players-header">
         <div className="header-content">
-          <h1 className="page-title">PUBG PLAYERS</h1>
+          <h1 className="page-title">ALL PLAYERS</h1>
         </div>
       </div>
 
@@ -81,16 +73,12 @@ const PubgPlayersPage = () => {
           <input
             type="text"
             className="search-input"
-            placeholder="Search by username, ID, or rank..."
+            placeholder="Search by username, USER ID..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <p className='search-icon'>🔎︎</p>
         </div>
-        
-        <button className="create-portfolio-btn" onClick={handleCreatePortfolio}>
-          + Create Portfolio
-        </button>
       </div>
 
       {isLoading ? (
@@ -112,12 +100,10 @@ const PubgPlayersPage = () => {
               </div>
               <div className="players-grid">
                 {filteredPlayers.map((player) => (
-                  <PlayerCard
-                    key={player.id}
+                  <UserCard
+                    key={player.user_id}
                     user_id={player.user_id}
-                    username={player.username}
-                    in_game_id={player.in_game_id}
-                    current_rank={player.current_rank}
+                    username={player.user_name}
                     onClick={() => navigate(`/players/${player.user_id}`)}
                   />
                 ))}
@@ -130,4 +116,4 @@ const PubgPlayersPage = () => {
   )
 }
 
-export default PubgPlayersPage
+export default PlayersPage
