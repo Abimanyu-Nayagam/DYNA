@@ -28,8 +28,8 @@ const CreatePubgPortfolioPage = () => {
     username: '',
     in_game_id: '',
     fd_ratio: '',
-    current_rank: 'Gold',
-    highest_rank: 'Gold',
+    current_rank: 'Bronze',
+    highest_rank: 'Bronze',
     headshot_rate: '',
     headshots: '',
     eliminations: '',
@@ -68,8 +68,8 @@ const CreatePubgPortfolioPage = () => {
           username: existingStats.username || '',
           in_game_id: existingStats.in_game_id || '',
           fd_ratio: existingStats.fd_ratio?.toString() || '',
-          current_rank: existingStats.current_rank || 'Gold',
-          highest_rank: existingStats.highest_rank || 'Gold',
+          current_rank: existingStats.current_rank || 'Bronze',
+          highest_rank: existingStats.highest_rank || 'Bronze',
           headshot_rate: existingStats.headshot_rate?.toString() || '',
           headshots: existingStats.headshots?.toString() || '',
           eliminations: existingStats.eliminations?.toString() || '',
@@ -89,7 +89,7 @@ const CreatePubgPortfolioPage = () => {
     }
   };
 
-  const ranks = ['Gold', 'Platinum', 'Diamond', 'Crown', 'Ace', 'Conqueror'];
+  const ranks = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Crown', 'Ace', 'Conqueror'];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -303,7 +303,7 @@ const CreatePubgPortfolioPage = () => {
             <h3>Combat Stats</h3>
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="fd_ratio">K/D Ratio</label>
+                <label htmlFor="fd_ratio">F/D Ratio</label>
                 <input
                   type="number"
                   step="0.01"
