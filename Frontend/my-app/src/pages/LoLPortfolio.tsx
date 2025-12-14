@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Footer from "@/components/Footer";
-import ProductCarousel from "@/components/CarouselScroll";
+import VideoCarousel from "@/components/CarouselScroll";
 import "@/styles/LoLPortfolio.css";
 import RankAnimation from "@/components/RankAnimation";
 import ScrollFadeIn from "@/components/ScrollFadeIn";
@@ -27,6 +27,15 @@ const rankIconMap: Record<string, string> = {
   grandmaster: "/images/league-user-stats/Crest_Grandmaster.png",
   challenger: "/images/league-user-stats/Crest_Challenger.png",
 };
+
+const highlightVideos: string[] = [
+  "/videos/highlights/Download.mp4",
+  "/videos/highlights/Flash_Surprise_-_Made_with_Clipchamp.mp4",
+  "/videos/highlights/Messenger_creation_1185985633102759.mp4",
+  "/videos/highlights/vijc90w.mp4"
+  // add/remove freely
+];
+
 
 interface PlayerData {
   user_name: string;
@@ -154,6 +163,14 @@ const LoLPortfolio: React.FC = () => {
                   </div>
                 </div>
               </div>
+              {highlightVideos.length > 0 && (
+                <div className="mt-16 w-full max-w-[1200px]">
+                  <h2 className="text-3xl font-bold mb-6 text-white">
+                    Highlights
+                  </h2>
+                  <VideoCarousel videos={highlightVideos} />
+                </div>
+              )}
             </div>
         )}
       </main>

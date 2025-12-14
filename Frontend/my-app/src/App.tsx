@@ -15,6 +15,7 @@ function App() {
         <Route path='/' element={<Home/>}/>
         <Route path='/players/pubg' element={<PubgPlayersPage/>}/>
         <Route path='/players/pubg/create' element={<CreatePubgPortfolioPage/>}/>
+        <Route path='/lol' element={<LoLPortfolio/>}/>
       </Routes>
     </Router>
   )
