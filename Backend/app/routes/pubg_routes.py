@@ -49,8 +49,8 @@ def create_pubg_stats():
     new_stats.username = data.get('username')
     new_stats.in_game_id = in_game_id
     new_stats.fd_ratio = data.get('fd_ratio', 0)
-    new_stats.current_rank = data.get('current_rank', 'Gold 5')
-    new_stats.highest_rank = data.get('highest_rank', 'Gold 5')
+    new_stats.current_rank = data.get('current_rank', 'Bronze')
+    new_stats.highest_rank = data.get('highest_rank', 'Bronze')
     new_stats.headshot_rate = data.get('headshot_rate', 0)
     new_stats.headshots = data.get('headshots', 0)
     new_stats.eliminations = data.get('eliminations', 0)
