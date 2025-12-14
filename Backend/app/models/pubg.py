@@ -8,7 +8,7 @@ class PubgPlayerStats(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
     
     # Foreign key to User model
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False, unique=True)
     
     # Player identification
     username = db.Column(db.String(100), nullable=False)
@@ -28,11 +28,11 @@ class PubgPlayerStats(db.Model):
     # Match statistics
     matches_played = db.Column(db.Integer, default=0)
     wins = db.Column(db.Integer, default=0)
-    top_10 = db.Column(db.Integer, default=0)  # Top 10 finishes
+    top_10 = db.Column(db.Integer, default=0)  
     
     # Performance averages
-    avg_damage = db.Column(db.Float, nullable=True)  # Average damage per match
-    avg_survival_time = db.Column(db.Float, nullable=True)  # Average survival time in minutes
+    avg_damage = db.Column(db.Float, nullable=True)  
+    avg_survival_time = db.Column(db.Float, nullable=True)
     
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
