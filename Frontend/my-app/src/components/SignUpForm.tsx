@@ -165,7 +165,11 @@ export function SignupForm() {
                           dark:hover:text-gray-100 transition-colors z-10 
                           pointer-events-auto "
             >
-              {showPassword ? <FiEyeOff size={15} /> : <FiEye size={15} />}
+              {showConfirmPassword ? (
+                <FiEyeOff size={15} />
+              ) : (
+                <FiEye size={15} />
+              )}
             </button>
           </LabelInputContainer>
         </div>

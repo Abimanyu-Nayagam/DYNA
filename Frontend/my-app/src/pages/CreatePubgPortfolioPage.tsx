@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
+import { pubgAPI } from '@/services/api'
 import '@/styles/createportfolio.css'
 
 interface PubgFormData {
@@ -27,8 +28,8 @@ const CreatePubgPortfolioPage = () => {
     username: '',
     in_game_id: '',
     fd_ratio: '',
-    current_rank: 'Gold',
-    highest_rank: 'Gold',
+    current_rank: 'Bronze',
+    highest_rank: 'Bronze',
     headshot_rate: '',
     headshots: '',
     eliminations: '',
@@ -39,71 +40,154 @@ const CreatePubgPortfolioPage = () => {
     avg_damage: '',
     avg_survival_time: ''
   });
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [isUpdate, setIsUpdate] = useState(false);
+  const [existingStatsId, setExistingStatsId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
       alert('Please login to create a portfolio');
       navigate('/login');
+      return;
+    }
+
+    // Check if user already has a portfolio
+    if (!loading && user && user.user_id) {
+      checkExistingPortfolio();
     }
   }, [user, loading, navigate]);
 
-  const ranks = ['Gold', 'Platinum', 'Diamond', 'Crown', 'Ace', 'Conqueror'];
+  const checkExistingPortfolio = async () => {
+    if (!user?.user_id) return;
+
+    try {
+      const existingStats = await pubgAPI.getStatsByUser(user.user_id);
+      if (existingStats) {
+        // Populate form with existing data
+        setFormData({
+          username: existingStats.username || '',
+          in_game_id: existingStats.in_game_id || '',
+          fd_ratio: existingStats.fd_ratio?.toString() || '',
+          current_rank: existingStats.current_rank || 'Bronze',
+          highest_rank: existingStats.highest_rank || 'Bronze',
+          headshot_rate: existingStats.headshot_rate?.toString() || '',
+          headshots: existingStats.headshots?.toString() || '',
+          eliminations: existingStats.eliminations?.toString() || '',
+          most_eliminations: existingStats.most_eliminations?.toString() || '',
+          matches_played: existingStats.matches_played?.toString() || '',
+          wins: existingStats.wins?.toString() || '',
+          top_10: existingStats.top_10?.toString() || '',
+          avg_damage: existingStats.avg_damage?.toString() || '',
+          avg_survival_time: existingStats.avg_survival_time?.toString() || ''
+        });
+        setExistingStatsId(existingStats.id);
+        setIsUpdate(true);
+      }
+    } catch (error) {
+      // No existing portfolio, continue with creation
+      console.log('No existing portfolio found, proceeding with creation');
+    }
+  };
+
+  const ranks = ['Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond', 'Crown', 'Ace', 'Conqueror'];
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
+  };
+
+  const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('video/')) {
+        alert('Please select a valid video file');
+        return;
+      }
+      // Validate file size (max 100MB)
+      const maxSize = 100 * 1024 * 1024; // 100MB in bytes
+      if (file.size > maxSize) {
+        alert('Video file size must be less than 100MB');
+        return;
+      }
+      setVideoFile(file);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!token || !user) {
-      alert('Please login to create a portfolio');
-      navigate('/login');
+      alert("Please login to create a portfolio");
+      navigate("/login");
       return;
     }
-    
+
     try {
-      const response = await fetch('http://localhost:5000/games/pubg/stats', {
-        method: 'POST',
+      const form = new FormData();
+
+      // Convert empty strings to 0 for number fields
+      const numberFields = [
+        "fd_ratio",
+        "headshot_rate",
+        "headshots",
+        "eliminations",
+        "most_eliminations",
+        "matches_played",
+        "wins",
+        "top_10",
+        "avg_damage",
+        "avg_survival_time",
+      ];
+
+      Object.entries(formData).forEach(([key, value]) => {
+        if (numberFields.includes(key)) {
+          form.append(key, value === "" ? "0" : value.toString());
+        } else {
+          form.append(key, value.toString());
+        }
+      });
+
+      // Add video if selected
+      if (videoFile) {
+        form.append("video", videoFile);
+      }
+
+      const url =
+        isUpdate && existingStatsId
+          ? `http://localhost:5000/games/pubg/stats/${existingStatsId}`
+          : `http://localhost:5000/games/pubg/stats`;
+
+      const response = await fetch(url, {
+        method: isUpdate ? "PATCH" : "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Do NOT set Content-Type manually
         },
-        body: JSON.stringify({
-          username: formData.username,
-          in_game_id: formData.in_game_id,
-          fd_ratio: Number(formData.fd_ratio) || 0,
-          current_rank: formData.current_rank,
-          highest_rank: formData.highest_rank,
-          headshot_rate: Number(formData.headshot_rate) || 0,
-          headshots: Number(formData.headshots) || 0,
-          eliminations: Number(formData.eliminations) || 0,
-          most_eliminations: Number(formData.most_eliminations) || 0,
-          matches_played: Number(formData.matches_played) || 0,
-          wins: Number(formData.wins) || 0,
-          top_10: Number(formData.top_10) || 0,
-          avg_damage: Number(formData.avg_damage) || 0,
-          avg_survival_time: Number(formData.avg_survival_time) || 0,
-        }),
+        body: form,
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create portfolio');
+        throw new Error(errorData.error || "Failed to save portfolio");
       }
 
       const data = await response.json();
-      console.log('Portfolio created:', data);
-      
-      alert('Portfolio created successfully!');
-      navigate('/players/pubg');
+      alert(
+        isUpdate
+          ? "Portfolio updated successfully!"
+          : "Portfolio created successfully!"
+      );
+      navigate("/players/pubg");
     } catch (error) {
-      console.error('Error creating portfolio:', error);
-      alert(error instanceof Error ? error.message : 'Failed to create portfolio. Please try again.');
+      console.error("Error saving portfolio:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to save portfolio. Please try again."
+      );
     }
   };
 
@@ -125,12 +209,17 @@ const CreatePubgPortfolioPage = () => {
     <div className="create-portfolio-page">
       <div className="page-container">
         <div className="page-header">
-          <h1>Create PUBG Portfolio</h1>
+          <h1>{isUpdate ? 'Update PUBG Portfolio' : 'Create PUBG Portfolio'}</h1>
+          {isUpdate && (
+            <div className="update-message">
+              You can have only one portfolio per game, update details if needed
+            </div>
+          )}
           <button className="back-btn" onClick={() => navigate('/players/pubg')}>
             ← Back to Players
           </button>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="portfolio-form">
           <div className="form-section">
             <h3>Player Information</h3>
@@ -147,7 +236,7 @@ const CreatePubgPortfolioPage = () => {
                   placeholder="Enter your username"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="in_game_id">In-Game ID *</label>
                 <input
@@ -180,7 +269,7 @@ const CreatePubgPortfolioPage = () => {
                   ))}
                 </select>
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="highest_rank">Highest Rank *</label>
                 <select
@@ -202,7 +291,7 @@ const CreatePubgPortfolioPage = () => {
             <h3>Combat Stats</h3>
             <div className="form-row">
               <div className="form-group">
-                <label htmlFor="fd_ratio">K/D Ratio</label>
+                <label htmlFor="fd_ratio">F/D Ratio</label>
                 <input
                   type="number"
                   step="0.01"
@@ -213,7 +302,7 @@ const CreatePubgPortfolioPage = () => {
                   placeholder="0.00"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="eliminations">Total Eliminations</label>
                 <input
@@ -226,7 +315,7 @@ const CreatePubgPortfolioPage = () => {
                 />
               </div>
             </div>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="headshots">Headshots</label>
@@ -239,7 +328,7 @@ const CreatePubgPortfolioPage = () => {
                   placeholder="0"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="headshot_rate">Headshot Rate (%)</label>
                 <input
@@ -253,7 +342,7 @@ const CreatePubgPortfolioPage = () => {
                 />
               </div>
             </div>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="most_eliminations">Most Eliminations (Single Match)</label>
@@ -266,7 +355,7 @@ const CreatePubgPortfolioPage = () => {
                   placeholder="0"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="avg_damage">Average Damage</label>
                 <input
@@ -277,6 +366,22 @@ const CreatePubgPortfolioPage = () => {
                   value={formData.avg_damage}
                   onChange={handleChange}
                   placeholder="0.0"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="form-section">
+            <h3>Gameplay Highlights</h3>
+            <div className="form-row">
+              <div className="form-group">
+                <label htmlFor="highlight_video">Best Gameplay Highlights (MP4 Video)</label>
+                <input
+                  type="file"
+                  id="highlight_video"
+                  name="highlight_video"
+                  accept="video/mp4,video/*"
+                  onChange={handleVideoChange}
                 />
               </div>
             </div>
@@ -296,7 +401,7 @@ const CreatePubgPortfolioPage = () => {
                   placeholder="0"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="wins">Wins</label>
                 <input
@@ -309,7 +414,7 @@ const CreatePubgPortfolioPage = () => {
                 />
               </div>
             </div>
-            
+
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="top_10">Top 10 Finishes</label>
@@ -322,7 +427,7 @@ const CreatePubgPortfolioPage = () => {
                   placeholder="0"
                 />
               </div>
-              
+
               <div className="form-group">
                 <label htmlFor="avg_survival_time">Avg Survival Time (min)</label>
                 <input
@@ -343,7 +448,7 @@ const CreatePubgPortfolioPage = () => {
               Cancel
             </button>
             <button type="submit" className="submit-btn">
-              Create Portfolio
+              {isUpdate ? 'Update Portfolio' : 'Create Portfolio'}
             </button>
           </div>
         </form>

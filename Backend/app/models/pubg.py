@@ -8,11 +8,12 @@ class PubgPlayerStats(db.Model):
     id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
     
     # Foreign key to User model
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False, unique=True)
     
     # Player identification
     username = db.Column(db.String(100), nullable=False)
     in_game_id = db.Column(db.String(100), nullable=False, unique=True)
+    video_url = db.Column(db.String(1000),nullable=True)
     
     # Performance ratios and rankings
     fd_ratio = db.Column(db.Float, nullable=True)
@@ -28,11 +29,11 @@ class PubgPlayerStats(db.Model):
     # Match statistics
     matches_played = db.Column(db.Integer, default=0)
     wins = db.Column(db.Integer, default=0)
-    top_10 = db.Column(db.Integer, default=0)  # Top 10 finishes
+    top_10 = db.Column(db.Integer, default=0)  
     
     # Performance averages
-    avg_damage = db.Column(db.Float, nullable=True)  # Average damage per match
-    avg_survival_time = db.Column(db.Float, nullable=True)  # Average survival time in minutes
+    avg_damage = db.Column(db.Float, nullable=True)  
+    avg_survival_time = db.Column(db.Float, nullable=True)
     
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
@@ -48,11 +49,12 @@ class PubgPlayerStats(db.Model):
     
     def to_dict(self):
         """Convert the model to a dictionary for JSON serialization"""
-        return {
+        result = {
             'id': self.id,
             'user_id': self.user_id,
             'username': self.username,
             'in_game_id': self.in_game_id,
+            'video_url': self.video_url,
             'fd_ratio': self.fd_ratio,
             'current_rank': self.current_rank,
             'highest_rank': self.highest_rank,
@@ -68,4 +70,6 @@ class PubgPlayerStats(db.Model):
             'ishidden': self.ishidden,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
-        } 
+        }
+        print(f"to_dict result: video_url = {result.get('video_url')}")
+        return result 
