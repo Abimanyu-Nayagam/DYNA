@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.exc import SQLAlchemyError
 from app import db
-from app.models import ValorantProfile, User
+from app.models import ValorantProfile, User, TeamHistory, TournamentHistory
 from app.schema.valorant_schema import ValorantProfileCreate, ValorantProfileUpdate
 from pydantic import ValidationError
 
@@ -14,7 +14,7 @@ valorant_bp = Blueprint('valorant', __name__, url_prefix='/api/valorant')
 
 # 🔹 1. GET /api/valorant/me
 @valorant_bp.route('/me', methods=['GET'])
-# @jwt_required()
+@jwt_required()
 def get_own_profile():
     user_id = get_jwt_identity()
     logger.debug(f"Fetching profile for user_id={user_id}")
@@ -32,7 +32,7 @@ def get_own_profile():
 
 # 🔹 2. POST /api/valorant
 @valorant_bp.route('', methods=['POST'])
-# @jwt_required()
+@jwt_required()
 def create_profile():
     user_id = get_jwt_identity()
     logger.debug(f"User {user_id} attempting to create Valorant profile")
@@ -52,9 +52,41 @@ def create_profile():
             logger.warning(f"Validation failed for user {user_id}: {e}")
             return jsonify({"error": "Validation failed", "details": e.errors()}), 400
 
-        profile = ValorantProfile(user_id=user_id, **data.dict())
+
+        # Convert Pydantic HttpUrl objects to plain strings
+        # Build flat fields only
+        clean_dict = data.dict(
+            exclude={"team_history", "tournaments"}
+        )
+
+    # Convert top-level HttpUrl fields to strings
+        if clean_dict.get("banner_url") is not None:
+            clean_dict["banner_url"] = str(clean_dict["banner_url"])
+        if clean_dict.get("media_clips") is not None:
+            clean_dict["media_clips"] = [str(url) for url in clean_dict["media_clips"]]
+
+        profile = ValorantProfile(user_id=user_id, **clean_dict)
+
+        # Add team history
+        if data.team_history:
+            for th in data.team_history:
+                th_data = th.dict()
+                if th_data.get("website") is not None:
+                    th_data["website"] = str(th_data["website"])
+                profile.team_history.append(TeamHistory(**th_data))
+
+        # Add tournament history
+        if data.tournaments:
+            for tr in data.tournaments:
+                tr_data = tr.dict()
+                # (convert any HttpUrl fields here if added later)
+                profile.tournaments.append(TournamentHistory(**tr_data))
+
+
+
         db.session.add(profile)
         db.session.commit()
+
         logger.info(f"Created Valorant profile for user {user_id}")
         return jsonify(profile.to_dict()), 201
 
@@ -69,10 +101,11 @@ def create_profile():
 
 # 🔹 3. PATCH /api/valorant/me → Partial update (inline editing)
 @valorant_bp.route('/me', methods=['PATCH'])
-# @jwt_required()
+@jwt_required()
 def patch_profile():
     user_id = get_jwt_identity()
     logger.debug(f"User {user_id} updating Valorant profile")
+
     try:
         profile = ValorantProfile.query.filter_by(user_id=user_id).first()
         if not profile:
@@ -84,6 +117,9 @@ def patch_profile():
             logger.warning(f"User {user_id} sent empty JSON body")
             return jsonify({"error": "No update data provided"}), 400
 
+        if "team_history" in json_data:
+            json_data["been_in_team_before"] = True
+            
         try:
             data = ValorantProfileUpdate(**json_data)
         except ValidationError as e:
@@ -94,23 +130,48 @@ def patch_profile():
         update_dict = data.dict(exclude_unset=True)
         update_dict = {k: v for k, v in update_dict.items() if v is not None}
 
-        # 🔹 Prevent meaningless updates
         if not update_dict:
             logger.warning(f"User {user_id} sent PATCH with no valid fields to update")
             return jsonify({"error": "No valid fields provided for update"}), 400
 
-        # Apply updates
+        # --- HANDLE nested lists separately ---
+        team_hist_list = update_dict.pop("team_history", None)
+        tourn_hist_list = update_dict.pop("tournaments", None)
+
+        # --- Convert HttpUrl fields in plain fields ---
+        if "banner_url" in update_dict:
+            update_dict["banner_url"] = str(update_dict["banner_url"])
+        if "media_clips" in update_dict:
+            # Make sure list items are strings
+            update_dict["media_clips"] = [str(url) for url in update_dict["media_clips"]]
+
+        # Apply flat scalar fields
         for key, value in update_dict.items():
             setattr(profile, key, value)
 
+# --- TEAM HISTORY (REPLACE ALL) ---
+        if team_hist_list is not None:
+            profile.team_history.clear()
+            for th_data in team_hist_list:  # <-- already dict
+                if th_data.get("website") is not None:
+                    th_data["website"] = str(th_data["website"])
+                profile.team_history.append(TeamHistory(**th_data))
+
+# --- TOURNAMENT HISTORY (REPLACE ALL) ---
+        if tourn_hist_list is not None:
+            profile.tournaments.clear()
+            for tr_data in tourn_hist_list:  # <-- already dict
+                profile.tournaments.append(TournamentHistory(**tr_data))
+
         db.session.commit()
-        logger.info(f"Successfully updated {len(update_dict)} fields for user {user_id}")
+        logger.info(f"Successfully updated profile for user {user_id}")
         return jsonify(profile.to_dict()), 200
 
     except SQLAlchemyError as e:
         db.session.rollback()
         logger.error(f"Database error during PATCH for user {user_id}: {str(e)}")
         return jsonify({"error": "Database update failed"}), 500
+
     except Exception as e:
         logger.error(f"Unexpected error during PATCH for user {user_id}: {str(e)}")
         return jsonify({"error": "Update failed"}), 500
@@ -118,7 +179,7 @@ def patch_profile():
 
 # 🔹 4. DELETE /api/valorant/me
 @valorant_bp.route('/me', methods=['DELETE'])
-# @jwt_required()
+@jwt_required()
 def delete_profile():
     user_id = get_jwt_identity()
     logger.info(f"User {user_id} requested profile deletion")
@@ -189,7 +250,9 @@ def search_valorant_profiles():
             "pages": pagination.pages,
             "page": page,
             "per_page": per_page,
-            "results": results
+            "results": results,
+            "empty": pagination.total == 0,
+            "message": "No profiles found" if pagination.total == 0 else None
         }), 200
 
     except Exception as e:
