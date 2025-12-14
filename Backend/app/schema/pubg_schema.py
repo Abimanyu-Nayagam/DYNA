@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 
 class PubgBaseSchema(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+    model_config = ConfigDict(extra="ignore")
 
     username: str
     in_game_id: str
