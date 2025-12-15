@@ -11,6 +11,7 @@ import CreateCsgoPortfolioPage from "./pages/CreateCsgoPortfolioPage";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import PubgPortfolio from './pages/PubgPortfolio'
 import AllUsersPage from "./pages/AllUsersPage";
+import MainPortfolio from "./pages/MainPortfolio";
 
 function App() {
   return (
@@ -23,7 +24,11 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/players/pubg" element={<PubgPlayersPage />} />
-             <Route path='/players/:userId' element={<PubgPortfolio/>}/>
+            <Route path='/players/:userId' element={<MainPortfolio/>}/>
+            <Route path='/players/:userId/pubg' element={<PubgPortfolio/>}/>
+            <Route path='/players/:userId/csgo' element={<div>CSGO Portfolio Coming Soon</div>}/>
+            <Route path='/players/:userId/valo' element={<div>VALORANT Portfolio Coming Soon</div>}/>
+            <Route path='/players/:userId/lol' element={<div>LOL Portfolio Coming Soon</div>}/>
             <Route path="/players/csgo" element={<CsgoPlayersPage />} />
             <Route
               path="/players/pubg/create"
