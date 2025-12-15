@@ -37,8 +37,8 @@ const PubgPortfolio = () => {
   const [heroImage, setHeroImage] = useState('');
 
   // Helper function to get rank image path
-  const getRankImage = (rank: string | null) => {
-    if (!rank) return null;
+  const getRankImage = (rank: string | null): string | undefined => {
+    if (!rank) return undefined;
     const rankName = rank.toLowerCase();
     console.log('Loading rank image for:', rank, '->', rankName);
     return `/PUBG-RANKS/${rankName}.png`;
@@ -50,6 +50,8 @@ const PubgPortfolio = () => {
 
       try {
         const data = await pubgAPI.getStatsByUser(parseInt(userId));
+        console.log('Fetched PUBG stats:', data);
+        console.log('Video URL:', data.video_url);
         setStats(data);
       } catch (err) {
         setError('No PUBG stats Availaible');
@@ -99,7 +101,7 @@ const PubgPortfolio = () => {
       {
         label: 'Stats',
         data: [stats.wins || 0, stats.top_10 || 0, stats.eliminations || 0, stats.headshots || 0],
-        backgroundColor: '#8b5cf6',
+        backgroundColor: '#d946ef',
       },
     ],
   };
@@ -113,7 +115,7 @@ const PubgPortfolio = () => {
           stats.top_10 || 0,
           (stats.matches_played || 0) - (stats.wins || 0) - (stats.top_10 || 0),
         ],
-        backgroundColor: ['#48396dff', '#6d44ceff', '#936ceeff'],
+        backgroundColor: ['#d946ef', '#9c3faaff', '#850099ff'],
         borderColor: 'transparent',
       },
     ],
@@ -125,7 +127,7 @@ const PubgPortfolio = () => {
       {
         label: 'Performance Trend',
         data: [stats.matches_played || 0, stats.eliminations || 0, stats.wins || 0],
-        borderColor: '#8b5cf6',
+        borderColor: '#d946ef',
       },
     ],
   };
@@ -238,6 +240,30 @@ const PubgPortfolio = () => {
           </div>
         </div>
       </div>
+
+      {/* Video Section */}
+      {stats.video_url && (
+        <div className="video-section">
+          {console.log('Rendering video section with URL:', stats.video_url)}
+          <div className="video-container">
+            <video 
+              loop 
+              autoPlay 
+              muted 
+              onError={(e) => console.error('Video load error:', e)}
+              onLoadStart={() => console.log('Video load start')}
+              onCanPlay={() => console.log('Video can play')}
+            >
+              <source src={stats.video_url} type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div className="title-container">
+            <h2>BEST MOMENTS</h2>
+            <h2>OF {stats.username?.toUpperCase()}</h2>
+          </div>
+        </div>
+      )}
 
       {/* Charts Section */}
       <div className="charts-section">

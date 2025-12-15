@@ -11,6 +11,7 @@ import CreateCsgoPortfolioPage from "./pages/CreateCsgoPortfolioPage";
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import PubgPortfolio from './pages/PubgPortfolio'
 import AllUsersPage from "./pages/AllUsersPage";
+import LoLPortfolio from "./pages/LoLPortfolio";
 import ValorantSearchPage from './pages/ValorantSearchPage';
 
 function App() {
@@ -37,6 +38,7 @@ function App() {
               path="/players/csgo/create"
               element={<CreateCsgoPortfolioPage />}
             />
+          <Route path="/lol" element={<LoLPortfolio/>}/>
           </Routes>
         </AuthProvider>
       </Router>

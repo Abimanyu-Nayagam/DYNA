@@ -49,11 +49,12 @@ class PubgPlayerStats(db.Model):
     
     def to_dict(self):
         """Convert the model to a dictionary for JSON serialization"""
-        return {
+        result = {
             'id': self.id,
             'user_id': self.user_id,
             'username': self.username,
             'in_game_id': self.in_game_id,
+            'video_url': self.video_url,
             'fd_ratio': self.fd_ratio,
             'current_rank': self.current_rank,
             'highest_rank': self.highest_rank,
@@ -69,4 +70,6 @@ class PubgPlayerStats(db.Model):
             'ishidden': self.ishidden,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
-        } 
+        }
+        print(f"to_dict result: video_url = {result.get('video_url')}")
+        return result 

@@ -1,0 +1,373 @@
+@keyframes fade-up {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-down {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-left {
+    0% { opacity: 0; transform: translateX(-20px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-right {
+    0% { opacity: 0; transform: translateX(20px); }
+    100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+@keyframes fade-out {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* =========================
+   Layout
+   ========================= */
+
+.lol-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: black;
+}
+
+.lol-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px;
+}
+
+/* =========================
+   Animations
+   ========================= */
+
+.spinner-fade {
+    opacity: 0;
+    animation: fade-in 1s ease-in-out forwards, spin 1s linear infinite;
+}
+
+.header-fade {
+    opacity: 0;
+    animation: fade-in 1s ease-in-out forwards;
+    animation-delay: 0.5s;
+}
+
+.rank-left-fade {
+    opacity: 0;
+    animation: fade-left 1s ease-in-out forwards;
+    animation-delay: 3s;
+}
+
+.rank-right-fade {
+    opacity: 0;
+    animation: fade-right 1s ease-in-out forwards;
+    animation-delay: 5s;
+}
+
+/* =========================
+   Rank Layout
+   ========================= */
+
+.rank-layout-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.rank-layout {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    align-items: center;
+    margin-top: 20px;
+    min-height: 650px;
+}
+
+.rank-side {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+}
+
+.rank-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* =========================
+   Cards
+   ========================= */
+
+.cards-section {
+    width: 100%;
+    margin: 40px auto 0;
+    max-width: 90%;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 32px;
+    width: 100%;
+}
+
+.card {
+    background: linear-gradient(135deg, #1f1f1f, #2c2c2c);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.card-content {
+    font-size: 1rem;
+    color: #ccc;
+}
+
+.rank-icon { width: 125px; margin-bottom: 10px; }
+.season-icon { width: 100px; margin-bottom: 10px; }
+.server-icon { width: 150px; margin-bottom: 10px; }
+
+/* =========================
+   Video Carousel (IMPORTANT)
+   ========================= */
+
+.video-carousel {
+    width: 100%;
+    margin-top: 40px;
+    padding-inline: 24px;
+}
+
+/* 🔑 KEY FIXES HERE */
+.video-track {
+  display: flex;
+  gap: 32px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 16px;
+
+  /* <-- add this */
+  padding-inline: calc((100vw - clamp(720px, 80vw, 1000px)) / 2);
+
+  cursor: grab;
+  user-select: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.video-track.dragging {
+    cursor: grabbing;
+}
+
+/* Always-visible scrollbar */
+.video-track::-webkit-scrollbar {
+    height: 10px;
+}
+
+.video-track::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.35);
+    border-radius: 10px;
+}
+
+.video-track::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* BIG BOY VIDEOS */
+.video-card {
+  flex: 0 0 clamp(720px, 80vw, 1000px);
+  aspect-ratio: 16 / 9;
+  scroll-snap-align: center;
+  border-radius: 20px;
+  overflow: hidden;
+  background: black;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+.video-card:hover {
+    transform: translateY(-6px) scale(1.05);
+    box-shadow: 0 14px 40px rgba(0,0,0,0.9);
+}
+
+/* 🔑 Prevent video stealing drag */
+.video-card video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    background: black;
+}
+
+/* =========================
+   General Stats (50/50)
+   ========================= */
+.general-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.general-stat {
+  background: linear-gradient(135deg, #1f1f1f, #2c2c2c);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  flex: 1 1 45%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.general-stat:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.8);
+}
+
+.general-stat h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.general-stat p {
+  color: #ccc;
+}
+
+/* =========================
+   Role Specific Stats (Alternating)
+   ========================= */
+.role-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.role-stat {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.role-stat.flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.stat-info {
+  flex: 1 1 45%;
+}
+
+.stat-info h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.stat-info p {
+  color: #ccc;
+  margin-bottom: 4px;
+}
+
+.stat-info p:first-of-type {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.stat-media {
+  flex: 1 1 45%;
+}
+
+.stat-media img {
+  width: 100%;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  object-fit: cover;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-media img:hover {
+  transform: scale(1.03);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.8);
+}
+
+/* =========================
+   Responsive
+   ========================= */
+@media screen and (max-width: 1024px) {
+  .general-stats {
+    flex-direction: column;
+  }
+
+  .general-stat {
+    flex: 1 1 100%;
+  }
+
+  .role-stat {
+    flex-direction: column !important;
+  }
+
+  .stat-info, .stat-media {
+    flex: 1 1 100%;
+  }
+
+  .stat-info p:first-of-type {
+    font-size: 2rem;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .general-stat {
+    padding: 16px;
+  }
+
+  .stat-info h2 {
+    font-size: 1.5rem;
+  }
+
+  .stat-info p:first-of-type {
+    font-size: 1.75rem;
+  }
+}

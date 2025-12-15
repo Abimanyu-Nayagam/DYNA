@@ -168,46 +168,36 @@ const CreateCsgoPortfolioPage = () => {
     }
 
     try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("username", formData.username);
+      formDataToSend.append("in_game_id", formData.in_game_id);
+      formDataToSend.append("current_rank", formData.current_rank);
+      formDataToSend.append("highest_rank", formData.highest_rank);
+      formDataToSend.append("mm_rank", formData.mm_rank);
+      formDataToSend.append("faceit_level", String(Number(formData.faceit_level) || 0));
+      formDataToSend.append("elo", String(Number(formData.elo) || 0));
+      formDataToSend.append("kd_ratio", String(Number(formData.kd_ratio) || 0));
+      formDataToSend.append("headshot_percentage", String(Number(formData.headshot_percentage) || 0));
+      formDataToSend.append("kills", String(Number(formData.kills) || 0));
+      formDataToSend.append("deaths", String(Number(formData.deaths) || 0));
+      formDataToSend.append("assists", String(Number(formData.assists) || 0));
+      formDataToSend.append("mvps", String(Number(formData.mvps) || 0));
+      formDataToSend.append("matches_played", String(Number(formData.matches_played) || 0));
+      formDataToSend.append("wins", String(Number(formData.wins) || 0));
+      formDataToSend.append("win_rate", String(Number(formData.win_rate) || 0));
+      formDataToSend.append("avg_damage_per_round", String(Number(formData.avg_damage_per_round) || 0));
+      formDataToSend.append("avg_kills_per_round", String(Number(formData.avg_kills_per_round) || 0));
+      formDataToSend.append("rounds_played", String(Number(formData.rounds_played) || 0));
+      formDataToSend.append("bomb_plants", String(Number(formData.bomb_plants) || 0));
+      formDataToSend.append("bomb_defuses", String(Number(formData.bomb_defuses) || 0));
+      formDataToSend.append("flash_assists", String(Number(formData.flash_assists) || 0));
+
       const response = await fetch("http://localhost:5000/games/csgo/stats", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          username: formData.username,
-          in_game_id: formData.in_game_id,
-
-          // Rankings / ratings
-          current_rank: formData.current_rank,
-          highest_rank: formData.highest_rank,
-          mm_rank: formData.mm_rank,
-          faceit_level: Number(formData.faceit_level) || 0,
-          elo: Number(formData.elo) || 0,
-
-          // Combat performance
-          kd_ratio: Number(formData.kd_ratio) || 0,
-          headshot_percentage: Number(formData.headshot_percentage) || 0,
-          kills: Number(formData.kills) || 0,
-          deaths: Number(formData.deaths) || 0,
-          assists: Number(formData.assists) || 0,
-          mvps: Number(formData.mvps) || 0,
-
-          // Match statistics
-          matches_played: Number(formData.matches_played) || 0,
-          wins: Number(formData.wins) || 0,
-          win_rate: Number(formData.win_rate) || 0,
-
-          // Performance averages
-          avg_damage_per_round: Number(formData.avg_damage_per_round) || 0,
-          avg_kills_per_round: Number(formData.avg_kills_per_round) || 0,
-          rounds_played: Number(formData.rounds_played) || 0,
-
-          // Utility / objective
-          bomb_plants: Number(formData.bomb_plants) || 0,
-          bomb_defuses: Number(formData.bomb_defuses) || 0,
-          flash_assists: Number(formData.flash_assists) || 0,
-        }),
+        body: formDataToSend,
       });
 
       if (!response.ok) {
