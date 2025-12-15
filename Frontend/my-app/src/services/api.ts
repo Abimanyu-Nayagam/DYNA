@@ -58,7 +58,6 @@ export interface PubgStatsData {
   user_id: number;
   username: string;
   in_game_id: string;
-  video_url:string;
   fd_ratio: number | null;
   current_rank: string | null;
   highest_rank: string | null;

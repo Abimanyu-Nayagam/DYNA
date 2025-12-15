@@ -51,25 +51,25 @@ const PubgPortfolio = () => {
 
       try {
         // First, fetch all users and find by username
-        const usersResponse = await fetch('http://localhost:5000/players');
+        const usersResponse = await fetch("http://localhost:5000/games/pubg");
         if (!usersResponse.ok) {
           throw new Error('Failed to fetch users');
         }
-        
+
         const usersResult = await usersResponse.json();
-        const users = usersResult.data || [];
-        
+        const users = usersResult || [];
+        console.log(usersResult);
         // Find user by username (case-insensitive)
         const user = users.find(
-          (u: any) => u.user_name.toLowerCase() === username.toLowerCase()
+          (u: any) => u.username.toLowerCase() === username.toLowerCase()
         );
-        
+
         if (!user) {
           throw new Error('User not found');
         }
-        
+
         setUserId(user.user_id);
-        
+
         // Then fetch PUBG stats using userId
         const data = await pubgAPI.getStatsByUser(user.user_id);
         console.log('Fetched PUBG stats:', data);
@@ -162,8 +162,8 @@ const PubgPortfolio = () => {
         <div className="pubg-hero-content">
           <div className="hero-main">
             {stats.current_rank && (
-              <img 
-                src={getRankImage(stats.current_rank)} 
+              <img
+                src={getRankImage(stats.current_rank)}
                 alt={`${stats.current_rank} Rank`}
                 className="hero-rank-logo-medium"
                 onError={(e) => {
@@ -194,7 +194,7 @@ const PubgPortfolio = () => {
               <span className="stat-value">{stats.eliminations || 0}</span>
               <span className="stat-label">Eliminations</span>
             </div>
-             <div className="pubg-hero-stat">
+            <div className="pubg-hero-stat">
               <span className="stat-value">{stats.fd_ratio || 0}</span>
               <span className="stat-label">F/D Ratio</span>
             </div>
@@ -268,10 +268,10 @@ const PubgPortfolio = () => {
         <div className="video-section">
           {console.log('Rendering video section with URL:', stats.video_url)}
           <div className="video-container">
-            <video 
-              loop 
-              autoPlay 
-              muted 
+            <video
+              loop
+              autoPlay
+              muted
               onError={(e) => console.error('Video load error:', e)}
               onLoadStart={() => console.log('Video load start')}
               onCanPlay={() => console.log('Video can play')}
@@ -315,8 +315,8 @@ const PubgPortfolio = () => {
             <div className="rank-display">
               {stats.highest_rank ? (
                 <div className="rank-with-name">
-                  <img 
-                    src={getRankImage(stats.highest_rank)} 
+                  <img
+                    src={getRankImage(stats.highest_rank)}
                     alt={`${stats.highest_rank} Rank`}
                     className="rank-logo-small"
                     onError={(e) => {

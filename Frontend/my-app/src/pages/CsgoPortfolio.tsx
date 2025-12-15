@@ -156,28 +156,27 @@ export default function CsgoPortfolio() {
   useEffect(() => {
     const fetchUserAndStats = async () => {
       if (!username) return;
-
       try {
         // First, fetch all users and find by username
-        const usersResponse = await fetch('http://localhost:5000/players');
+        const usersResponse = await fetch("http://localhost:5000/games/csgo");
         if (!usersResponse.ok) {
-          throw new Error('Failed to fetch users');
+          throw new Error("Failed to fetch users");
         }
-        
+
         const usersResult = await usersResponse.json();
-        const users = usersResult.data || [];
-        
+        const users = usersResult || [];
+
         // Find user by username (case-insensitive)
         const user = users.find(
-          (u: any) => u.user_name.toLowerCase() === username.toLowerCase()
+          (u: any) => u.username.toLowerCase() === username.toLowerCase()
         );
-        
+
         if (!user) {
-          throw new Error('User not found');
+          throw new Error("User not found");
         }
-        
+
         setUserId(user.user_id);
-        
+
         // Then fetch CSGO stats using userId
         const data = await csgoAPI.getStatsByUser(user.user_id);
         console.log(data);
