@@ -58,6 +58,7 @@ export interface PubgStatsData {
   user_id: number;
   username: string;
   in_game_id: string;
+  video_url:string;
   fd_ratio: number | null;
   current_rank: string | null;
   highest_rank: string | null;
@@ -120,5 +121,68 @@ export const pubgAPI = {
     return response.data;
   },
 };
+
+export interface CsgoStatsData {
+  id: number;
+  user_id: number;
+  username: string;
+  in_game_id: string;
+  video_url:string|null;
+
+
+  current_rank: string|null;
+  highest_rank: string|null;
+  mm_rank: string|null;
+  faceit_level: number | null;
+  elo: number | null;
+
+
+  kd_ratio: number | null;
+  headshot_percentage: number | null;
+  kills: number  |null;
+  deaths: number |null;
+  assists: number|null;
+  mvps: number|null;
+
+  matches_played: number | string|null;
+  wins: number | string |null;
+  win_rate: number |null;
+  
+  avg_damage_per_round: number | string|null;
+  avg_kills_per_round: number | string |null;
+  rounds_played: number | string |null;
+
+  bomb_plants: number | string|null;
+  bomb_defuses: number | string |null;
+  flash_assists: number | string |null;
+  ishidden: boolean;
+}
+
+export const csgoAPI = {
+  createStats: async (data: Omit<CsgoStatsData, 'id' | 'user_id' | 'ishidden' | 'created_at' | 'updated_at'>) => {
+    const response = await api.post("/games/csgo/stats", data);
+    return response.data;
+  },
+
+  getAllStats: async (): Promise<CsgoStatsData[]> => {
+    const response = await api.get("/games/csgo/");
+    return response.data;
+  },
+
+  getStatsByUser: async (userId: number): Promise<CsgoStatsData> => {
+    const response = await api.get(`/games/csgo/stats/${userId}`);
+    console.log(response);
+    
+    return response.data;
+  },
+
+  updateStats: async (statsId: number, data: Partial<CsgoStatsData>) => {
+    const response = await api.patch(`/games/csgo/stats/${statsId}`, data);
+    return response.data;
+  },
+};
+
+
+
 
 export default api;
