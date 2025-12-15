@@ -37,7 +37,7 @@ function App() {
               path="/players/csgo/create"
               element={<CreateCsgoPortfolioPage />}
             />
-          <Route path="/lol" element={<LoLPortfolio/>}/>
+          <Route path="/players/lol" element={<LoLPortfolio/>}/>
           </Routes>
         </AuthProvider>
       </Router>

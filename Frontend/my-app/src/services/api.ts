@@ -77,6 +77,10 @@ export interface PubgStatsData {
   updated_at: string | null;
 }
 
+export interface PlayerLolData {
+  
+}
+
 // API
 export const authAPI = {
   signup: async (data: SignupPayload) => {
@@ -115,6 +119,11 @@ export const pubgAPI = {
     const response = await api.get(`/games/pubg/stats/${userId}`);
     return response.data;
   },
+
+  // getLolStatsByUser: async (userId: number): Promise<> => {
+  //   const response = await api.get(`/games/lol/stats/${userId}`);
+  //   return response.data;
+  // },
 
   updateStats: async (statsId: number, data: Partial<PubgStatsData>) => {
     const response = await api.patch(`/games/pubg/stats/${statsId}`, data);
