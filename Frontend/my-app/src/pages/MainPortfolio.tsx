@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { FaEnvelope, FaUser, FaCalendar } from 'react-icons/fa'
+import { pubgAPI, csgoAPI } from '../services/api'
 import '../styles/mainportfolio.css'
 
 interface UserData {
@@ -18,6 +19,7 @@ const MainPortfolio = () => {
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [availableGames, setAvailableGames] = useState<string[]>([]);
 
   const games = [
     {
@@ -53,7 +55,7 @@ const MainPortfolio = () => {
     try {
       setIsLoading(true);
       // Fetch all users and find by username
-      const response = await fetch(`http://localhost:5000/players`);
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/players`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch users');
@@ -72,6 +74,10 @@ const MainPortfolio = () => {
       }
       
       setUserData(user);
+      
+      // Check which games this user has portfolios for
+      await checkAvailableGames(user.user_id);
+      
       setError(null);
     } catch (err) {
       setError('Failed to load user data');
@@ -79,6 +85,31 @@ const MainPortfolio = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const checkAvailableGames = async (userId: number) => {
+    const available: string[] = [];
+    
+    // Check PUBG
+    try {
+      await pubgAPI.getStatsByUser(userId);
+      available.push('PUBG');
+    } catch (err) {
+      // User doesn't have PUBG portfolio
+    }
+    
+    // Check CSGO
+    try {
+      await csgoAPI.getStatsByUser(userId);
+      available.push('CSGO');
+    } catch (err) {
+      // User doesn't have CSGO portfolio
+    }
+    
+    // Add other games here when implemented
+    // TODO: Add VALORANT and LOL checks when APIs are available
+    
+    setAvailableGames(available);
   };
 
   const formatDate = (dateString: string | null) => {
@@ -135,8 +166,13 @@ const MainPortfolio = () => {
 
       <div className="main-games-section">
         <h2 className="section-title">Game Portfolios</h2>
+        {availableGames.length === 0 ? (
+          <div className="no-portfolios">
+            <p>No game portfolios found for this user.</p>
+          </div>
+        ) : (
         <div className="main-portfolio-games-grid">
-          {games.map((game, index) => (
+          {games.filter(game => availableGames.includes(game.title)).map((game, index) => (
             <Link to={game.route} key={index} className="game-card-link">
               <div className="main-portfolio-game-card">
                 <div className="game-card-image-container">
@@ -154,6 +190,7 @@ const MainPortfolio = () => {
             </Link>
           ))}
         </div>
+        )}
       </div>
     </div>
   )

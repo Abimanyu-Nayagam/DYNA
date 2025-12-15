@@ -132,7 +132,6 @@
 
 .main-portfolio-game-card {
   background: rgba(26, 15, 46, 0.6);
-  border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
   position: relative;
@@ -216,6 +215,13 @@
 .main-portfolio-error h2 {
   margin-bottom: 20px;
   color: #d946ef;
+}
+
+.no-portfolios {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.2rem;
 }
 
 @media (max-width: 768px) {
