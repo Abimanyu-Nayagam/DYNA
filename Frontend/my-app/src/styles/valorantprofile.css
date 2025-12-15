@@ -1,0 +1,949 @@
+/* 🎮 VALORANT PROFILE PAGE - ULTRA EDITION */
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
+
+/* 🌌 Main Container */
+.valorant-profile-page {
+  min-height: 100vh;
+  background: #0d0a15;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ⏳ Loading State */
+.valorant-profile-loading {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #0d0a15;
+  color: #fff;
+}
+
+.loading-spinner-large {
+  width: 80px;
+  height: 80px;
+  border: 5px solid transparent;
+  border-top: 5px solid #8b5cf6;
+  border-right: 5px solid #d946ef;
+  border-bottom: 5px solid #00ffff;
+  border-radius: 50%;
+  animation: spinRGB 1.5s linear infinite;
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.6);
+  margin-bottom: 24px;
+}
+
+@keyframes spinRGB {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.valorant-profile-loading p {
+  font-size: 18px;
+  letter-spacing: 2px;
+  animation: loadingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes loadingPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* ❌ Error State */
+.valorant-profile-error {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #0d0a15;
+  color: #fff;
+  padding: 40px;
+  text-align: center;
+}
+
+.valorant-profile-error h2 {
+  font-size: 32px;
+  margin-bottom: 16px;
+  color: #ff6b6b;
+}
+
+.valorant-profile-error p {
+  font-size: 18px;
+  margin-bottom: 32px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.back-btn {
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #602469, #8b5cf6);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.6);
+}
+
+/* 🎨 Hero Section */
+.profile-hero {
+  position: relative;
+  min-height: 400px;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  padding: 40px;
+  overflow: hidden;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, 
+    rgba(13, 10, 21, 0.3) 0%, 
+    rgba(13, 10, 21, 0.9) 70%,
+    rgba(13, 10, 21, 1) 100%
+  );
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* 👤 User Section (DYNA Info) */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6, #d946ef);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 0 40px rgba(139, 92, 246, 0.8);
+  animation: avatarGlow 3s ease-in-out infinite;
+}
+
+@keyframes avatarGlow {
+  0%, 100% {
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.8);
+  }
+  50% {
+    box-shadow: 0 0 60px rgba(217, 70, 239, 1);
+  }
+}
+
+.user-info {
+  flex: 1;
+}
+
+.dyna-username {
+  font-size: 36px;
+  font-weight: 900;
+  margin: 0 0 8px 0;
+  background: linear-gradient(90deg, #e846a7, #8b5cf6, #d946ef);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+  letter-spacing: 2px;
+}
+
+.dyna-email {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+/* 🎮 Valorant Section */
+.valorant-section {
+  margin-bottom: 24px;
+}
+
+.player-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: #d946ef;
+  margin: 0 0 8px 0;
+  text-shadow: 0 0 20px rgba(217, 70, 239, 0.6);
+}
+
+.riot-id {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Courier New', monospace;
+  margin: 0 0 20px 0;
+}
+
+/* 🏆 Rank Badges */
+.rank-badges {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.rank-badge {
+  padding: 16px 24px;
+  background: rgba(139, 92, 246, 0.2);
+  border: 2px solid rgba(139, 92, 246, 0.4);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.rank-badge:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px rgba(139, 92, 246, 0.5);
+  border-color: rgba(139, 92, 246, 0.8);
+}
+
+.rank-badge.current {
+  border-color: rgba(0, 245, 160, 0.6);
+}
+
+.rank-badge.peak {
+  border-color: rgba(255, 215, 0, 0.6);
+}
+
+.badge-label {
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.badge-rank {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.badge-season {
+  display: block;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ✏️ Owner Controls */
+.owner-controls {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.edit-mode-btn,
+.delete-btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.edit-mode-btn {
+  background: linear-gradient(135deg, #602469, #8b5cf6);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+.edit-mode-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 30px rgba(139, 92, 246, 0.6);
+}
+
+.delete-btn {
+  background: rgba(255, 0, 0, 0.2);
+  color: #ff6b6b;
+  border: 2px solid rgba(255, 0, 0, 0.4);
+}
+
+.delete-btn:hover {
+  background: rgba(255, 0, 0, 0.3);
+  border-color: rgba(255, 0, 0, 0.6);
+}
+
+/* 📊 Profile Content */
+.profile-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 60px 40px;
+}
+
+/* 🎯 Section Titles */
+.section-title {
+  font-size: 32px;
+  font-weight: 900;
+  margin-bottom: 32px;
+  background: linear-gradient(90deg, #e846a7, #8b5cf6, #d946ef);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* 📈 Stats Section */
+.stats-section {
+  margin-bottom: 60px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.stat-card {
+  padding: 24px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: 16px;
+  transition: all 0.4s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 40px rgba(139, 92, 246, 0.4);
+  border-color: rgba(139, 92, 246, 0.6);
+}
+
+.stat-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.stat-value-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.edit-icon-mini {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+
+.edit-icon-mini:hover {
+  opacity: 1;
+  transform: scale(1.2);
+}
+
+.stat-edit {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.stat-input {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.save-btn-mini,
+.cancel-btn-mini {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.save-btn-mini {
+  background: #00F5A0;
+  color: #000;
+}
+
+.save-btn-mini:hover {
+  background: #00ff88;
+  transform: scale(1.1);
+}
+
+.cancel-btn-mini {
+  background: rgba(255, 0, 0, 0.3);
+  color: #fff;
+}
+
+.cancel-btn-mini:hover {
+  background: rgba(255, 0, 0, 0.5);
+}
+
+/* 🎮 Playstyle Section */
+.playstyle-section {
+  margin-bottom: 60px;
+}
+
+.playstyle-card {
+  padding: 32px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: 16px;
+}
+
+.playstyle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.role-badge {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #602469, #8b5cf6);
+  color: #fff;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.playstyle-description {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.playstyle-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stat-bar-container {
+  width: 100%;
+}
+
+.stat-bar-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.stat-bar-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 600;
+}
+
+.stat-bar-value {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.stat-bar-track {
+  height: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 1s ease;
+  box-shadow: 0 0 15px currentColor;
+}
+
+/* 🦸 Agents Section */
+.agents-section {
+  margin-bottom: 60px;
+}
+
+.agents-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+.best-agent-card {
+  grid-column: span 2;
+  padding: 32px;
+  background: rgba(139, 92, 246, 0.15);
+  border: 3px solid rgba(139, 92, 246, 0.5);
+  border-radius: 16px;
+  text-align: center;
+  position: relative;
+  transition: all 0.4s ease;
+}
+
+.best-agent-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 20px 50px rgba(139, 92, 246, 0.5);
+}
+
+.best-badge {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #000;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.agent-icon-large {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 16px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  font-weight: 700;
+  color: #fff;
+  animation: agentFloat 4s ease-in-out infinite;
+}
+
+@keyframes agentFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+.agent-card {
+  padding: 20px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 2px solid;
+  border-radius: 12px;
+  text-align: center;
+  transition: all 0.4s ease;
+}
+
+.agent-card:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(139, 92, 246, 0.4);
+}
+
+.agent-icon {
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.agent-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* 👥 Team Section */
+.team-section,
+.tournaments-section,
+.media-section,
+.bio-section {
+  margin-bottom: 60px;
+}
+
+.current-team-card {
+  padding: 24px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: 16px;
+  margin-bottom: 24px;
+}
+
+.current-team-card h3 {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.team-name {
+  font-size: 24px;
+  font-weight: 700;
+  color: #d946ef;
+  margin-bottom: 8px;
+}
+
+.team-role {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.team-history h3,
+.tournaments-section h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #8b5cf6;
+  margin-bottom: 16px;
+}
+
+.teams-list,
+.tournaments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.team-item,
+.tournament-card {
+  padding: 20px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 2px solid rgba(139, 92, 246, 0.2);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.team-item:hover,
+.tournament-card:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateX(8px);
+}
+
+.team-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.team-item-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.team-link {
+  font-size: 20px;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+}
+
+.team-link:hover {
+  transform: scale(1.2);
+}
+
+.team-dates {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.tournament-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.tournament-organizer {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 12px;
+}
+
+.tournament-details {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.tournament-year,
+.tournament-placement,
+.tournament-role {
+  padding: 4px 12px;
+  background: rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tournament-notes {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}
+
+/* 🎬 Media Section */
+.media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.media-item {
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  transition: all 0.3s ease;
+}
+
+.media-item:hover {
+  transform: scale(1.02);
+  border-color: rgba(139, 92, 246, 0.6);
+}
+
+.media-video {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+/* 📝 Bio Section */
+.bio-card {
+  padding: 32px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  border-radius: 16px;
+}
+
+.bio-card p {
+  font-size: 16px;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* 🗑️ Delete Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: linear-gradient(135deg, #1a0033, #0f001f);
+  border: 3px solid rgba(255, 0, 0, 0.5);
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 500px;
+  text-align: center;
+  animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.modal-content h3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ff6b6b;
+  margin-bottom: 16px;
+}
+
+.modal-content p {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.cancel-btn,
+.confirm-delete-btn {
+  padding: 14px 32px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cancel-btn {
+  background: rgba(139, 92, 246, 0.3);
+  color: #fff;
+  border: 2px solid rgba(139, 92, 246, 0.5);
+}
+
+.cancel-btn:hover {
+  background: rgba(139, 92, 246, 0.5);
+}
+
+.confirm-delete-btn {
+  background: rgba(255, 0, 0, 0.3);
+  color: #ff6b6b;
+  border: 2px solid rgba(255, 0, 0, 0.5);
+}
+
+.confirm-delete-btn:hover {
+  background: rgba(255, 0, 0, 0.5);
+  color: #fff;
+}
+
+/* 📱 Responsive Design */
+@media (max-width: 1024px) {
+  .profile-content {
+    padding: 50px 30px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+
+  .agents-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+
+  .best-agent-card {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-hero {
+    padding: 30px 20px;
+  }
+
+  .profile-content {
+    padding: 40px 20px;
+  }
+
+  .dyna-username {
+    font-size: 28px;
+  }
+
+  .section-title {
+    font-size: 26px;
+  }
+
+  .stats-grid,
+  .agents-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rank-badges {
+    flex-direction: column;
+  }
+
+  .owner-controls {
+    flex-direction: column;
+  }
+
+  .edit-mode-btn,
+  .delete-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .user-avatar {
+    width: 60px;
+    height: 60px;
+    font-size: 24px;
+  }
+
+  .dyna-username {
+    font-size: 24px;
+  }
+
+  .player-name {
+    font-size: 22px;
+  }
+
+  .modal-content {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+}
