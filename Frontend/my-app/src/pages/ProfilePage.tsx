@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaUser, FaCalendar } from "react-icons/fa";
-import "../styles/mainportfolio.css";
+import "../styles/profile.css";
 import { useAuth } from "@/contexts/AuthContext";
 import { pubgAPI, csgoAPI } from "../services/api";
 
@@ -16,6 +16,7 @@ interface UserData {
 
 const Profile = () => {
   const user = useAuth();
+  const { logout } = useAuth();
   const user_name = user.user?.user_name;
   const [heroImage, setHeroImage] = useState("");
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -24,30 +25,39 @@ const Profile = () => {
   const [availableGames, setAvailableGames] = useState<string[]>([]);
   const [csgo_user, setCsgoUser] = useState("");
   const [pubg_user, setPubgUser] = useState("");
-  // const [valo_user, setValoUser] = useState("");
-  // const [lol_user, setLolUser] = useState("");
+  const [valo_user, setValoUser] = useState("");
+  const [lol_user, setLolUser] = useState("");
+
   const games = [
     {
       title: "PUBG",
       image: "/pubgcard.png",
-      route: `/players/${pubg_user}/pubg`,
+      viewRoute: pubg_user ? `/players/${pubg_user}/pubg` : null,
+      createRoute: "/players/pubg/create",
     },
     {
       title: "CSGO",
       image: "/csgocard.png",
-      route: `/players/${csgo_user}/csgo`,
+      viewRoute: csgo_user ? `/players/${csgo_user}/csgo` : null,
+      createRoute: "/players/csgo/create",
     },
-    // {
-    //   title: "VALORANT",
-    //   image: "/valocard.png",
-    //   route: `/players/${valo_user}/valo`,
-    // },
-    // {
-    //   title: "LEAGUE OF LEGENDS",
-    //   image: "/lolcard.png",
-    //   route: `/players/${lol_user}/lol`,
-    // },
+    {
+      title: "VALORANT",
+      image: "/valocard.png",
+      route: `/players/${valo_user}/valo`,
+    },
+    {
+      title: "LEAGUE OF LEGENDS",
+      image: "/lolcard.png",
+      route: `/players/${lol_user}/lol`,
+    },
   ];
+
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   useEffect(() => {
     setHeroImage("/main-port-bg.png");
@@ -173,38 +183,71 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      <div className="logout-wrapper">
+        <button onClick={handleLogout} className="logout-btn">
+          LOGOUT
+        </button>
+      </div>
+
       <div className="main-games-section">
         <h2 className="section-title">Game Portfolios</h2>
-        {availableGames.length === 0 ? (
-          <div className="no-portfolios">
-            <p>No game portfolios found for this user.</p>
-          </div>
-        ) : (
-          <div className="main-portfolio-games-grid">
-            {games
-              .filter((game) => availableGames.includes(game.title))
-              .map((game, index) => (
-                <Link to={game.route} key={index} className="game-card-link">
-                  <div className="main-portfolio-game-card">
+
+        <div className="main-portfolio-games-grid">
+          {games.map((game, index) => {
+            const isAvailable = availableGames.includes(game.title);
+
+            return (
+              <div key={index} className="game-card-wrapper">
+                {isAvailable && game.viewRoute ? (
+                  <Link to={game.viewRoute} className="game-card-link">
+                    <div className="main-portfolio-game-card">
+                      <div className="game-card-image-container">
+                        <img
+                          src={game.image}
+                          alt={game.title}
+                          className="game-card-image"
+                        />
+                        <div className="game-card-overlay" />
+                      </div>
+                      <div className="game-card-content">
+                        <h3 className="main-portfolio-game-title">
+                          {game.title}
+                        </h3>
+                        <div className="view-portfolio-btn">
+                          View Portfolio →
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ) : (
+                  <div className="main-portfolio-game-card disabled">
                     <div className="game-card-image-container">
                       <img
                         src={game.image}
                         alt={game.title}
                         className="game-card-image"
                       />
-                      <div className="game-card-overlay"></div>
+                      <div className="game-card-overlay" />
                     </div>
                     <div className="game-card-content">
                       <h3 className="main-portfolio-game-title">
                         {game.title}
                       </h3>
-                      <div className="view-portfolio-btn">View Portfolio →</div>
                     </div>
                   </div>
-                </Link>
-              ))}
-          </div>
-        )}
+                )}
+                <div className="align-center mt-20">
+                  <button
+                    className="profile-portfolio-btn"
+                    onClick={() => navigate(game.createRoute)}
+                  >
+                    {isAvailable ? "Update Portfolio" : "Create Portfolio"}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
