@@ -158,8 +158,8 @@ const CreatePubgPortfolioPage = () => {
 
       const url =
         isUpdate && existingStatsId
-          ? `http://localhost:5000/games/pubg/stats/${existingStatsId}`
-          : `http://localhost:5000/games/pubg/stats`;
+          ? `${import.meta.env.VITE_API_BASE_URL}/games/pubg/stats/${existingStatsId}`
+          : `${import.meta.env.VITE_API_BASE_URL}/games/pubg/stats`;
 
       const response = await fetch(url, {
         method: isUpdate ? "PATCH" : "POST",

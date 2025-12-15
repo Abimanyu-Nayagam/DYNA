@@ -158,7 +158,7 @@ export default function CsgoPortfolio() {
       if (!username) return;
       try {
         // First, fetch all users and find by username
-        const usersResponse = await fetch("http://localhost:5000/games/csgo");
+        const usersResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/games/csgo`);
         if (!usersResponse.ok) {
           throw new Error("Failed to fetch users");
         }
