@@ -1,5 +1,5 @@
 import React from 'react';
-import '@/styles/valorantcard.css';
+import '@/styles/valorant/valorantcard.css';
 
 // 📝 TypeScript Interface - defines what data this card needs
 interface ValorantPlayerCardProps {
@@ -57,7 +57,6 @@ const ValorantPlayerCard: React.FC<ValorantPlayerCardProps> = ({
     currentRank,
     region,
     bestAgent,
-    userName,
     onClick
 }) => {
     return (
@@ -136,7 +135,7 @@ const ValorantPlayerCard: React.FC<ValorantPlayerCardProps> = ({
 
             {/* 🔗 View Profile Button */}
             <button className="view-profile-btn">
-                View Profile →
+                View Profile 
             </button>
         </div>
     );

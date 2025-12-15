@@ -65,7 +65,14 @@ def create_profile():
         if clean_dict.get("media_clips") is not None:
             clean_dict["media_clips"] = [str(url) for url in clean_dict["media_clips"]]
 
-        profile = ValorantProfile(user_id=user_id, **clean_dict)
+        user = User.query.get(user_id)
+
+        profile = ValorantProfile(
+            user_id=user_id,
+            player_name=user.user_name,  # 🔒 enforced DYNA name
+            **clean_dict
+        )
+
 
         # Add team history
         if data.team_history:

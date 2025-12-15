@@ -61,16 +61,16 @@ def create_app():
         "message": "An internal server error occurred."
     }), 500
 
-    CORS(
-        app,
-        resources={
-            r"/auth/*": {"origins": "http://localhost:3173"},
-            r"/api/valorant/*": {"origins": "http://localhost:3173"},  # ← ADD THIS
-            r"/players/*": {"origins": "http://localhost:3173"}        # ← ADD THIS
-        },
-        supports_credentials=True,
-        allow_headers=["Content-Type", "Authorization"],
-        methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]  # ← Added PATCH
-    )
+    # CORS(
+    #     app,
+    #     resources={
+    #         r"/auth/*": {"origins": "http://localhost:3173"},
+    #         r"/api/valorant/*": {"origins": "http://localhost:3173"},  # ← ADD THIS
+    #         r"/players/*": {"origins": "http://localhost:3173"}        # ← ADD THIS
+    #     },
+    #     supports_credentials=True,
+    #     allow_headers=["Content-Type", "Authorization"],
+    #     methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]  # ← Added PATCH
+    # )
 
     return app  

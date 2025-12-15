@@ -99,8 +99,6 @@ class ValorantProfileCreate(BaseModel):
     # -------------------------
     # Identity
     # -------------------------
-    player_name: str = Field(..., max_length=120)
-
     riot_id: str = Field(
         ...,
         min_length=3,
@@ -244,7 +242,6 @@ class ValorantProfileCreate(BaseModel):
 
 class ValorantProfileUpdate(BaseModel):
     # All fields optional — reuse validation logic
-    player_name: Optional[str] = Field(None, max_length=120)
     riot_id: Optional[str] = Field(None, min_length=3, max_length=16, pattern=r"^[a-zA-Z0-9_]+$")
     tagline: Optional[str] = Field(None, min_length=1, max_length=6, pattern=r"^[A-Za-z0-9]+$")
     region: Optional[RegionEnum] = None
