@@ -11,8 +11,7 @@ const roleIconMap: Record<string, string> = {
   middle: "/images/league-user-stats/roleicon_middle.png",
   mid: "/images/league-user-stats/roleicon_middle.png", // safety alias
   bottom: "/images/league-user-stats/Bottom_icon.png",
-  adc: "/images/league-user-stats/roleicon_bottom.png", // optional
-  support: "/images/league-user-stats/roleicon_support.png",
+  support: "/images/league-user-stats/Support_icon.png",
 };
 
 const rankIconMap: Record<string, string> = {
@@ -50,7 +49,6 @@ interface PlayerData {
   avg_kills: number;
   avg_deaths: number;
   avg_assists: number;
-  avg_
   avg_game_duration: number;
   avg_vision_score: number;
 }
@@ -63,9 +61,9 @@ const LoLPortfolio: React.FC = () => {
     setTimeout(() => {
       const json: PlayerData = {
         user_name: "42Raven42",
-        cur_rank: "Challenger",
-        peak_rank: "Challenger 4",
-        last_season_rank: "Grandmaster 1",
+        cur_rank: "Gold 2",
+        peak_rank: "Platinum 4",
+        last_season_rank: "Gold 3",
         main_role: "Support",
         server: "SEA",
         player_since: "Season 10",
