@@ -14,7 +14,7 @@ import AllUsersPage from "./pages/AllUsersPage";
 import MainPortfolio from "./pages/MainPortfolio";
 import LoLPortfolio from "./pages/LoLPortfolio";
 import CsgoPortfolio from "./pages/CsgoPortfolio";
-
+import Profile from "./pages/ProfilePage";
 
 function App() {
   return (
@@ -27,11 +27,17 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/players/pubg" element={<PubgPlayersPage />} />
-            <Route path='/players/:username' element={<MainPortfolio/>}/>
-            <Route path='/players/:username/pubg' element={<PubgPortfolio/>}/>
-            <Route path='/players/:username/csgo' element={<CsgoPortfolio/>}/>
-            <Route path='/players/:username/valo' element={<div>VALORANT Portfolio Coming Soon</div>}/>
-            <Route path='/players/:username/lol' element={<div>LOL Portfolio Coming Soon</div>}/>
+            <Route path="/players/:username" element={<MainPortfolio />} />
+            <Route path="/players/:username/pubg" element={<PubgPortfolio />} />
+            <Route path="/players/:username/csgo" element={<CsgoPortfolio />} />
+            <Route
+              path="/players/:username/valo"
+              element={<div>VALORANT Portfolio Coming Soon</div>}
+            />
+            <Route
+              path="/players/:username/lol"
+              element={<div>LOL Portfolio Coming Soon</div>}
+            />
             <Route path="/players/csgo" element={<CsgoPlayersPage />} />
             <Route
               path="/players/pubg/create"
@@ -42,6 +48,7 @@ function App() {
               path="/players/csgo/create"
               element={<CreateCsgoPortfolioPage />}
             />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </AuthProvider>
       </Router>
