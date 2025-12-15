@@ -183,16 +183,19 @@ export default function CsgoPortfolio() {
   return (
     <div className="csgo-portfolio-page">
       {/* HERO */}
-      <motion.section
-        className="hero"
-        variants={fadeUp}
-        initial="hidden"
-        animate="visible"
-        transition={{ duration: 0.6 }}
+      <motion.div
+        className="csgo-portfolio-page"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 2 }}
+        style={{
+          backgroundImage: "url('/csgo-bg.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
       >
         <div className="rank-card glass">
           <div className="rank-info">
-            <p className="rank p-20  mb-20">{stats.in_game_id}</p>
+            <p className="rank p-20 mb-20">{stats.in_game_id}</p>
           </div>
 
           <div className="rank-right">
@@ -200,9 +203,10 @@ export default function CsgoPortfolio() {
               <h1>{stats.username}</h1>
               <p className="rank">{stats.current_rank}</p>
               <span className="peak">Peak: {stats.highest_rank}</span>
-              <br></br>
+              <br />
               <span className="peak">MM: {stats.highest_rank}</span>
             </div>
+
             <div className="metrics">
               <div className="metric">
                 <span className="metric-label">ELO</span>
@@ -217,7 +221,7 @@ export default function CsgoPortfolio() {
               <div className="metric">
                 <span className="metric-label">Faceit Level</span>
                 <span className="metric-value">
-                  {stats.win_rate ? `${stats.faceit_level}` : "—"}
+                  {stats.faceit_level ?? "—"}
                 </span>
               </div>
             </div>
@@ -227,7 +231,7 @@ export default function CsgoPortfolio() {
         {stats.ishidden && (
           <span className="hidden-badge">Hidden Portfolio</span>
         )}
-      </motion.section>
+      </motion.div>
 
       {/* STATS GRID */}
       <motion.section
