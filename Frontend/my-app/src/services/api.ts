@@ -78,7 +78,25 @@ export interface PubgStatsData {
 }
 
 export interface PlayerLolData {
-  
+  id: number;
+  user_id: number;
+  ign: string;
+  riot_id: string;
+  server: string;
+  cur_rank: string;
+  peak_rank: string;
+  last_season_rank: string;
+  main_role: string;
+  cs_per_min: number | null;
+  avg_kills: number | null;
+  avg_deaths: number | null;
+  avg_assists: number | null;
+  avg_dmg: number | null;
+  avg_vision_score: number | null;
+  avg_game_duration: number | null;
+  ishidden: boolean;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 // API
@@ -119,11 +137,6 @@ export const pubgAPI = {
     const response = await api.get(`/games/pubg/stats/${userId}`);
     return response.data;
   },
-
-  // getLolStatsByUser: async (userId: number): Promise<> => {
-  //   const response = await api.get(`/games/lol/stats/${userId}`);
-  //   return response.data;
-  // },
 
   updateStats: async (statsId: number, data: Partial<PubgStatsData>) => {
     const response = await api.patch(`/games/pubg/stats/${statsId}`, data);
@@ -191,7 +204,32 @@ export const csgoAPI = {
   },
 };
 
+export const leagueAPI = {
+  createStats: async (data: Record<string, unknown>) => {
+    const response = await api.post("/api/lol/create-folio", data);
+    return response.data;
+  },
 
+  getAllStats: async (): Promise<PlayerLolData[]> => {
+    const response = await api.get("/api/lol/get-all-folios");
+    return response.data;
+  },
+
+  getStatsByUser: async (): Promise<PlayerLolData> => {
+    const response = await api.get(`/api/lol/get-folio`);
+    return response.data;
+  },
+
+  updateStats: async (data: Partial<PlayerLolData>) => {
+    const response = await api.patch(`/api/lol/update-folio`, data);
+    return response.data;
+  },
+
+  deleteStats: async (statsId: number) => {
+    const response = await api.delete(`/api/lol/delete-folio/${statsId}`);
+    return response.data;
+  }
+}
 
 
 export default api;

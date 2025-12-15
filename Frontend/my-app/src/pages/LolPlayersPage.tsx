@@ -1,23 +1,26 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '@/contexts/AuthContext'
-import PlayerCard from '@/components/ui/PlayerCard'
-import '@/styles/playerspage.css'
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import PlayerCard from "@/components/ui/PlayerCard";
+import "@/styles/playerspage.css";
+import { leagueAPI } from "@/services/api";
 
-interface PubgPlayer {
+interface LeaguePlayer {
   id: number;
   user_id: number;
-  username: string;
-  in_game_id: string;
-  current_rank: string;
+  ign: string;
+  riot_id: string;
+  cur_rank: string;
+  server: string;
 }
 
-const PubgPlayersPage = () => {
+const LolPlayersPage = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [players, setPlayers] = useState<PubgPlayer[]>([]);
-  const [filteredPlayers, setFilteredPlayers] = useState<PubgPlayer[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+
+  const [players, setPlayers] = useState<LeaguePlayer[]>([]);
+  const [filteredPlayers, setFilteredPlayers] = useState<LeaguePlayer[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -25,14 +28,16 @@ const PubgPlayersPage = () => {
   }, []);
 
   useEffect(() => {
-    // Filter players based on search term
-    if (searchTerm.trim() === '') {
+    if (searchTerm.trim() === "") {
       setFilteredPlayers(players);
     } else {
-      const filtered = players.filter(player =>
-        player.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        player.in_game_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        player.current_rank.toLowerCase().includes(searchTerm.toLowerCase())
+      const term = searchTerm.toLowerCase();
+      const filtered = players.filter(
+        (player) =>
+          player.ign.toLowerCase().includes(term) ||
+          player.riot_id.toLowerCase().includes(term) ||
+          player.cur_rank.toLowerCase().includes(term) ||
+          player.server.toLowerCase().includes(term)
       );
       setFilteredPlayers(filtered);
     }
@@ -41,18 +46,17 @@ const PubgPlayersPage = () => {
   const fetchPlayers = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/games/pubg/');
-      
+      const response = await leagueAPI.getAllStats()
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       setPlayers(data);
       setFilteredPlayers(data);
     } catch (error) {
-      console.error('Error fetching players:', error);
-      // Fallback to empty array on error
+      console.error("Error fetching players:", error);
       setPlayers([]);
       setFilteredPlayers([]);
     } finally {
@@ -62,9 +66,9 @@ const PubgPlayersPage = () => {
 
   const handleCreatePortfolio = () => {
     if (!user) {
-      navigate('/login');
+      navigate("/login");
     } else {
-      navigate('/players/pubg/create');
+      navigate("/players/lol/create");
     }
   };
 
@@ -72,7 +76,7 @@ const PubgPlayersPage = () => {
     <div className="players-page">
       <div className="players-header">
         <div className="header-content">
-          <h1 className="page-title">PUBG PLAYERS</h1>
+          <h1 className="page-title">LEAGUE OF LEGENDS PLAYERS</h1>
         </div>
       </div>
 
@@ -81,13 +85,13 @@ const PubgPlayersPage = () => {
           <input
             type="text"
             className="search-input"
-            placeholder="Search by username, ID, or rank..."
+            placeholder="Search by IGN, Riot ID, rank, or server..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <p className='search-icon'>🔎︎</p>
+          <p className="search-icon">🔎︎</p>
         </div>
-        
+
         <button className="create-portfolio-btn" onClick={handleCreatePortfolio}>
           + Create Portfolio
         </button>
@@ -101,24 +105,28 @@ const PubgPlayersPage = () => {
         <>
           {filteredPlayers.length === 0 ? (
             <div className="no-results">
-             <p>🔎︎</p>
+              <p>🔎︎</p>
               <h3>No players found</h3>
               <p>Try adjusting your search criteria</p>
             </div>
           ) : (
             <>
               <div className="results-count">
-                Showing {filteredPlayers.length} {filteredPlayers.length === 1 ? 'player' : 'players'}
+                Showing {filteredPlayers.length}{" "}
+                {filteredPlayers.length === 1 ? "player" : "players"}
               </div>
+
               <div className="players-grid">
                 {filteredPlayers.map((player) => (
                   <PlayerCard
                     key={player.id}
                     user_id={player.user_id}
-                    username={player.username}
-                    in_game_id={player.in_game_id}
-                    current_rank={player.current_rank}
-                    onClick={() => navigate(`/players/${player.username}`)}
+                    username={player.ign}
+                    in_game_id={player.riot_id}
+                    current_rank={player.cur_rank}
+                    onClick={() =>
+                      navigate(`/players/lol/${player.ign}`)
+                    }
                   />
                 ))}
               </div>
@@ -127,7 +135,7 @@ const PubgPlayersPage = () => {
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default PubgPlayersPage
+export default LolPlayersPage;
