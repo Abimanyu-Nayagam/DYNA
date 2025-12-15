@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { FaEnvelope, FaUser, FaCalendar } from 'react-icons/fa'
-import { pubgAPI, csgoAPI } from '../services/api'
-import '../styles/mainportfolio.css'
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
+import { FaEnvelope, FaUser, FaCalendar } from "react-icons/fa";
+import { pubgAPI, csgoAPI } from "../services/api";
+import "../styles/mainportfolio.css";
 
 interface UserData {
   user_id: number;
@@ -20,28 +20,31 @@ const MainPortfolio = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [availableGames, setAvailableGames] = useState<string[]>([]);
-
+  const [csgo_user, setCsgoUser] = useState("");
+  const [pubg_user, setPubgUser] = useState("");
+  // const [valo_user, setValoUser] = useState("");
+  // const [lol_user, setLolUser] = useState("");
   const games = [
     {
-      title: 'PUBG',
-      image: '/pubgcard.png',
-      route: `/players/${username}/pubg`,
+      title: "PUBG",
+      image: "/pubgcard.png",
+      route: `/players/${pubg_user}/pubg`,
     },
     {
-      title: 'CSGO',
-      image: '/csgocard.png',
-      route: `/players/${username}/csgo`,
+      title: "CSGO",
+      image: "/csgocard.png",
+      route: `/players/${csgo_user}/csgo`,
     },
-    {
-      title: 'VALORANT',
-      image: '/valocard.png',
-      route: `/players/${username}/valo`,
-    },
-    {
-      title: 'LEAGUE OF LEGENDS',
-      image: '/lolcard.png',
-      route: `/players/${username}/lol`,
-    }
+    // {
+    //   title: "VALORANT",
+    //   image: "/valocard.png",
+    //   route: `/players/${valo_user}/valo`,
+    // },
+    // {
+    //   title: "LEAGUE OF LEGENDS",
+    //   image: "/lolcard.png",
+    //   route: `/players/${lol_user}/lol`,
+    // },
   ];
 
   useEffect(() => {
@@ -56,28 +59,28 @@ const MainPortfolio = () => {
       setIsLoading(true);
       // Fetch all users and find by username
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/players`);
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch users');
       }
-      
+
       const result = await response.json();
       const users = result.data || [];
-      
+
       // Find user by username (case-insensitive)
       const user = users.find(
         (u: UserData) => u.user_name.toLowerCase() === username.toLowerCase()
       );
-      
+
       if (!user) {
         throw new Error('User not found');
       }
-      
+
       setUserData(user);
-      
+
       // Check which games this user has portfolios for
       await checkAvailableGames(user.user_id);
-      
+
       setError(null);
     } catch (err) {
       setError('Failed to load user data');
@@ -89,26 +92,28 @@ const MainPortfolio = () => {
 
   const checkAvailableGames = async (userId: number) => {
     const available: string[] = [];
-    
+
     // Check PUBG
     try {
-      await pubgAPI.getStatsByUser(userId);
-      available.push('PUBG');
+      const res = await pubgAPI.getStatsByUser(userId);
+      setPubgUser(res.username);
+      available.push("PUBG");
     } catch (err) {
       // User doesn't have PUBG portfolio
     }
-    
+
     // Check CSGO
     try {
-      await csgoAPI.getStatsByUser(userId);
-      available.push('CSGO');
+      const res = await csgoAPI.getStatsByUser(userId);
+      available.push("CSGO");
+      setCsgoUser(res.username);
     } catch (err) {
       // User doesn't have CSGO portfolio
     }
-    
+
     // Add other games here when implemented
     // TODO: Add VALORANT and LOL checks when APIs are available
-    
+
     setAvailableGames(available);
   };
 
@@ -141,9 +146,9 @@ const MainPortfolio = () => {
         <div className="main-hero-content">
           <div className="user-info-container">
             <div className="user-avatar">
-                <FaUser />
+              <FaUser />
             </div>
-            <h1 className="user-name">{userData.user_name}</h1>            
+            <h1 className="user-name">{userData.user_name}</h1>
             <div className="user-details">
               <div className="detail-item">
                 <FaEnvelope className="detail-icon" />
@@ -171,25 +176,25 @@ const MainPortfolio = () => {
             <p>No game portfolios found for this user.</p>
           </div>
         ) : (
-        <div className="main-portfolio-games-grid">
+          <div className="main-portfolio-games-grid">
           {games.filter(game => availableGames.includes(game.title)).map((game, index) => (
-            <Link to={game.route} key={index} className="game-card-link">
-              <div className="main-portfolio-game-card">
-                <div className="game-card-image-container">
+                <Link to={game.route} key={index} className="game-card-link">
+                  <div className="main-portfolio-game-card">
+                    <div className="game-card-image-container">
                   <img src={game.image} alt={game.title} className="game-card-image" />
                   <div className="game-card-overlay">
                   </div>
-                </div>
-                <div className="game-card-content">
+                    </div>
+                    <div className="game-card-content">
                   <h3 className="main-portfolio-game-title">{game.title}</h3>
                   <div className="view-portfolio-btn">
                     View Portfolio →
                   </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+          </div>
         )}
       </div>
     </div>
