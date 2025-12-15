@@ -13,6 +13,7 @@ import PubgPortfolio from "./pages/PubgPortfolio";
 import AllUsersPage from "./pages/AllUsersPage";
 import MainPortfolio from "./pages/MainPortfolio";
 import LoLPortfolio from "./pages/LoLPortfolio";
+import CsgoPortfolio from "./pages/CsgoPortfolio";
 
 
 function App() {
@@ -28,7 +29,7 @@ function App() {
             <Route path="/players/pubg" element={<PubgPlayersPage />} />
             <Route path='/players/:username' element={<MainPortfolio/>}/>
             <Route path='/players/:username/pubg' element={<PubgPortfolio/>}/>
-            <Route path='/players/:username/csgo' element={<div>CSGO Portfolio Coming Soon</div>}/>
+            <Route path='/players/:username/csgo' element={<CsgoPortfolio/>}/>
             <Route path='/players/:username/valo' element={<div>VALORANT Portfolio Coming Soon</div>}/>
             <Route path='/players/:username/lol' element={<div>LOL Portfolio Coming Soon</div>}/>
             <Route path="/players/csgo" element={<CsgoPlayersPage />} />

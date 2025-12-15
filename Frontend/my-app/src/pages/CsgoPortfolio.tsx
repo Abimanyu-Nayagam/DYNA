@@ -149,26 +149,48 @@ const fadeUp = {
 
 export default function CsgoPortfolio() {
   const [stats, setStats] = useState<CsgoStatsData | null>(null);
-  const { userId } = useParams<{ userId: string }>();
+  const { username } = useParams<{ username: string }>();
   const [error, setError] = useState<string | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
-    const fetchStats = async () => {
-      if (!userId) return;
+    const fetchUserAndStats = async () => {
+      if (!username) return;
 
       try {
-        const data = await csgoAPI.getStatsByUser(parseInt(userId));
+        // First, fetch all users and find by username
+        const usersResponse = await fetch('http://localhost:5000/players');
+        if (!usersResponse.ok) {
+          throw new Error('Failed to fetch users');
+        }
+        
+        const usersResult = await usersResponse.json();
+        const users = usersResult.data || [];
+        
+        // Find user by username (case-insensitive)
+        const user = users.find(
+          (u: any) => u.user_name.toLowerCase() === username.toLowerCase()
+        );
+        
+        if (!user) {
+          throw new Error('User not found');
+        }
+        
+        setUserId(user.user_id);
+        
+        // Then fetch CSGO stats using userId
+        const data = await csgoAPI.getStatsByUser(user.user_id);
         console.log(data);
 
         setStats(data);
       } catch (err) {
-        setError("No PUBG stats Availaible");
+        setError("No CSGO stats Available");
         console.error(err);
       }
     };
 
-    fetchStats();
-  }, [userId]);
+    fetchUserAndStats();
+  }, [username]);
 
   if (!stats) return <div className="loading">Loading portfolio...</div>;
   if (error || !stats) {
