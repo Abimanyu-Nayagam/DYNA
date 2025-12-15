@@ -104,7 +104,7 @@ const PlayersPage = () => {
                     key={player.user_id}
                     user_id={player.user_id}
                     username={player.user_name}
-                    onClick={() => navigate(`/players/${player.user_id}`)}
+                    onClick={() => navigate(`/players/${player.user_name}`)}
                   />
                 ))}
               </div>

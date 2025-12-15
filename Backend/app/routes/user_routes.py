@@ -31,3 +31,31 @@ def get_all_users():
     except Exception as e:
         logger.error(f"Error fetching users: {str(e)}")
         return error_response(f"Failed to fetch users: {str(e)}", 500)
+
+
+@user_bp.route('/players/<int:user_id>', methods=['GET'])
+def get_user_by_id(user_id):
+    """Get user/player by user ID"""
+    logger.info(f"Fetching user with ID: {user_id}")
+    try:
+        user = User.query.get(user_id)
+        if not user:
+            logger.warning(f"User with ID {user_id} not found")
+            return error_response("User not found", 404)
+        
+        user_data = {
+            'user_id': user.user_id,
+            'user_name': user.user_name,
+            'email': user.email,
+            'provider': user.provider,
+            'created_at': user.created_at.isoformat() if user.created_at else None,
+            'updated_at': user.updated_at.isoformat() if user.updated_at else None
+        }
+        
+        logger.info(f"Successfully fetched user with ID: {user_id}")
+        return success_response(user_data, "User fetched successfully")
+    
+    except Exception as e:
+        logger.error(f"Error fetching user with ID {user_id}: {str(e)}")
+        return error_response(f"Failed to fetch user: {str(e)}", 500)
+    

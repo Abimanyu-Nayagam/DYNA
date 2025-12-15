@@ -30,11 +30,12 @@ ChartJS.register(
 );
 
 const PubgPortfolio = () => {
-  const { userId } = useParams<{ userId: string }>();
+  const { username } = useParams<{ username: string }>();
   const [stats, setStats] = useState<PubgStatsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [heroImage, setHeroImage] = useState('');
+  const [userId, setUserId] = useState<number | null>(null);
 
   // Helper function to get rank image path
   const getRankImage = (rank: string | null): string | undefined => {
@@ -45,21 +46,42 @@ const PubgPortfolio = () => {
   };
 
   useEffect(() => {
-    const fetchStats = async () => {
-      if (!userId) return;
+    const fetchUserAndStats = async () => {
+      if (!username) return;
 
       try {
-        const data = await pubgAPI.getStatsByUser(parseInt(userId));
+        // First, fetch all users and find by username
+        const usersResponse = await fetch('http://localhost:5000/players');
+        if (!usersResponse.ok) {
+          throw new Error('Failed to fetch users');
+        }
+        
+        const usersResult = await usersResponse.json();
+        const users = usersResult.data || [];
+        
+        // Find user by username (case-insensitive)
+        const user = users.find(
+          (u: any) => u.user_name.toLowerCase() === username.toLowerCase()
+        );
+        
+        if (!user) {
+          throw new Error('User not found');
+        }
+        
+        setUserId(user.user_id);
+        
+        // Then fetch PUBG stats using userId
+        const data = await pubgAPI.getStatsByUser(user.user_id);
         console.log('Fetched PUBG stats:', data);
         console.log('Video URL:', data.video_url);
         setStats(data);
       } catch (err) {
-        setError('No PUBG stats Availaible');
+        setError('No PUBG stats Available');
         console.error(err);
       }
     };
 
-    fetchStats();
+    fetchUserAndStats();
 
     const fetchHeroImage = async () => {
       setHeroImage('/pubg-port-bg.jpg');
@@ -67,7 +89,7 @@ const PubgPortfolio = () => {
 
     fetchHeroImage();
 
-  }, [userId]);
+  }, [username]);
 
   if (isLoading) {
     return (
