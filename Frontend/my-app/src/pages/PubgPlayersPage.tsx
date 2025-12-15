@@ -139,7 +139,7 @@ const PubgPlayersPage = () => {
                     username={player.username}
                     in_game_id={player.in_game_id}
                     current_rank={player.current_rank}
-                    onClick={() => navigate(`/players/${player.username}`)}
+                    onClick={() => navigate(`/players/${player.username}/pubg`)}
                   />
                 ))}
               </div>
