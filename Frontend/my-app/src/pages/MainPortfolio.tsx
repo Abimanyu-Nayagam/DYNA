@@ -1,50 +1,158 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { FaEnvelope, FaUser, FaCalendar } from 'react-icons/fa'
 import '../styles/mainportfolio.css'
 
+interface UserData {
+  user_id: number;
+  user_name: string;
+  email: string;
+  provider: string;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
 const MainPortfolio = () => {
-  const { userId } = useParams<{ userId: string }>();
+  const { username } = useParams<{ username: string }>();
+  const [heroImage, setHeroImage] = useState('');
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const games = [
+    {
+      title: 'PUBG',
+      image: '/pubgcard.png',
+      route: `/players/${username}/pubg`,
+    },
+    {
+      title: 'CSGO',
+      image: '/csgocard.png',
+      route: `/players/${username}/csgo`,
+    },
+    {
+      title: 'VALORANT',
+      image: '/valocard.png',
+      route: `/players/${username}/valo`,
+    },
+    {
+      title: 'LEAGUE OF LEGENDS',
+      image: '/lolcard.png',
+      route: `/players/${username}/lol`,
+    }
+  ];
+
+  useEffect(() => {
+    setHeroImage('/main-port-bg.png');
+    fetchUserData();
+  }, [username]);
+
+  const fetchUserData = async () => {
+    if (!username) return;
+
+    try {
+      setIsLoading(true);
+      // Fetch all users and find by username
+      const response = await fetch(`http://localhost:5000/players`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch users');
+      }
+      
+      const result = await response.json();
+      const users = result.data || [];
+      
+      // Find user by username (case-insensitive)
+      const user = users.find(
+        (u: UserData) => u.user_name.toLowerCase() === username.toLowerCase()
+      );
+      
+      if (!user) {
+        throw new Error('User not found');
+      }
+      
+      setUserData(user);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load user data');
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
+  if (isLoading) {
+    return <div className="main-portfolio-loading">Loading...</div>;
+  }
+
+  if (error || !userData) {
+    return (
+      <div className="main-portfolio-error">
+        <h2>{error || 'User not found'}</h2>
+        <Link to="/players" className="back-link">← Back to Players</Link>
+      </div>
+    );
+  }
 
   return (
     <div className="main-portfolio">
-      <Link to="/players" className="back-link">← Back to Players</Link>
-
-      <div className="portfolio-header">
-        <h1 className="portfolio-title">Player Portfolio</h1>
-        <p className="portfolio-subtitle">User ID: {userId}</p>
+      <div className="main-hero-section" style={{ backgroundImage: `url(${heroImage})` }}>
+        <div className="main-hero-overlay"></div>
+        <div className="main-hero-content">
+          <div className="user-info-container">
+            <div className="user-avatar">
+                <FaUser />
+            </div>
+            <h1 className="user-name">{userData.user_name}</h1>            
+            <div className="user-details">
+              <div className="detail-item">
+                <FaEnvelope className="detail-icon" />
+                <div className="detail-text">
+                  <span className="detail-label">Email</span>
+                  <span className="detail-value">{userData.email}</span>
+                </div>
+              </div>
+              <div className="detail-item">
+                <FaCalendar className="detail-icon" />
+                <div className="detail-text">
+                  <span className="detail-label">Member Since</span>
+                  <span className="detail-value">{formatDate(userData.created_at)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="main-portfolio-games-grid">
-        <div className="main-portfolio-game-card">
-          <span className="main-portfolio-game-icon">🎮</span>
-          <h2 className="main-portfolio-game-title">PUBG</h2>
-          <Link to={`/players/${userId}/pubg`} className="main-portfolio-game-link">
-            View Portfolio
-          </Link>
-        </div>
-
-        <div className="main-portfolio-game-card">
-          <span className="main-portfolio-game-icon">🔫</span>
-          <h2 className="main-portfolio-game-title">CSGO</h2>
-          <Link to={`/players/${userId}/csgo`} className="main-portfolio-game-link">
-            View Portfolio
-          </Link>
-        </div>
-
-        <div className="main-portfolio-game-card">
-          <span className="main-portfolio-game-icon">⚔️</span>
-          <h2 className="main-portfolio-game-title">VALORANT</h2>
-          <Link to={`/players/${userId}/valo`} className="main-portfolio-game-link">
-            View Portfolio
-          </Link>
-        </div>
-
-        <div className="main-portfolio-game-card">
-          <span className="main-portfolio-game-icon">🏆</span>
-          <h2 className="main-portfolio-game-title">LOL</h2>
-          <Link to={`/players/${userId}/lol`} className="main-portfolio-game-link">
-            View Portfolio
-          </Link>
+      <div className="main-games-section">
+        <h2 className="section-title">Game Portfolios</h2>
+        <div className="main-portfolio-games-grid">
+          {games.map((game, index) => (
+            <Link to={game.route} key={index} className="game-card-link">
+              <div className="main-portfolio-game-card">
+                <div className="game-card-image-container">
+                  <img src={game.image} alt={game.title} className="game-card-image" />
+                  <div className="game-card-overlay">
+                  </div>
+                </div>
+                <div className="game-card-content">
+                  <h3 className="main-portfolio-game-title">{game.title}</h3>
+                  <div className="view-portfolio-btn">
+                    View Portfolio →
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </div>
