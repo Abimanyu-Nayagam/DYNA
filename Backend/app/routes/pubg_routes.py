@@ -140,8 +140,7 @@ def update_pubg_stats(stats_id):
         "headshot_rate", "headshots",
         "eliminations", "most_eliminations",
         "matches_played", "wins", "top_10",
-        "avg_damage", "avg_survival_time",
-        "ishidden"
+        "avg_damage", "avg_survival_time"
     ]
     for field in updatable_fields:
         if field in data:

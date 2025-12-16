@@ -25,7 +25,7 @@ const Footer = () => {
           <ul className='footer-links'>
             <li><a href="#hero-section">Home</a></li>
             <li><a href="#games">Games</a></li>
-            <li><a href="#search">Players</a></li>
+            <li><a href="/players">Players</a></li>
           </ul>
         </div>
         
