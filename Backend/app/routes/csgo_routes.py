@@ -29,6 +29,7 @@ def create_csgo_stats():
         return jsonify({'error': str(e)}), 400
 
     in_game_id = data.in_game_id
+    username = data.username
 
     # One portfolio per user
     if CsgoPlayerStats.query.filter_by(user_id=user_id).first():
@@ -36,6 +37,11 @@ def create_csgo_stats():
             'error': 'You already have a CSGO portfolio.'
         }), 400
 
+    # Unique username
+    if CsgoPlayerStats.query.filter_by(username=username).first():
+        return jsonify({
+            'error': 'A portfolio with this User Name already exists.'
+        }), 400
     # Unique in-game ID
     if CsgoPlayerStats.query.filter_by(in_game_id=in_game_id).first():
         return jsonify({
