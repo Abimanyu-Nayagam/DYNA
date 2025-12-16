@@ -3,7 +3,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
-from authlib.integrations.flask_client import OAuth
 from .utils.logger import setup_logging
 from app.config import Config
 from flask_cors import CORS

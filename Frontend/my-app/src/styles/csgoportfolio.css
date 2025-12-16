@@ -87,7 +87,7 @@
 
 .rank-card.glass {
   display: flex;
-  gap: 2rem;
+  gap: 3rem;
   padding: 2rem 3rem;
   border-radius: 18px;
   backdrop-filter: blur(3px);
@@ -123,13 +123,24 @@
   font-size: 20px;
 }
 
-.hidden-badge {
-  background: #602469;
-  padding: 6px 14px;
-  border-radius: 999px;
-  width: fit-content;
+
+.rank-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24px;
 }
 
+.rank-image {
+  width: 120px;
+  height: auto;
+  object-fit: contain;
+}
+.csgo-current-rank {
+  text-align: center;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
 
 .highlight-video {
   width: 100%;
