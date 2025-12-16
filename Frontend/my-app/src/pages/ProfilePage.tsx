@@ -6,6 +6,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { pubgAPI, csgoAPI, leagueAPI } from "../services/api";
 import api from "../services/api"
 
+/* ================= TYPES ================= */
+
 interface UserData {
   user_id: number;
   user_name: string;
@@ -14,19 +16,26 @@ interface UserData {
   updated_at: string | null;
 }
 
+/* ================= COMPONENT ================= */
+
 const Profile = () => {
-  const user = useAuth();
-  const { logout } = useAuth();
-  const user_name = user.user?.user_name;
+  const { user, logout } = useAuth();
+  const user_name = user?.user_name;
+
+  const navigate = useNavigate();
+
   const [heroImage, setHeroImage] = useState("");
   const [userData, setUserData] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
   const [availableGames, setAvailableGames] = useState<string[]>([]);
-  const [csgo_user, setCsgoUser] = useState("");
   const [pubg_user, setPubgUser] = useState("");
+  const [csgo_user, setCsgoUser] = useState("");
   const [valo_user, setValoUser] = useState("");
   const [lol_user, setLolUser] = useState("");
+
+  /* ================= GAME CONFIG ================= */
 
   const games = [
     {
@@ -44,26 +53,25 @@ const Profile = () => {
     {
       title: "VALORANT",
       image: "/valocard.png",
-      route: `/players/${valo_user}/valo`,
+      viewRoute: valo_user ? `/players/valorant/me` : null,
+      createRoute: "/players/valorant/create",
     },
     {
       title: "LEAGUE OF LEGENDS",
       image: "/lolcard.png",
       viewRoute: lol_user ? `/players/${lol_user}/lol` : null,
-      createRoute: "/players/lol/create"
+      createRoute: "/players/lol/create", // future-ready
     },
   ];
 
-  const navigate = useNavigate();
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
+  /* ================= EFFECTS ================= */
 
   useEffect(() => {
     setHeroImage("/main-port-bg.png");
     fetchUserData();
   }, []);
+
+  /* ================= DATA LOAD ================= */
 
   const fetchUserData = async () => {
     if (!user_name) return;
@@ -76,17 +84,15 @@ const Profile = () => {
       const users = response.data?.data ?? response.data ?? [];
 
       // Find user by username (case-insensitive)
-      const user = users.find(
+      const matchedUser = users.find(
         (u: UserData) =>
           u.user_name.toLowerCase() === user_name.toLowerCase()
       );
 
-      if (!user) {
-        throw new Error("User not found");
-      }
+      if (!matchedUser) throw new Error("User not found");
 
-      await checkAvailableGames(user.user_id);
-      setUserData(user);
+      setUserData(matchedUser);
+      await checkAvailableGames(matchedUser.user_id);
       setError(null);
     } catch (err) {
       console.error(err);
@@ -100,47 +106,47 @@ const Profile = () => {
   const checkAvailableGames = async (userId: number) => {
     const available: string[] = [];
 
-    // Check PUBG
     try {
       const res = await pubgAPI.getStatsByUser(userId);
       setPubgUser(res.username);
       available.push("PUBG");
-    } catch (err) {
-      // User doesn't have PUBG portfolio
-    }
+    } catch {}
 
-    // Check CSGO
     try {
       const res = await csgoAPI.getStatsByUser(userId);
       setCsgoUser(res.username);
-
       available.push("CSGO");
-    } catch (err) {
-      // User doesn't have CSGO portfolio
-    }
+    } catch {}
 
-    // Check LoL
-    try {
-      const res = await leagueAPI.getStatsByUser();
-      setLolUser(res.ign);
+    // Valorant handled via /me route (private)
+    setValoUser(user_name || "");
+    available.push("VALORANT");
 
-      available.push("LEAGUE OF LEGENDS");
-    } catch (err) {
-      // User doesn't have CSGO portfolio
-    }
+//     // LOL placeholder (future teammate work)
+//     setLolUser(user_name || "");
+//     // Check LoL
+//     try {
+//       const res = await leagueAPI.getStatsByUser();
+//       setLolUser(res.ign);
 
-    // TODO: Add VALORANT checks when APIs are available
+//       available.push("LEAGUE OF LEGENDS");
+//     } catch (err) {
+//       // User doesn't have CSGO portfolio
+//     }
 
     setAvailableGames(available);
   };
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return "N/A";
-    return new Date(dateString).toLocaleDateString("en-US", {
+
+  const formatDate = (date: string | null) => {
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
       month: "long",
       day: "numeric",
     });
   };
+
+  /* ================= STATES ================= */
 
   if (isLoading) {
     return <div className="main-portfolio-loading">Loading...</div>;
@@ -157,19 +163,24 @@ const Profile = () => {
     );
   }
 
+  /* ================= RENDER ================= */
+
   return (
     <div className="main-portfolio">
+      {/* ================= HERO ================= */}
       <div
         className="main-hero-section"
         style={{ backgroundImage: `url(${heroImage})` }}
       >
-        <div className="main-hero-overlay"></div>
+        <div className="main-hero-overlay" />
         <div className="main-hero-content">
           <div className="user-info-container">
             <div className="user-avatar">
               <FaUser />
             </div>
+
             <h1 className="user-name">{userData.user_name}</h1>
+
             <div className="user-details">
               <div className="detail-item">
                 <FaEnvelope className="detail-icon" />
@@ -178,6 +189,7 @@ const Profile = () => {
                   <span className="detail-value">{userData.email}</span>
                 </div>
               </div>
+
               <div className="detail-item">
                 <FaCalendar className="detail-icon" />
                 <div className="detail-text">
@@ -191,12 +203,15 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      {/* ================= LOGOUT ================= */}
       <div className="logout-wrapper">
-        <button onClick={handleLogout} className="logout-btn">
+        <button onClick={() => { logout(); navigate("/"); }} className="logout-btn">
           LOGOUT
         </button>
       </div>
 
+      {/* ================= GAME PORTFOLIOS ================= */}
       <div className="main-games-section">
         <h2 className="section-title">Game Portfolios</h2>
 
@@ -217,6 +232,7 @@ const Profile = () => {
                         />
                         <div className="game-card-overlay" />
                       </div>
+
                       <div className="game-card-content">
                         <h3 className="main-portfolio-game-title">
                           {game.title}
@@ -237,6 +253,7 @@ const Profile = () => {
                       />
                       <div className="game-card-overlay" />
                     </div>
+
                     <div className="game-card-content">
                       <h3 className="main-portfolio-game-title">
                         {game.title}
@@ -244,6 +261,7 @@ const Profile = () => {
                     </div>
                   </div>
                 )}
+
                 <div className="align-center mt-20">
                   <button
                     className="profile-portfolio-btn"

@@ -156,7 +156,7 @@ const CreateValorantPortfolioPage = () => {
             if (profile && profile.exists) {
                 setProfileExists(true);
                 alert('You already have a Valorant profile!');
-                navigate('/players/valorant');
+                navigate('/players/valorant/me');
             }
         } catch (error) {
             console.log('No existing profile, proceed with creation');
@@ -449,7 +449,7 @@ const CreateValorantPortfolioPage = () => {
                 }));
             }
 
-            const response = await valorantAPI.createProfile(payload);
+            await valorantAPI.createProfile(payload);
             alert('✅ Profile created successfully!');
             navigate(`/players/valorant/${user.user_name}`);
 
