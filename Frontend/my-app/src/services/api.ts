@@ -214,20 +214,21 @@ export const leagueAPI = {
   },
 
   getStatsByUser: async (): Promise<PlayerLolData> => {
-    const response = await api.get(`/api/lol/get-folio`);
+    const response = await api.get("/api/lol/get-folio");
     return response.data;
   },
 
   updateStats: async (data: Partial<PlayerLolData>) => {
-    const response = await api.patch(`/api/lol/update-folio`, data);
+    const response = await api.put("/api/lol/update-folio", data);
     return response.data;
   },
 
-  deleteStats: async (statsId: number) => {
-    const response = await api.delete(`/api/lol/delete-folio/${statsId}`);
+  deleteStats: async () => {
+    const response = await api.delete("/api/lol/delete-folio");
     return response.data;
-  }
-}
+  },
+};
+
 
 
 export interface ValorantProfileData {

@@ -20,11 +20,13 @@ import ValorantProfilePage from './pages/valorant pages/ValorantProfilePage';
 import CreateValorantPortfolioPage from "./pages/valorant pages/CreateValorantPortfolioPage";
 import CreateLolPortfolioPage from "./pages/CreateLolPortfolioPage";
 import LolPlayersPage from "./pages/LolPlayersPage";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <>
       <Router>
+        <ScrollToTop />
         <AuthProvider>
           <Navbar />
           <Routes>

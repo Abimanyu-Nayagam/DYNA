@@ -10,8 +10,21 @@ interface LeaguePlayer {
   user_id: number;
   ign: string;
   riot_id: string;
-  cur_rank: string;
   server: string;
+  cur_rank: string;
+  peak_rank: string;
+  last_season_rank: string;
+  player_since: string;
+  main_role: string;
+  cs_per_min: number | null;
+  avg_kills: number | null;
+  avg_deaths: number | null;
+  avg_assists: number | null;
+  avg_dmg: number | null;
+  avg_vision_score: number | null;
+  avg_game_duration: number | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 const LolPlayersPage = () => {
@@ -22,8 +35,10 @@ const LolPlayersPage = () => {
   const [filteredPlayers, setFilteredPlayers] = useState<LeaguePlayer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   useEffect(() => {
+    checkExistingPortfolio();
     fetchPlayers();
   }, []);
 
@@ -42,6 +57,19 @@ const LolPlayersPage = () => {
       setFilteredPlayers(filtered);
     }
   }, [searchTerm, players]);
+
+  const checkExistingPortfolio = async () => {
+      if (!user?.user_id) return;
+  
+      try {
+        const existingStats = await leagueAPI.getStatsByUser();
+        if (existingStats) {
+          setIsUpdate(true);
+        }
+      } catch (error) {
+        console.log("No existing portfolio found, proceeding with creation");
+      }
+    };
 
   const fetchPlayers = async () => {
     try {
@@ -70,7 +98,7 @@ const LolPlayersPage = () => {
   };
 
   return (
-    <div className="players-page">
+    <div className="lol-players-page">
       <div className="players-header">
         <div className="header-content">
           <h1 className="page-title">LEAGUE OF LEGENDS PLAYERS</h1>
@@ -89,9 +117,13 @@ const LolPlayersPage = () => {
           <p className="search-icon">🔎︎</p>
         </div>
 
-        <button className="create-portfolio-btn" onClick={handleCreatePortfolio}>
-          + Create Portfolio
+        <button
+          className="create-portfolio-btn"
+          onClick={handleCreatePortfolio}
+        >
+          {isUpdate ? " Update Portfolio" : " + Create Portfolio"}
         </button>
+
       </div>
 
       {isLoading ? (

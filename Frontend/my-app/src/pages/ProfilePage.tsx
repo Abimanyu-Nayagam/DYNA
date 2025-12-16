@@ -4,6 +4,7 @@ import { FaEnvelope, FaUser, FaCalendar } from "react-icons/fa";
 import "../styles/profile.css";
 import { useAuth } from "@/contexts/AuthContext";
 import { pubgAPI, csgoAPI, leagueAPI } from "../services/api";
+import api from "../services/api"
 
 interface UserData {
   user_id: number;
@@ -48,7 +49,8 @@ const Profile = () => {
     {
       title: "LEAGUE OF LEGENDS",
       image: "/lolcard.png",
-      route: `/players/${lol_user}/lol`,
+      viewRoute: lol_user ? `/players/${lol_user}/lol` : null,
+      createRoute: "/players/lol/create"
     },
   ];
 
@@ -68,34 +70,32 @@ const Profile = () => {
 
     try {
       setIsLoading(true);
-      // Fetch all users and find by username
-      const response = await fetch(`http://localhost:5000/players`);
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch users");
-      }
-
-      const result = await response.json();
-      const users = result.data || [];
+      // Axios call
+      const response = await api.get("/players");
+      const users = response.data?.data ?? response.data ?? [];
 
       // Find user by username (case-insensitive)
       const user = users.find(
-        (u: UserData) => u.user_name.toLowerCase() === user_name.toLowerCase()
+        (u: UserData) =>
+          u.user_name.toLowerCase() === user_name.toLowerCase()
       );
 
       if (!user) {
         throw new Error("User not found");
       }
+
       await checkAvailableGames(user.user_id);
       setUserData(user);
       setError(null);
     } catch (err) {
-      setError("Failed to load user data");
       console.error(err);
+      setError("Failed to load user data");
     } finally {
       setIsLoading(false);
     }
   };
+
 
   const checkAvailableGames = async (userId: number) => {
     const available: string[] = [];
@@ -124,7 +124,7 @@ const Profile = () => {
       const res = await leagueAPI.getStatsByUser();
       setLolUser(res.ign);
 
-      available.push("CSGO");
+      available.push("LEAGUE OF LEGENDS");
     } catch (err) {
       // User doesn't have CSGO portfolio
     }

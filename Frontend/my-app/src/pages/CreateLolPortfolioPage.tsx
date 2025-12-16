@@ -64,6 +64,7 @@ const CreateLolPortfolioPage = () => {
         cur_rank: existing.cur_rank || "Bronze",
         peak_rank: existing.peak_rank || "Bronze",
         last_season_rank: existing.last_season_rank || "Bronze",
+        player_since: existing.player_since || "",
         main_role: existing.main_role || "Mid",
 
         cs_per_min: existing.cs_per_min?.toString() || "",
@@ -106,7 +107,7 @@ const CreateLolPortfolioPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!token || !user) return;
+    if (!user) return;
 
     const payload = Object.fromEntries(
       Object.entries(formData).map(([k, v]) => [
@@ -115,18 +116,19 @@ const CreateLolPortfolioPage = () => {
       ])
     );
 
-    const res = await fetch("http://localhost:5000/api/lol/create-folio", {
-      method: isUpdate ? "PATCH" : "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
+    try {
+      if (isUpdate) {
+        await leagueAPI.updateStats(payload);
+      } else {
+        await leagueAPI.createStats(payload);
+      }
 
-    if (!res.ok) throw new Error("Failed to save portfolio");
-    navigate("/players/lol");
+      navigate("/players/lol");
+    } catch (error) {
+      console.error("Failed to save portfolio:", error);
+    }
   };
+
 
 
   if (loading) return null;
