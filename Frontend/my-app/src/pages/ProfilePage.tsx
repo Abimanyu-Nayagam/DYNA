@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaUser, FaCalendar } from "react-icons/fa";
 import "../styles/profile.css";
 import { useAuth } from "@/contexts/AuthContext";
-import { pubgAPI, csgoAPI, leagueAPI } from "../services/api";
-import api from "../services/api"
+import { pubgAPI, csgoAPI, leagueAPI, valorantAPI } from "../services/api";
+import api from "../services/api";
 
 /* ================= TYPES ================= */
 
@@ -62,7 +62,7 @@ const Profile = () => {
       title: "LEAGUE OF LEGENDS",
       image: "/lolcard.png",
       viewRoute: lol_user ? `/players/${lol_user}/lol` : null,
-      createRoute: "/players/lol/create", // future-ready
+      createRoute: "/players/lol/create",
     },
   ];
 
@@ -81,11 +81,9 @@ const Profile = () => {
     try {
       setIsLoading(true);
 
-      // Axios call
       const response = await api.get("/players");
       const users = response.data?.data ?? response.data ?? [];
 
-      // Find user by username (case-insensitive)
       const matchedUser = users.find(
         (u: UserData) =>
           u.user_name.toLowerCase() === user_name.toLowerCase()
@@ -104,37 +102,40 @@ const Profile = () => {
     }
   };
 
+  /* ================= GAME CHECK ================= */
 
   const checkAvailableGames = async (userId: number) => {
     const available: string[] = [];
 
+    // PUBG
     try {
       const res = await pubgAPI.getStatsByUser(userId);
       setPubgUser(res.username);
       available.push("PUBG");
-    } catch { }
+    } catch {}
 
+    // CSGO
     try {
       const res = await csgoAPI.getStatsByUser(userId);
       setCsgoUser(res.username);
       available.push("CSGO");
-    } catch { }
+    } catch {}
 
-    // Valorant handled via /me route (private)
-    setValoUser(user_name || "");
-    available.push("VALORANT");
+    // VALORANT (REAL EXISTENCE CHECK)
+    try {
+      const res = await valorantAPI.getMyProfile();
+      if (res?.exists) {
+        setValoUser(user_name || "");
+        available.push("VALORANT");
+      } else {
+        setValoUser("");
+      }
+    } catch {
+      setValoUser("");
+    }
 
-//     // LOL placeholder (future teammate work)
-//     setLolUser(user_name || "");
-//     // Check LoL
-//     try {
-//       const res = await leagueAPI.getStatsByUser();
-//       setLolUser(res.ign);
-
-//       available.push("LEAGUE OF LEGENDS");
-//     } catch (err) {
-//       // User doesn't have CSGO portfolio
-//     }
+    // LOL placeholder (future teammate work)
+    // setLolUser(user_name || "");
 
     setAvailableGames(available);
   };
@@ -169,7 +170,6 @@ const Profile = () => {
 
   return (
     <div className="main-portfolio">
-      {/* ================= HERO ================= */}
       <div
         className="main-hero-section"
         style={{ backgroundImage: `url(${heroImage})` }}
@@ -206,14 +206,18 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* ================= LOGOUT ================= */}
       <div className="logout-wrapper">
-        <button onClick={() => { logout(); navigate("/"); }} className="logout-btn">
+        <button
+          onClick={() => {
+            logout();
+            navigate("/");
+          }}
+          className="logout-btn"
+        >
           LOGOUT
         </button>
       </div>
 
-      {/* ================= GAME PORTFOLIOS ================= */}
       <div className="main-games-section">
         <h2 className="section-title">Game Portfolios</h2>
 
