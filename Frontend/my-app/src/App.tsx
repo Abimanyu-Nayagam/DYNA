@@ -52,6 +52,7 @@ function App() {
               element={<CreateCsgoPortfolioPage />}
             />
             <Route path="/profile" element={<Profile />} />
+            <Route path="/players/:username/lol" element={<LoLPortfolio />} />
           </Routes>
         </AuthProvider>
       </Router>

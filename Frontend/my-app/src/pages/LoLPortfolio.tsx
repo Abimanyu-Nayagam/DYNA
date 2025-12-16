@@ -4,6 +4,7 @@ import VideoCarousel from "@/components/CarouselScroll";
 import "@/styles/LoLPortfolio.css";
 import RankAnimation from "@/components/RankAnimation";
 import ScrollFadeIn from "@/components/ScrollFadeIn";
+import { leagueAPI } from "@/services/api";
 
 const roleIconMap: Record<string, string> = {
   top: "/images/league-user-stats/roleicon_top.png",

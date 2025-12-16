@@ -28,4 +28,3 @@ class LeagueForm(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    ishidden = db.Column(db.Boolean, default=False)

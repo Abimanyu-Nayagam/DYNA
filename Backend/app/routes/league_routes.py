@@ -29,16 +29,29 @@ def create_portfolio():
         return jsonify({"error": str(e)}), 400
     
     new_form = LeagueForm(
-        user_id = user_id,
-        cur_rank = data["cur_rank"],
-        peak_rank = data["peak_rank"],
-        main_role = data["main_role"],
-        avg_kda = data["avg_kda"],
-        avg_kp_percent = data["avg_kp_percent"],
-        cs_per_min = data["cs_per_min"],
-        avg_dmg = data["avg_dmg"],
-        avg_vision_score = data.get("avg_vision_score")
-    )
+        user_id=user_id,
+
+        cur_rank=data["cur_rank"],
+        peak_rank=data["peak_rank"],
+        last_season_rank=data.get("last_season_rank"),
+
+        main_role=data["main_role"],
+        server=data.get("server"),
+
+        cs_per_min=data.get("cs_per_min"),
+
+        avg_kills=data.get("avg_kills"),
+        avg_deaths=data.get("avg_deaths"),
+        avg_assists=data.get("avg_assists"),
+
+        avg_dmg=data.get("avg_dmg"),
+        avg_vision_score=data.get("avg_vision_score"),
+        avg_game_duration=data.get("avg_game_duration"),
+
+        ign=data.get("ign"),
+        riot_id=data.get("riot_id")
+        )
+
 
     try:
         db.session.add(new_form)
