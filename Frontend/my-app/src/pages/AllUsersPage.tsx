@@ -7,7 +7,6 @@ interface Player {
   user_id: number;
   user_name: string;
   email: string;
-  provider: string;
   created_at: string | null;
   updated_at: string | null;
 }
