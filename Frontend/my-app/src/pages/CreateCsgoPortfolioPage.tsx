@@ -322,7 +322,7 @@ const CreateCsgoPortfolioPage = () => {
       formDataToSend.append("bomb_defuses", String(Number(formData.bomb_defuses) || 0));
       formDataToSend.append("flash_assists", String(Number(formData.flash_assists) || 0));
 
-      const response = await fetch("http://localhost:5000/games/csgo/stats", {
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/games/csgo/stats`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

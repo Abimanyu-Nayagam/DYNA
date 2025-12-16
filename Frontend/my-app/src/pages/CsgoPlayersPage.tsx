@@ -56,7 +56,7 @@ const CsgoPlayersPage = () => {
   const fetchPlayers = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("http://localhost:5000/games/csgo/");
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/games/csgo/`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

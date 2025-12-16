@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import "../styles/Navbar.css";
 import { useAuth } from "../contexts/AuthContext";
+import { FaUser} from "react-icons/fa";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -104,9 +105,9 @@ const Navbar = () => {
               </Link>
             </>
           ) : (
-            <button onClick={handleLogout} className="btn">
-              LOGOUT
-            </button>
+            <Link to="/profile" className="profile-btn">
+              <FaUser />
+            </Link>
           )}
         </div>
       </nav>

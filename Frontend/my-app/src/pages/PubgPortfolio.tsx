@@ -51,7 +51,7 @@ const PubgPortfolio = () => {
 
       try {
         // First, fetch all users and find by username
-        const usersResponse = await fetch("http://localhost:5000/games/pubg");
+        const usersResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/games/pubg`);
         if (!usersResponse.ok) {
           throw new Error('Failed to fetch users');
         }

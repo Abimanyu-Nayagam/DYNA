@@ -14,7 +14,7 @@ import AllUsersPage from "./pages/AllUsersPage";
 import MainPortfolio from "./pages/MainPortfolio";
 import LoLPortfolio from "./pages/LoLPortfolio";
 import CsgoPortfolio from "./pages/CsgoPortfolio";
-import CreateLolPortfolioPage from "./pages/CreateLolPortfolioPage";
+import Profile from "./pages/ProfilePage";import CreateLolPortfolioPage from "./pages/CreateLolPortfolioPage";
 import LolPlayersPage from "./pages/LolPlayersPage";
 
 function App() {
@@ -28,11 +28,17 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/players/pubg" element={<PubgPlayersPage />} />
-            <Route path='/players/:username' element={<MainPortfolio/>}/>
-            <Route path='/players/:username/pubg' element={<PubgPortfolio/>}/>
-            <Route path='/players/:username/csgo' element={<CsgoPortfolio/>}/>
-            <Route path='/players/:username/valo' element={<div>VALORANT Portfolio Coming Soon</div>}/>
-            <Route path='/players/:username/lol' element={<LoLPortfolio/>}/>
+            <Route path="/players/:username" element={<MainPortfolio />} />
+            <Route path="/players/:username/pubg" element={<PubgPortfolio />} />
+            <Route path="/players/:username/csgo" element={<CsgoPortfolio />} />
+            <Route
+              path="/players/:username/valo"
+              element={<div>VALORANT Portfolio Coming Soon</div>}
+            />
+            <Route
+              path="/players/:username/lol"
+              element={<div>LOL Portfolio Coming Soon</div>}
+            />
             <Route path="/players/csgo" element={<CsgoPlayersPage />} />
             <Route path="/players/lol" element={<LolPlayersPage />} />
             <Route
@@ -45,6 +51,7 @@ function App() {
               path="/players/csgo/create"
               element={<CreateCsgoPortfolioPage />}
             />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </AuthProvider>
       </Router>
