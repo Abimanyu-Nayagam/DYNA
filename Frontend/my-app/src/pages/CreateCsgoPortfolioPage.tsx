@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { csgoAPI } from "@/services/api";
-import "@/styles/createportfolio.css";
+import "@/styles/csgocreateportfolio.css";
 
 interface CsgoFormData {
   username: string;
@@ -322,19 +322,25 @@ const CreateCsgoPortfolioPage = () => {
       formDataToSend.append("bomb_defuses", String(Number(formData.bomb_defuses) || 0));
       formDataToSend.append("flash_assists", String(Number(formData.flash_assists) || 0));
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/games/csgo/stats`, {
-        method: "POST",
+      // Add video if selected
+      if (videoFile) {
+        formDataToSend.append("video", videoFile);
+      }
+
+      const url =
+        isUpdate && existingStatsId
+          ? `${
+              import.meta.env.VITE_API_BASE_URL
+            }/games/csgo/stats/${existingStatsId}`
+          : `${import.meta.env.VITE_API_BASE_URL}/games/csgo/stats`;
+
+      const response = await fetch(url, {
+        method: isUpdate ? "PATCH" : "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Do NOT set Content-Type manually
         },
         body: formDataToSend,
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to save portfolio");
-      }
-
       const data = await response.json();
       console.log(data);
 

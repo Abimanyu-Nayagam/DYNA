@@ -142,8 +142,7 @@ def update_csgo_stats(stats_id):
         "mm_rank", "faceit_level", "elo", "kd_ratio", "headshot_percentage",
         "kills", "deaths", "assists", "mvps", "matches_played", "wins",
         "win_rate", "avg_damage_per_round", "avg_kills_per_round",
-        "rounds_played", "bomb_plants", "bomb_defuses", "flash_assists",
-        "ishidden"
+        "rounds_played", "bomb_plants", "bomb_defuses", "flash_assists"
     ]
 
     for field in updatable_fields:

@@ -40,6 +40,3 @@ class CsgoBaseSchema(BaseModel):
     bomb_plants: int = 0
     bomb_defuses: int = 0
     flash_assists: int = 0
-
-    # Visibility
-    ishidden: bool = False

@@ -18,7 +18,7 @@ const PlayerCard: React.FC<PlayerCardProps> = ({
   return (
     <div className="player-card" onClick={onClick} style={{ cursor: onClick ? 'pointer' : 'default' }}>
       <div className="player-card-header">
-        <div className="player-avatar">
+        <div className="player-card-avatar">
           {username.charAt(0).toUpperCase()}
         </div>
         <div className="player-info">
