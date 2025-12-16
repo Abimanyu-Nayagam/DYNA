@@ -4,8 +4,6 @@ export interface User {
   user_id: number;
   user_name: string;
   email: string;
-  provider?: string;
-  provider_id?: string | null;
   created_at?: string;
   updated_at?: string;
 }

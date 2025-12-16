@@ -5,11 +5,11 @@ from urllib.parse import quote_plus
 load_dotenv()
 
 class Config:
-    DB_USER = os.getenv('MYSQL_USER', 'root')
+    DB_USER = os.getenv('MYSQL_USER')
     DB_PASSWORD = os.getenv('MYSQL_PASSWORD', '')
-    DB_HOST = os.getenv('MYSQL_HOST', 'localhost')
-    DB_NAME = os.getenv('DB_NAME')
-    DB_PORT = os.getenv('DB_PORT', '3306')
+    DB_HOST = os.getenv('MYSQL_HOST')
+    DB_NAME = os.getenv('MYSQL_DB')
+    DB_PORT = os.getenv('MYSQL_PORT')
     
     # URL-encode password to handle special characters like @
     encoded_password = quote_plus(DB_PASSWORD)

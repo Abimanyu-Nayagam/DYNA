@@ -248,10 +248,6 @@ export default function CsgoPortfolio() {
             </div>
           </div>
         </div>
-
-        {stats.ishidden && (
-          <span className="hidden-badge">Hidden Portfolio</span>
-        )}
       </motion.div>
 
       {/* STATS GRID */}

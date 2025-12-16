@@ -11,7 +11,7 @@ class PubgPlayerStats(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False, unique=True)
     
     # Player identification
-    username = db.Column(db.String(100), nullable=False)
+    username = db.Column(db.String(100), nullable=False, unique=True)
     in_game_id = db.Column(db.String(100), nullable=False, unique=True)
     video_url = db.Column(db.String(1000),nullable=True)
     
@@ -38,8 +38,6 @@ class PubgPlayerStats(db.Model):
     # Timestamps
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
-    
-    ishidden = db.Column(db.Boolean, default=False)
 
     # Relationship to User model
     user = db.relationship('User', backref=db.backref('pubg_stats', lazy=True))
@@ -67,7 +65,6 @@ class PubgPlayerStats(db.Model):
             'top_10': self.top_10,
             'avg_damage': self.avg_damage,
             'avg_survival_time': self.avg_survival_time,
-            'ishidden': self.ishidden,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }

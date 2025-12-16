@@ -20,7 +20,6 @@ def get_all_users():
                 'user_id': user.user_id,
                 'user_name': user.user_name,
                 'email': user.email,
-                'provider': user.provider,
                 'created_at': user.created_at.isoformat() if user.created_at else None,
                 'updated_at': user.updated_at.isoformat() if user.updated_at else None
             })
@@ -47,7 +46,6 @@ def get_user_by_id(user_id):
             'user_id': user.user_id,
             'user_name': user.user_name,
             'email': user.email,
-            'provider': user.provider,
             'created_at': user.created_at.isoformat() if user.created_at else None,
             'updated_at': user.updated_at.isoformat() if user.updated_at else None
         }

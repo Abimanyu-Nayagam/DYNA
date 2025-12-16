@@ -100,7 +100,7 @@ export const authAPI = {
 };
 
 export const pubgAPI = {
-  createStats: async (data: Omit<PubgStatsData, 'id' | 'user_id' | 'ishidden' | 'created_at' | 'updated_at'>) => {
+  createStats: async (data: Omit<PubgStatsData, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     const response = await api.post("/games/pubg/stats", data);
     return response.data;
   },
@@ -154,11 +154,10 @@ export interface CsgoStatsData {
   bomb_plants: number | string|null;
   bomb_defuses: number | string |null;
   flash_assists: number | string |null;
-  ishidden: boolean;
 }
 
 export const csgoAPI = {
-  createStats: async (data: Omit<CsgoStatsData, 'id' | 'user_id' | 'ishidden' | 'created_at' | 'updated_at'>) => {
+  createStats: async (data: Omit<CsgoStatsData, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     const response = await api.post("/games/csgo/stats", data);
     return response.data;
   },
