@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import { FaEnvelope, FaUser, FaCalendar } from "react-icons/fa";
 import { pubgAPI, csgoAPI } from "../services/api";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,8 +18,8 @@ interface UserData {
 /* ================= COMPONENT ================= */
 
 const MainPortfolio = () => {
-  const { username } = useParams<{ username: string }>();
-  const navigate = useNavigate();
+  const { username: rawUsername } = useParams<{ username: string }>();
+  const username = rawUsername ?? "";
   const { user } = useAuth();
 
   const [heroImage, setHeroImage] = useState("");

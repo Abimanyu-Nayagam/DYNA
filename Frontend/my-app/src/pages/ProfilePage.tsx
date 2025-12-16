@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaUser, FaCalendar } from "react-icons/fa";
 import "../styles/profile.css";
@@ -53,7 +53,9 @@ const Profile = () => {
       title: "VALORANT",
       image: "/valocard.png",
       viewRoute: valo_user ? `/players/valorant/me` : null,
-      createRoute: "/players/valorant/create",
+      createRoute: valo_user
+        ? "/players/valorant/me/edit"
+        : "/players/valorant/create",
     },
     {
       title: "LEAGUE OF LEGENDS",
@@ -109,13 +111,13 @@ const Profile = () => {
       const res = await pubgAPI.getStatsByUser(userId);
       setPubgUser(res.username);
       available.push("PUBG");
-    } catch {}
+    } catch { }
 
     try {
       const res = await csgoAPI.getStatsByUser(userId);
       setCsgoUser(res.username);
       available.push("CSGO");
-    } catch {}
+    } catch { }
 
     // Valorant handled via /me route (private)
     setValoUser(user_name || "");
