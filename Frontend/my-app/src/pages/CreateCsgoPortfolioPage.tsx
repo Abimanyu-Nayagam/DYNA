@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { csgoAPI } from "@/services/api";
-import "@/styles/createportfolio.css";
+import "@/styles/csgocreateportfolio.css";
 
 interface CsgoFormData {
   username: string;
