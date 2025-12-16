@@ -158,7 +158,9 @@ export default function CsgoPortfolio() {
       if (!username) return;
       try {
         // First, fetch all users and find by username
-        const usersResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/games/csgo`);
+        const usersResponse = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/games/csgo`
+        );
         if (!usersResponse.ok) {
           throw new Error("Failed to fetch users");
         }
@@ -191,6 +193,12 @@ export default function CsgoPortfolio() {
     fetchUserAndStats();
   }, [username]);
 
+  const getRankImage = (rank: string | null): string | undefined => {
+    if (!rank) return undefined;
+    const rankName = rank.toLowerCase().trim().replace(/\s+/g, "_"); // add _ between words
+    return `/CSGO-RANKS/${rankName}.png`;
+  };
+
   if (!stats) return <div className="loading">Loading portfolio...</div>;
   if (error || !stats) {
     return (
@@ -215,14 +223,28 @@ export default function CsgoPortfolio() {
         }}
       >
         <div className="rank-card glass">
-          <div className="rank-info">
-            <p className="rank p-20 mb-20">{stats.in_game_id}</p>
+          <div>
+            {stats.current_rank && (
+              <img
+                src={getRankImage(stats.current_rank)}
+                alt={`${stats.current_rank} Rank`}
+                className="rank-image"
+                onError={(e) => {
+                  console.log(
+                    "Failed to load rank image:",
+                    stats.current_rank,
+                    getRankImage(stats.current_rank)
+                  );
+                }}
+              />
+            )}
+            <p className="csgo-current-rank ">{stats.current_rank}</p>
           </div>
 
           <div className="rank-right">
             <div className="rank-info">
               <h1>{stats.username}</h1>
-              <p className="rank">{stats.current_rank}</p>
+              <p className="rank p-20 mb-20">SteamID: {stats.in_game_id}</p>
               <span className="peak">Peak: {stats.highest_rank}</span>
               <br />
               <span className="peak">MM: {stats.highest_rank}</span>
