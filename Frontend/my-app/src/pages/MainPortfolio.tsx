@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaUser, FaCalendar } from "react-icons/fa";
-import { pubgAPI, csgoAPI } from "../services/api";
+import { pubgAPI, csgoAPI, leagueAPI } from "../services/api";
 import { useAuth } from "@/contexts/AuthContext";
 import "../styles/mainportfolio.css";
 
@@ -129,6 +129,17 @@ const MainPortfolio = () => {
       setValoUser(username);
       available.push("VALORANT");
     } catch {}
+    // Check LoL
+    try {
+      const res = await leagueAPI.getStatsByUser();
+      available.push("LEAGUE OF LEGENDS");
+      setLolUser(res.username as string);
+    } catch (err) {
+      // User doesn't have LoL portfolio
+    }
+
+    // Add other games here when implemented
+    // TODO: Add VALORANT check when APIs are available
 
     setAvailableGames(available);
   };

@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaUser, FaCalendar } from "react-icons/fa";
 import "../styles/profile.css";
 import { useAuth } from "@/contexts/AuthContext";
-import { pubgAPI, csgoAPI } from "../services/api";
+import { pubgAPI, csgoAPI, leagueAPI } from "../services/api";
+import api from "../services/api"
 
 /* ================= TYPES ================= */
 
@@ -78,12 +79,11 @@ const Profile = () => {
     try {
       setIsLoading(true);
 
-      const response = await fetch("http://localhost:5000/players");
-      if (!response.ok) throw new Error("Failed to fetch users");
+      // Axios call
+      const response = await api.get("/players");
+      const users = response.data?.data ?? response.data ?? [];
 
-      const result = await response.json();
-      const users = result.data || [];
-
+      // Find user by username (case-insensitive)
       const matchedUser = users.find(
         (u: UserData) =>
           u.user_name.toLowerCase() === user_name.toLowerCase()
@@ -101,6 +101,7 @@ const Profile = () => {
       setIsLoading(false);
     }
   };
+
 
   const checkAvailableGames = async (userId: number) => {
     const available: string[] = [];
@@ -121,8 +122,17 @@ const Profile = () => {
     setValoUser(user_name || "");
     available.push("VALORANT");
 
-    // LOL placeholder (future teammate work)
-    setLolUser(user_name || "");
+//     // LOL placeholder (future teammate work)
+//     setLolUser(user_name || "");
+//     // Check LoL
+//     try {
+//       const res = await leagueAPI.getStatsByUser();
+//       setLolUser(res.ign);
+
+//       available.push("LEAGUE OF LEGENDS");
+//     } catch (err) {
+//       // User doesn't have CSGO portfolio
+//     }
 
     setAvailableGames(available);
   };

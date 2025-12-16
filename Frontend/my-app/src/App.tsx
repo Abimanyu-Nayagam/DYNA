@@ -18,11 +18,15 @@ import Profile from "./pages/ProfilePage";
 import ValorantSearchPage from './pages/valorant pages/ValorantSearchPage';
 import ValorantProfilePage from './pages/valorant pages/ValorantProfilePage';
 import CreateValorantPortfolioPage from "./pages/valorant pages/CreateValorantPortfolioPage";
+import CreateLolPortfolioPage from "./pages/CreateLolPortfolioPage";
+import LolPlayersPage from "./pages/LolPlayersPage";
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   return (
     <>
       <Router>
+        <ScrollToTop />
         <AuthProvider>
           <Navbar />
           <Routes>
@@ -39,17 +43,19 @@ function App() {
             />
             <Route
               path="/players/:username/lol"
-              element={<div>LOL Portfolio Coming Soon</div>}
+              element={ <LoLPortfolio />}
             />
             <Route path="/players/csgo" element={<CsgoPlayersPage />} />
             <Route path="/players/valorant" element={<ValorantSearchPage />} />
             <Route path="/players/valorant/me" element={<ValorantProfilePage />} />
             <Route path="/players/valorant/:username" element={<ValorantProfilePage />} />
             <Route path="/players/valorant/create" element={<CreateValorantPortfolioPage />} />
+            <Route path="/players/lol" element={<LolPlayersPage />} />
             <Route
               path="/players/pubg/create"
               element={<CreatePubgPortfolioPage />}
             />
+            <Route path="/players/lol/create" element={<CreateLolPortfolioPage />} />
             <Route path="/players" element={<AllUsersPage />} />
             <Route
               path="/players/csgo/create"
