@@ -12,7 +12,9 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom'
 import PubgPortfolio from './pages/PubgPortfolio'
 import AllUsersPage from "./pages/AllUsersPage";
 import LoLPortfolio from "./pages/LoLPortfolio";
-import ValorantSearchPage from './pages/ValorantSearchPage';
+import ValorantSearchPage from './pages/valorant pages/ValorantSearchPage';
+import ValorantProfilePage from './pages/valorant pages/ValorantProfilePage';
+import CreateValorantPortfolioPage from "./pages/valorant pages/CreateValorantPortfolioPage";
 
 function App() {
   return (
@@ -28,7 +30,9 @@ function App() {
             <Route path='/players/:userId' element={<PubgPortfolio/>}/>
             <Route path="/players/csgo" element={<CsgoPlayersPage />} />
             <Route path="/players/valorant" element={<ValorantSearchPage />} />
-            <Route path="/games/valorant" element={<ValorantSearchPage />} />
+            <Route path="/players/valorant/me" element={<ValorantProfilePage />} />
+            <Route path="/players/valorant/:username" element={<ValorantProfilePage />} />
+            <Route path="/players/valorant/create" element={<CreateValorantPortfolioPage />} />
             <Route
               path="/players/pubg/create"
               element={<CreatePubgPortfolioPage />}

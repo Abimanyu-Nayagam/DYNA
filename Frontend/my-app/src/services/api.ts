@@ -167,9 +167,12 @@ export const valorantAPI = {
   },
 
   // Get own profile
-  getMyProfile: async (): Promise<ValorantProfileData> => {
-    const response = await api.get('/api/valorant/me');
-    return response.data.data;
+  getMyProfile: async (): Promise<{
+    exists: boolean;
+    data?: any;
+  }> => {
+    const res = await api.get("/api/valorant/me");
+    return res.data;
   },
 
   // Create profile
@@ -187,6 +190,14 @@ export const valorantAPI = {
   // Delete profile
   deleteProfile: async () => {
     const response = await api.delete('/api/valorant/me');
+    return response.data;
+  },
+};
+
+export const userAPI = {
+  // Get user profile with all games
+  getUserProfile: async (username: string) => {
+    const response = await api.get(`/players/${username}`);
     return response.data;
   },
 };
