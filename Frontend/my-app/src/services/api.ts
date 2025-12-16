@@ -184,4 +184,85 @@ export const csgoAPI = {
 
 
 
+export interface ValorantProfileData {
+  id: number;
+  user_id: number;
+  player_name: string;
+  riot_id: string;
+  tagline: string;
+  full_riot_id: string;
+  region: string;
+  server: string;
+  current_rank: string;
+  peak_rank: string;
+  kd: number;
+  win_rate: number;
+  total_matches: number;
+  hours_played: number;
+  main_role: string;
+  best_agent: string;
+  top_agents: string[];
+  is_public: boolean;
+  // Add more fields as needed
+}
+
+export interface ValorantSearchResult {
+  player_name: string;
+  riot_id: string;
+  tagline: string;
+  current_rank: string;
+  region: string;
+  best_agent: string;
+  user_name: string; // DYNA username to link to profile
+}
+
+export const valorantAPI = {
+  // Search public profiles
+  searchProfiles: async (query: string): Promise<ValorantSearchResult[]> => {
+    const response = await api.get(`/api/valorant/search?query=${query}`);
+    return response.data.results || [];
+  },
+
+  // Get public profile by username
+  getPublicProfile: async (userName: string): Promise<ValorantProfileData> => {
+    const response = await api.get(`/api/valorant/${userName}`);
+    return response.data;
+  },
+
+  // Get own profile
+  getMyProfile: async (): Promise<{
+    exists: boolean;
+    data?: any;
+  }> => {
+    const res = await api.get("/api/valorant/me");
+    return res.data;
+  },
+
+  // Create profile
+  createProfile: async (data: any) => {
+    const response = await api.post('/api/valorant', data);
+    return response.data;
+  },
+
+  // Update profile (PATCH for partial updates)
+  updateProfile: async (data: any) => {
+    const response = await api.patch('/api/valorant/me', data);
+    return response.data;
+  },
+
+  // Delete profile
+  deleteProfile: async () => {
+    const response = await api.delete('/api/valorant/me');
+    return response.data;
+  },
+};
+
+export const userAPI = {
+  // Get user profile with all games
+  getUserProfile: async (username: string) => {
+    const response = await api.get(`/players/${username}`);
+    return response.data;
+  },
+};
+
 export default api;

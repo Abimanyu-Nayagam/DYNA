@@ -1,4 +1,5 @@
 /venv
+venv
 .env
 __pycache__/
 migrations/
@@ -7,3 +8,5 @@ config.json
 logs
 app.log
 node_modules/
+manage.py
+__pycache__
