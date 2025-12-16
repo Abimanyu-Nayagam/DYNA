@@ -21,6 +21,7 @@ import CreateValorantPortfolioPage from "./pages/valorant pages/CreateValorantPo
 import CreateLolPortfolioPage from "./pages/CreateLolPortfolioPage";
 import LolPlayersPage from "./pages/LolPlayersPage";
 import ScrollToTop from "./components/ScrollToTop";
+import EditValorantPortfolioPage from "./pages/valorant pages/EditValorantPortfolioPage";
 
 function App() {
   return (
@@ -34,7 +35,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/players/pubg" element={<PubgPlayersPage />} />
-           <Route path="/players/:username" element={<MainPortfolio />} />
+            <Route path="/players/:username" element={<MainPortfolio />} />
             <Route path="/players/:username/pubg" element={<PubgPortfolio />} />
             <Route path="/players/:username/csgo" element={<CsgoPortfolio />} />
             <Route
@@ -46,11 +47,13 @@ function App() {
               element={ <LoLPortfolio />}
             />
             <Route path="/players/csgo" element={<CsgoPlayersPage />} />
+            {/* Valorant Routes */}
             <Route path="/players/valorant" element={<ValorantSearchPage />} />
             <Route path="/players/valorant/me" element={<ValorantProfilePage />} />
             <Route path="/players/valorant/:username" element={<ValorantProfilePage />} />
             <Route path="/players/valorant/create" element={<CreateValorantPortfolioPage />} />
             <Route path="/players/lol" element={<LolPlayersPage />} />
+            <Route path="/players/valorant/me/edit" element={<EditValorantPortfolioPage />} />
             <Route
               path="/players/pubg/create"
               element={<CreatePubgPortfolioPage />}

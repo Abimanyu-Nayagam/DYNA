@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import { FaEnvelope, FaUser, FaCalendar } from "react-icons/fa";
-import { pubgAPI, csgoAPI, leagueAPI } from "../services/api";
+import { pubgAPI, csgoAPI, leagueAPI, valorantAPI } from "../services/api";
 import { useAuth } from "@/contexts/AuthContext";
 import "../styles/mainportfolio.css";
 
@@ -18,8 +18,8 @@ interface UserData {
 /* ================= COMPONENT ================= */
 
 const MainPortfolio = () => {
-  const { username } = useParams<{ username: string }>();
-  const navigate = useNavigate();
+  const { username: rawUsername } = useParams<{ username: string }>();
+  const username = rawUsername ?? "";
   const { user } = useAuth();
 
   const [heroImage, setHeroImage] = useState("");
@@ -54,11 +54,6 @@ const MainPortfolio = () => {
           : `/players/valorant/${valo_user}`,
     },
     // LEAGUE OF LEGENDS (future teammate work)
-    // {
-    //   title: "LEAGUE OF LEGENDS",
-    //   image: "/lolcard.png",
-    //   route: `/players/${username}/lol`,
-    // },
   ];
 
   /* ================= EFFECTS ================= */
@@ -107,6 +102,8 @@ const MainPortfolio = () => {
     }
   };
 
+  /* ================= GAME CHECK ================= */
+
   const checkAvailableGames = async (userId: number) => {
     const available: string[] = [];
 
@@ -124,22 +121,14 @@ const MainPortfolio = () => {
       available.push("CSGO");
     } catch {}
 
-    // VALORANT (public check = existence)
+    // VALORANT (REAL PUBLIC CHECK)
     try {
-      setValoUser(username);
-      available.push("VALORANT");
+      const res = await valorantAPI.getPublicProfile(username);
+      if (res) {
+        setValoUser(username);
+        available.push("VALORANT");
+      }
     } catch {}
-    // Check LoL
-    try {
-      const res = await leagueAPI.getStatsByUser();
-      available.push("LEAGUE OF LEGENDS");
-      setLolUser(res.username as string);
-    } catch (err) {
-      // User doesn't have LoL portfolio
-    }
-
-    // Add other games here when implemented
-    // TODO: Add VALORANT check when APIs are available
 
     setAvailableGames(available);
   };
@@ -174,7 +163,6 @@ const MainPortfolio = () => {
 
   return (
     <div className="main-portfolio">
-      {/* ================= HERO ================= */}
       <div
         className="main-hero-section"
         style={{ backgroundImage: `url(${heroImage})` }}
@@ -224,11 +212,7 @@ const MainPortfolio = () => {
             {games
               .filter((game) => availableGames.includes(game.title))
               .map((game, index) => (
-                <Link
-                  to={game.route}
-                  key={index}
-                  className="game-card-link"
-                >
+                <Link to={game.route} key={index} className="game-card-link">
                   <div className="main-portfolio-game-card">
                     <div className="game-card-image-container">
                       <img
