@@ -159,7 +159,7 @@ export function SignupForm() {
             />
             <button
               type="button"
-              onClick={() => setShowConfirmPassword(!showPassword)}
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="absolute right-2 top-3 h-full  flex items-center 
                           text-gray-600 dark:text-gray-300 hover:text-gray-800 
                           dark:hover:text-gray-100 transition-colors z-10 

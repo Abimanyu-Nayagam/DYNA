@@ -11,7 +11,7 @@ class CsgoPlayerStats(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False,unique=True)
     video_url = db.Column(db.String(1000),nullable=True)
     # Player identification
-    username = db.Column(db.String(100), nullable=False)
+    username = db.Column(db.String(100), nullable=False,unique=True)
     in_game_id = db.Column(db.String(100), nullable=False, unique=True)
     
     # Rankings and ratings
@@ -67,6 +67,7 @@ class CsgoPlayerStats(db.Model):
             'user_id': self.user_id,
             'username': self.username,
             'in_game_id': self.in_game_id,
+            'video_url':self.video_url,
             'current_rank': self.current_rank,
             'highest_rank': self.highest_rank,
             'mm_rank': self.mm_rank,

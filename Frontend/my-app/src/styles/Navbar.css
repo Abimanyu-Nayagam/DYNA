@@ -79,6 +79,22 @@ body {
           transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.profile-btn {
+          background: linear-gradient(135deg, #602469, #8b5cf6);
+          color: #fff;
+          padding: 10px;
+          border: none;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          border-radius: 9999px;
+}
+
+.profile-btn:hover {
+          transform: translateY(-2px);
+          box-shadow:  5px 5px rgba(217, 70, 239, 0.4);
+}
 .btn:hover {
           transform: translateY(-2px);
           box-shadow:  10px 10px rgba(217, 70, 239, 0.4);

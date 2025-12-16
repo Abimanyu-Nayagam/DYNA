@@ -34,12 +34,18 @@ def create_pubg_stats():
     
     
     in_game_id = data.in_game_id
+    username = data.username
     # Check if user already has a portfolio
     existing_user_stats = PubgPlayerStats.query.filter_by(user_id=user_id).first()
     if existing_user_stats:
         logger.warning(f"PUBG stats creation failed - user already has a portfolio: {user_id}")
         return jsonify({'error': 'You already have a PUBG portfolio. You can only have one portfolio per user.'}), 400
     
+    # Check if username already exists
+    existing_stats = PubgPlayerStats.query.filter_by(username=username).first()
+    if existing_stats:
+        logger.warning(f"PUBG stats creation failed - username already exists: {username}")
+        return jsonify({'error': 'A portfolio with this Username already exists.'}), 400
     # Check if in_game_id already exists
     existing_stats = PubgPlayerStats.query.filter_by(in_game_id=in_game_id).first()
     if existing_stats:
@@ -101,7 +107,6 @@ def get_pubg_stats():
         return jsonify({'error': 'Failed to fetch player stats'}), 500
 
 @pubg_bp.route('/stats/<int:user_id>', methods=['GET'])
-@jwt_required()
 def get_pubg_stats_by_user(user_id):
     """Retrieve PUBG stats by user ID."""
     logger.info(f"Fetching PUBG stats for user_id: {user_id}")

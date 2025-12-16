@@ -39,7 +39,7 @@ const PlayersPage = () => {
   const fetchPlayers = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:5000/players');
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/players`);
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -104,7 +104,7 @@ const PlayersPage = () => {
                     key={player.user_id}
                     user_id={player.user_id}
                     username={player.user_name}
-                    onClick={() => navigate(`/players/${player.user_id}`)}
+                    onClick={() => navigate(`/players/${player.user_name}`)}
                   />
                 ))}
               </div>
