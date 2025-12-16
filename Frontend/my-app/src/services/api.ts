@@ -85,6 +85,7 @@ export interface PlayerLolData {
   cur_rank: string;
   peak_rank: string;
   last_season_rank: string;
+  player_since: string;
   main_role: string;
   cs_per_min: number | null;
   avg_kills: number | null;
@@ -93,7 +94,6 @@ export interface PlayerLolData {
   avg_dmg: number | null;
   avg_vision_score: number | null;
   avg_game_duration: number | null;
-  ishidden: boolean;
   created_at: string | null;
   updated_at: string | null;
 }

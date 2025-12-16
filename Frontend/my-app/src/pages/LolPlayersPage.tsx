@@ -46,15 +46,11 @@ const LolPlayersPage = () => {
   const fetchPlayers = async () => {
     try {
       setIsLoading(true);
-      const response = await leagueAPI.getAllStats()
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = await leagueAPI.getAllStats();
       setPlayers(data);
       setFilteredPlayers(data);
+
     } catch (error) {
       console.error("Error fetching players:", error);
       setPlayers([]);
@@ -63,6 +59,7 @@ const LolPlayersPage = () => {
       setIsLoading(false);
     }
   };
+
 
   const handleCreatePortfolio = () => {
     if (!user) {
@@ -125,7 +122,7 @@ const LolPlayersPage = () => {
                     in_game_id={player.riot_id}
                     current_rank={player.cur_rank}
                     onClick={() =>
-                      navigate(`/players/lol/${player.ign}`)
+                      navigate(`/players/${player.ign}/lol`)
                     }
                   />
                 ))}

@@ -94,8 +94,8 @@ const CreateLolPortfolioPage = () => {
     "Emerald","Diamond","Master","Grandmaster","Challenger",
   ];
 
-  const roles = ["Top", "Jungle", "Mid", "ADC", "Support"];
-  const servers = ["EUW", "NA", "EUNE", "KR", "OCE", "JP", "LAN", "LAS"];
+  const roles = ["Top", "Jungle", "Mid", "Bottom", "Support"];
+  const servers = ["NA", "EUW", "EUNE", "OCE", "RU", "TR", "BR", "LAN", "LAS", "JP", "TW", "SEA", "TH", "VN", "KR", "CN", "MENA"];
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -108,25 +108,26 @@ const CreateLolPortfolioPage = () => {
     e.preventDefault();
     if (!token || !user) return;
 
-    const form = new FormData();
-    Object.entries(formData).forEach(([k, v]) =>
-      form.append(k, v === "" ? "0" : v.toString())
+    const payload = Object.fromEntries(
+      Object.entries(formData).map(([k, v]) => [
+        k,
+        v === "" ? null : Number.isNaN(Number(v)) ? v : Number(v),
+      ])
     );
 
-    const url = isUpdate && existingId
-      ? `http://localhost:5000/games/lol/stats/${existingId}`
-      : `http://localhost:5000/games/lol/stats`;
-
-    const res = await fetch(url, {
+    const res = await fetch("http://localhost:5000/api/lol/create-folio", {
       method: isUpdate ? "PATCH" : "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: form,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
     });
 
     if (!res.ok) throw new Error("Failed to save portfolio");
-
     navigate("/players/lol");
   };
+
 
   if (loading) return null;
   if (!user) return null;
@@ -148,7 +149,7 @@ const CreateLolPortfolioPage = () => {
             </div>
 
             <div className="lol-field">
-              <label>Riot ID (Name#TAG)</label>
+              <label>Riot ID (#TAG)</label>
               <input name="riot_id" value={formData.riot_id} onChange={handleChange} />
             </div>
 

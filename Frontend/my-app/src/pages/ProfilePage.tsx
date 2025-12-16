@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaEnvelope, FaUser, FaCalendar } from "react-icons/fa";
 import "../styles/profile.css";
 import { useAuth } from "@/contexts/AuthContext";
-import { pubgAPI, csgoAPI } from "../services/api";
+import { pubgAPI, csgoAPI, leagueAPI } from "../services/api";
 
 interface UserData {
   user_id: number;
@@ -120,8 +120,17 @@ const Profile = () => {
       // User doesn't have CSGO portfolio
     }
 
-    // Add other games here when implemented
-    // TODO: Add VALORANT and LOL checks when APIs are available
+    // Check LoL
+    try {
+      const res = await leagueAPI.getStatsByUser();
+      setLolUser(res.ign);
+
+      available.push("CSGO");
+    } catch (err) {
+      // User doesn't have CSGO portfolio
+    }
+
+    // TODO: Add VALORANT checks when APIs are available
 
     setAvailableGames(available);
   };

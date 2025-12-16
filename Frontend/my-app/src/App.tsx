@@ -14,7 +14,8 @@ import AllUsersPage from "./pages/AllUsersPage";
 import MainPortfolio from "./pages/MainPortfolio";
 import LoLPortfolio from "./pages/LoLPortfolio";
 import CsgoPortfolio from "./pages/CsgoPortfolio";
-import Profile from "./pages/ProfilePage";import CreateLolPortfolioPage from "./pages/CreateLolPortfolioPage";
+import Profile from "./pages/ProfilePage";
+import CreateLolPortfolioPage from "./pages/CreateLolPortfolioPage";
 import LolPlayersPage from "./pages/LolPlayersPage";
 
 function App() {
@@ -37,7 +38,7 @@ function App() {
             />
             <Route
               path="/players/:username/lol"
-              element={<div>LOL Portfolio Coming Soon</div>}
+              element={ <LoLPortfolio />}
             />
             <Route path="/players/csgo" element={<CsgoPlayersPage />} />
             <Route path="/players/lol" element={<LolPlayersPage />} />
@@ -52,7 +53,6 @@ function App() {
               element={<CreateCsgoPortfolioPage />}
             />
             <Route path="/profile" element={<Profile />} />
-            <Route path="/players/:username/lol" element={<LoLPortfolio />} />
           </Routes>
         </AuthProvider>
       </Router>

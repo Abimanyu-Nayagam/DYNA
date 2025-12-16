@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { FaEnvelope, FaUser, FaCalendar } from "react-icons/fa";
-import { pubgAPI, csgoAPI } from "../services/api";
+import { pubgAPI, csgoAPI, leagueAPI } from "../services/api";
 import "../styles/mainportfolio.css";
 
 interface UserData {
@@ -23,7 +23,7 @@ const MainPortfolio = () => {
   const [csgo_user, setCsgoUser] = useState("");
   const [pubg_user, setPubgUser] = useState("");
   // const [valo_user, setValoUser] = useState("");
-  // const [lol_user, setLolUser] = useState("");
+  const [lol_user, setLolUser] = useState("");
   const games = [
     {
       title: "PUBG",
@@ -40,11 +40,11 @@ const MainPortfolio = () => {
     //   image: "/valocard.png",
     //   route: `/players/${valo_user}/valo`,
     // },
-    // {
-    //   title: "LEAGUE OF LEGENDS",
-    //   image: "/lolcard.png",
-    //   route: `/players/${lol_user}/lol`,
-    // },
+    {
+      title: "LEAGUE OF LEGENDS",
+      image: "/lolcard.png",
+      route: `/players/${lol_user}/lol`,
+    },
   ];
 
   useEffect(() => {
@@ -111,8 +111,17 @@ const MainPortfolio = () => {
       // User doesn't have CSGO portfolio
     }
 
+    // Check LoL
+    try {
+      const res = await leagueAPI.getStatsByUser();
+      available.push("LEAGUE OF LEGENDS");
+      setLolUser(res.username as string);
+    } catch (err) {
+      // User doesn't have LoL portfolio
+    }
+
     // Add other games here when implemented
-    // TODO: Add VALORANT and LOL checks when APIs are available
+    // TODO: Add VALORANT check when APIs are available
 
     setAvailableGames(available);
   };

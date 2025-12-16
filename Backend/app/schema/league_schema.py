@@ -5,6 +5,7 @@ class LeagueBaseSchema(BaseModel):
 
     cur_rank: str
     peak_rank: str
+    player_since: str
     last_season_rank: str | None = None
 
     main_role: str

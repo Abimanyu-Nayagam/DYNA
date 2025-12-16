@@ -34,6 +34,7 @@ def create_portfolio():
         cur_rank=data["cur_rank"],
         peak_rank=data["peak_rank"],
         last_season_rank=data.get("last_season_rank"),
+        player_since=data["player_since"],
 
         main_role=data["main_role"],
         server=data.get("server"),
@@ -68,41 +69,74 @@ def create_portfolio():
 def get_portfolio():
     user_id = get_jwt_identity()
     form = LeagueForm.query.filter_by(user_id=user_id).first()
+
     if not form:
         return jsonify({"error": "League portfolio not found"}), 404
+
     form_data = {
-        "user_id": user_id,
+        "id": form.id,
+        "user_id": form.user_id,
+
         "cur_rank": form.cur_rank,
         "peak_rank": form.peak_rank,
+        "last_season_rank": form.last_season_rank,
+        "player_since": form.player_since,
+
         "main_role": form.main_role,
-        "avg_kda": form.avg_kda,
-        "avg_kp_percent": form.avg_kp_percent,
+        "server": form.server,
+
         "cs_per_min": form.cs_per_min,
+
+        "avg_kills": form.avg_kills,
+        "avg_deaths": form.avg_deaths,
+        "avg_assists": form.avg_assists,
+
         "avg_dmg": form.avg_dmg,
-        "avg_vision_score": form.avg_vision_score
+        "avg_vision_score": form.avg_vision_score,
+        "avg_game_duration": form.avg_game_duration,
+
+        "ign": form.ign,
+        "riot_id": form.riot_id,
     }
+
     return jsonify(form_data), 200
+
 
 # Route to get all league portfolios
 @lol_bp.route('/get-all-folios', methods=['GET'])
-@jwt_required()
 def get_all_portfolios():
     forms = LeagueForm.query.all()
     all_forms = []
+
     for form in forms:
-        form_data = {
+        all_forms.append({
+            "id": form.id,
             "user_id": form.user_id,
+
             "cur_rank": form.cur_rank,
             "peak_rank": form.peak_rank,
+            "last_season_rank": form.last_season_rank,
+            "player_since": form.player_since,
+
             "main_role": form.main_role,
-            "avg_kda": form.avg_kda,
-            "avg_kp_percent": form.avg_kp_percent,
+            "server": form.server,
+
             "cs_per_min": form.cs_per_min,
+
+            "avg_kills": form.avg_kills,
+            "avg_deaths": form.avg_deaths,
+            "avg_assists": form.avg_assists,
+
             "avg_dmg": form.avg_dmg,
-            "avg_vision_score": form.avg_vision_score
-        }
-        all_forms.append(form_data)
+            "avg_vision_score": form.avg_vision_score,
+            "avg_game_duration": form.avg_game_duration,
+
+            "ign": form.ign,
+            "riot_id": form.riot_id,
+        })
+
     return jsonify(all_forms), 200
+
 
 # Route to update a league portfolio by user_id
 @lol_bp.route('/update-folio', methods=['PUT'])
@@ -110,32 +144,46 @@ def get_all_portfolios():
 def update_portfolio():
     user_id = get_jwt_identity()
     data = request.get_json()
+
     form = LeagueForm.query.filter_by(user_id=user_id).first()
     if not form:
         return jsonify({"error": "League portfolio not found"}), 404
-    
+
     # Pydantic validation
     try:
         league_data = LeagueBaseSchema(**data)
     except Exception as e:
         return jsonify({"error": str(e)}), 400
-    
-    form.cur_rank = data.get('cur_rank', form.cur_rank)
-    form.peak_rank = data.get('peak_rank', form.peak_rank)
-    form.main_role = data.get('main_role', form.main_role)
-    form.avg_kda = data.get('avg_kda', form.avg_kda)
-    form.avg_kp_percent = data.get('avg_kp_percent', form.avg_kp_percent)
-    form.cs_per_min = data.get('cs_per_min', form.cs_per_min)
-    form.avg_dmg = data.get('avg_dmg', form.avg_dmg)
-    form.avg_vision_score = data.get('avg_vision_score', form.avg_vision_score)
-    
+
+    form.cur_rank = data.get("cur_rank", form.cur_rank)
+    form.peak_rank = data.get("peak_rank", form.peak_rank)
+    form.last_season_rank = data.get("last_season_rank", form.last_season_rank)
+    form.player_since = data.get("player_since", form.player_since)
+
+    form.main_role = data.get("main_role", form.main_role)
+    form.server = data.get("server", form.server)
+
+    form.cs_per_min = data.get("cs_per_min", form.cs_per_min)
+
+    form.avg_kills = data.get("avg_kills", form.avg_kills)
+    form.avg_deaths = data.get("avg_deaths", form.avg_deaths)
+    form.avg_assists = data.get("avg_assists", form.avg_assists)
+
+    form.avg_dmg = data.get("avg_dmg", form.avg_dmg)
+    form.avg_vision_score = data.get("avg_vision_score", form.avg_vision_score)
+    form.avg_game_duration = data.get("avg_game_duration", form.avg_game_duration)
+
+    form.ign = data.get("ign", form.ign)
+    form.riot_id = data.get("riot_id", form.riot_id)
+
     try:
         db.session.commit()
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Database error: " + str(e)}), 500
-    
+
     return jsonify({"message": "League portfolio updated successfully"}), 200
+
 
 # Route to delete a league portfolio by user_id
 @lol_bp.route('/delete-folio', methods=['DELETE'])

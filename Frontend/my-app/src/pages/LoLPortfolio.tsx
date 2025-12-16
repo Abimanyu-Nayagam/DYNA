@@ -37,7 +37,7 @@ const highlightVideos: string[] = [
 
 
 interface PlayerData {
-  user_name: string;
+  ign: string;
   cur_rank: string;
   peak_rank: string;
   last_season_rank: string;
@@ -45,7 +45,7 @@ interface PlayerData {
   server: string;
   player_since: string;
   cs_per_min: number;
-  avg_total_dmg: number;
+  avg_dmg: number;
   avg_kills: number;
   avg_deaths: number;
   avg_assists: number;
@@ -54,39 +54,57 @@ interface PlayerData {
 }
 
 const LoLPortfolio: React.FC = () => {
+  // Define useparams to get username from URL if needed
+  
+
+  // State for player data and loading status
   const [data, setData] = useState<PlayerData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
   useEffect(() => {
-    setTimeout(() => {
-      const json: PlayerData = {
-        user_name: "42Raven42",
-        cur_rank: "Challenger",
-        peak_rank: "Challenger",
-        last_season_rank: "Grandmaster",
-        main_role: "Bottom",
-        server: "SEA",
-        player_since: "Season 10",
-        cs_per_min: 6.5,
-        avg_total_dmg: 100000,
-        avg_kills: 8,
-        avg_deaths: 5,
-        avg_assists: 10,
-        avg_game_duration: 35,
-        avg_vision_score: 18,
-      };
+    const fetchData = async () => {
+      try {
+        setLoading(true);
 
-      // Calculate avg kda, combat participation(avg (K + A)), avg dmg per min, avg vision score per min, assist ratio (A / (K + A))
-      json["avg_kda"] = parseFloat(((json.avg_kills + json.avg_assists) / Math.max(1, json.avg_deaths)).toFixed(2));
-      json["avg_dmg_per_min"] = parseFloat((json.avg_total_dmg / json.avg_game_duration).toFixed(2));
-      json["avg_vision_score_per_min"] = parseFloat((json.avg_vision_score / json.avg_game_duration).toFixed(2));
-      json["avg_assist_ratio"] = parseFloat((json.avg_assists / Math.max(1, (json.avg_kills + json.avg_assists))).toFixed(2));
-      json["combat_participation_per_min"] = parseFloat(((json.avg_kills + json.avg_assists) / json.avg_game_duration).toFixed(2));
+        const apiData = await leagueAPI.getStatsByUser();
 
-      setData(json);
-      setLoading(false);
-    }, 2000);
+        const derivedData = {
+          ...apiData,
+
+          avg_kda: Number(
+            ((apiData.avg_kills + apiData.avg_assists) /
+              Math.max(1, apiData.avg_deaths)).toFixed(2)
+          ),
+
+          avg_dmg_per_min: Number(
+            (apiData.avg_dmg / apiData.avg_game_duration).toFixed(2)
+          ),
+
+          avg_vision_score_per_min: Number(
+            (apiData.avg_vision_score / apiData.avg_game_duration).toFixed(2)
+          ),
+
+          avg_assist_ratio: Number(
+            (apiData.avg_assists /
+              Math.max(1, apiData.avg_kills + apiData.avg_assists)).toFixed(2)
+          ),
+
+          combat_participation_per_min: Number(
+            ((apiData.avg_kills + apiData.avg_assists) /
+              apiData.avg_game_duration).toFixed(2)
+          ),
+        };
+
+        setData(derivedData);
+      } catch (error) {
+        console.error("Error fetching LoL player data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
+
 
   return (
     <div id="LoLPortfolio" className="lol-wrapper">
@@ -96,7 +114,7 @@ const LoLPortfolio: React.FC = () => {
         ) : (
             <div className="rank-layout-wrapper">
                 <h1 className="text-5xl font-extrabold bg-gradient-to-r from-blue-400 via-purple-400 to-white bg-clip-text text-transparent header-fade">
-                    {data!.user_name}'s Summoner Stats
+                    {data!.ign}'s Summoner Stats
                 </h1>
 
                 <div className="rank-layout">
@@ -128,10 +146,10 @@ const LoLPortfolio: React.FC = () => {
                       src={
                         rankIconMap[data!.last_season_rank.split(' ')[0].toLowerCase()]
                       }
-                      alt={data!.peak_rank}
+                      alt={data!.last_season_rank}
                       className="rank-icon"
                     />
-                    <p className="card-content">{data!.peak_rank}</p>
+                    <p className="card-content">{data!.last_season_rank}</p>
                   </div>
                   <div className="card fade-up">
                     <h3 className="card-title">Server</h3>
@@ -307,7 +325,7 @@ const LoLPortfolio: React.FC = () => {
                         <tr><td>Average Kills</td><td>{data!.avg_kills}</td></tr>
                         <tr><td>Average Deaths</td><td>{data!.avg_deaths}</td></tr>
                         <tr><td>Average Assists</td><td>{data!.avg_assists}</td></tr>
-                        <tr><td>Average Total Damage</td><td>{data!.avg_total_dmg}</td></tr>
+                        <tr><td>Average Total Damage</td><td>{data!.avg_dmg}</td></tr>
                         <tr><td>Average Game Duration</td><td>{data!.avg_game_duration} min</td></tr>
                         <tr><td>CS / Min</td><td>{data!.cs_per_min}</td></tr>
                       </tbody>

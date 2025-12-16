@@ -1,5 +1,6 @@
 from app import db
 from datetime import datetime
+
 class LeagueForm(db.Model):
     __tablename__ = 'league_forms'
 
@@ -9,6 +10,7 @@ class LeagueForm(db.Model):
     cur_rank = db.Column(db.String(50), nullable=False)
     peak_rank = db.Column(db.String(50), nullable=False)
     last_season_rank = db.Column(db.String(50), nullable=True)
+    player_since = db.Column(db.String(50), nullable=True)
 
     main_role = db.Column(db.String(50), nullable=False)
     server = db.Column(db.String(50), nullable=True)
