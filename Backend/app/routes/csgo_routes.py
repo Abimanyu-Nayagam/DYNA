@@ -98,7 +98,6 @@ def get_csgo_stats():
 
 
 @csgo_bp.route('/stats/<int:user_id>', methods=['GET'])
-@jwt_required()
 def get_csgo_stats_by_user(user_id):
     """Retrieve CSGO stats by user ID."""
     stats = CsgoPlayerStats.query.filter_by(user_id=user_id).first()

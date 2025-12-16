@@ -101,7 +101,6 @@ def get_pubg_stats():
         return jsonify({'error': 'Failed to fetch player stats'}), 500
 
 @pubg_bp.route('/stats/<int:user_id>', methods=['GET'])
-@jwt_required()
 def get_pubg_stats_by_user(user_id):
     """Retrieve PUBG stats by user ID."""
     logger.info(f"Fetching PUBG stats for user_id: {user_id}")
