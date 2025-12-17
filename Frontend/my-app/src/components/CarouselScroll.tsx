@@ -11,8 +11,8 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollStart, setScrollStart] = useState(0);
-  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
-  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
+  // const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  // const [isAutoScrolling, setIsAutoScrolling] = useState(false);
 
   // Drag start
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -98,7 +98,11 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
               loop
               playsInline
               preload="metadata"
-              ref={(el) => el && (videoRefs.current[idx] = el)}
+              ref={(el) => {
+                if (el) {
+                  videoRefs.current[idx] = el;
+                }
+              }}
               onMouseEnter={() => handleMouseEnterVideo(idx)}
               onMouseLeave={() => handleMouseLeaveVideo(idx)}
               style={{ cursor: "pointer" }}

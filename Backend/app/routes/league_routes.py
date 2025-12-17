@@ -218,3 +218,11 @@ def delete_portfolio():
         return jsonify({"error": "Database error: " + str(e)}), 500
     
     return jsonify({"message": "League form deleted successfully"}), 200
+
+@lol_bp.route('/get-ign-from-user-id/<int:user_id>', methods = ['POST'])
+def get_ign_from_id(user_id):
+    row = LeagueForm.query.filter_by(user_id=user_id).first()
+    if not row:
+        return jsonify({"error": "User does not have a league portfolio"}), 404
+
+    return jsonify({"ign": row.ign})

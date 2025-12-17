@@ -174,7 +174,7 @@ const CreatePubgPortfolioPage = () => {
         throw new Error(errorData.error || "Failed to save portfolio");
       }
 
-      const data = await response.json();
+      // const data = await response.json();
       alert(
         isUpdate
           ? "Portfolio updated successfully!"

@@ -63,10 +63,10 @@ const Navbar = () => {
     }, 100);
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/");
-  };
+  // const handleLogout = () => {
+  //   logout();
+  //   navigate("/");
+  // };
 
   return (
     <>

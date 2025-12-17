@@ -1,24 +1,33 @@
-import React from 'react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
-export default function ScrollFadeIn({ children }) {
-    const ref = useRef(null)
+interface ScrollFadeInProps {
+  children: React.ReactNode;
+}
 
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting && ref.current) {
-                    ref.current.classList.add("animate-fadein")
-                }
-            },
-            {threshold: 0.4}
-        )
-        if (ref.current) observer.observe(ref.current)
-            return () => observer.disconnect()
-    }, [])
-    return (
-        <div ref={ref} className="opacity-0">
-            {children}
-        </div>
-    )
+export default function ScrollFadeIn({ children }: ScrollFadeInProps) {
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          element.classList.add("animate-fadein");
+        }
+      },
+      { threshold: 0.4 }
+    );
+
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className="opacity-0">
+      {children}
+    </div>
+  );
 }

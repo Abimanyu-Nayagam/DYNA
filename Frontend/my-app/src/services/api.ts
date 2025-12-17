@@ -216,6 +216,11 @@ export const leagueAPI = {
     return response.data;
   },
 
+  getIgnByUserId: async (user_id: number) => {
+    const response = await api.post(`/api/lol/get-ign-from-user-id/${user_id}`);
+    return response.data; // { ign: string } or { error: string }
+  },
+
   getAllStats: async (): Promise<PlayerLolData[]> => {
     const response = await api.get("/api/lol/get-all-folios");
     return response.data;

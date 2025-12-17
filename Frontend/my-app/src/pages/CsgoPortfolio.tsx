@@ -151,7 +151,7 @@ export default function CsgoPortfolio() {
   const [stats, setStats] = useState<CsgoStatsData | null>(null);
   const { username } = useParams<{ username: string }>();
   const [error, setError] = useState<string | null>(null);
-  const [userId, setUserId] = useState<number | null>(null);
+  // const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchUserAndStats = async () => {
@@ -177,7 +177,7 @@ export default function CsgoPortfolio() {
           throw new Error("User not found");
         }
 
-        setUserId(user.user_id);
+        // setUserId(user.user_id);
 
         // Then fetch CSGO stats using userId
         const data = await csgoAPI.getStatsByUser(user.user_id);
@@ -229,7 +229,7 @@ export default function CsgoPortfolio() {
                 src={getRankImage(stats.current_rank)}
                 alt={`${stats.current_rank} Rank`}
                 className="rank-image"
-                onError={(e) => {
+                onError={() => {
                   console.log(
                     "Failed to load rank image:",
                     stats.current_rank,

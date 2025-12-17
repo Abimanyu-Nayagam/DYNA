@@ -27,7 +27,7 @@ interface LeagueFormData {
 
 const CreateLolPortfolioPage = () => {
   const navigate = useNavigate();
-  const { user, token, loading } = useAuth();
+  const { user, loading } = useAuth();
   const [videoFiles, setVideoFiles] = useState<File[]>([]);
 
   const [formData, setFormData] = useState<LeagueFormData>({
@@ -52,11 +52,13 @@ const CreateLolPortfolioPage = () => {
   });
 
   const [isUpdate, setIsUpdate] = useState(false);
-  const [existingId, setExistingId] = useState<number | null>(null);
+  const [setExistingId] = useState<number | null>(null);
 
     const checkExistingPortfolio = async () => {
     try {
-      const existing = await leagueAPI.getStatsByUser();
+      if (!user?.user_name) return;
+
+      const existing = await leagueAPI.getStatsByUser(user.user_name);
       if (!existing) return;
 
       setFormData({

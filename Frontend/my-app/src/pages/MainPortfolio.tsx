@@ -31,6 +31,7 @@ const MainPortfolio = () => {
   const [pubg_user, setPubgUser] = useState("");
   const [csgo_user, setCsgoUser] = useState("");
   const [valo_user, setValoUser] = useState("");
+  const [lol_user, setLolUser] = useState("");
 
   /* ================= GAME CONFIG ================= */
 
@@ -54,6 +55,11 @@ const MainPortfolio = () => {
           : `/players/valorant/${valo_user}`,
     },
     // LEAGUE OF LEGENDS (future teammate work)
+        {
+      title: "LEAGUE OF LEGENDS",
+      image: "/lolcard.png",
+      route: lol_user ? `/players/${lol_user}/csgo` : "",
+    },
   ];
 
   /* ================= EFFECTS ================= */
@@ -112,14 +118,29 @@ const MainPortfolio = () => {
       const res = await pubgAPI.getStatsByUser(userId);
       setPubgUser(res.username);
       available.push("PUBG");
-    } catch {}
+    } catch {
+      console.error("Error fetching PUBG data:", error);
+    }
 
     // CSGO
     try {
       const res = await csgoAPI.getStatsByUser(userId);
       setCsgoUser(res.username);
       available.push("CSGO");
-    } catch {}
+    } catch {
+      console.error("Error fetching CSGO ends data:", error);
+    }
+
+    // LOL Check
+    try {
+      const ign = await leagueAPI.getIgnByUserId(userId);
+      const res = await leagueAPI.getStatsByUser(ign);
+      setLolUser(res.ign);
+      available.push("LEAGUE OF LEGENDS");
+    } catch {
+      console.error("Error fetching League of Legends data:", error);
+    }
+    
 
     // VALORANT (REAL PUBLIC CHECK)
     try {
@@ -128,7 +149,9 @@ const MainPortfolio = () => {
         setValoUser(username);
         available.push("VALORANT");
       }
-    } catch {}
+    } catch {
+      console.error("Error fetching League of Legends data:", error);
+    }
 
     setAvailableGames(available);
   };

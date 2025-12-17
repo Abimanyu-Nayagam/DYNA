@@ -1,4 +1,3 @@
-import React from 'react'
 import {Controller} from '../components/Controller'
 import '@/styles/HeroSection.css'
 

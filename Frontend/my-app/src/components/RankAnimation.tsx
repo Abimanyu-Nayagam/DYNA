@@ -1,5 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 
+type Rank =
+  | "iron"
+  | "bronze"
+  | "silver"
+  | "gold"
+  | "platinum"
+  | "diamond"
+  | "master"
+  | "grandmaster"
+  | "challenger";
+
 interface RankAnimationProps {
   rank: string;
 }
@@ -9,6 +20,7 @@ export default function RankAnimation({ rank }: RankAnimationProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   if (!rank) return null;
+
   const normalizedRank = rank.toLowerCase();
 
   const rankMapFrom = {
@@ -20,10 +32,10 @@ export default function RankAnimation({ rank }: RankAnimationProps) {
     platinum: "/videos/rank-from/tier-promotion-from-platinum.webm",
     diamond: "/videos/rank-from/tier-promotion-from-diamond.webm",
     master: "/videos/rank-from/tier-promotion-from-master.webm",
-    grandmaster: "/videos/rank-from/tier-promotion-from-grandmaster.webm"
+    grandmaster: "/videos/rank-from/tier-promotion-from-grandmaster.webm",
   };
 
-  const rankMapTo = {
+  const rankMapTo: Record<Rank, string> = {
     iron: "/videos/rank-to/tier-promotion-to-iron.webm",
     bronze: "/videos/rank-to/tier-promotion-to-bronze.webm",
     silver: "/videos/rank-to/tier-promotion-to-silver.webm",
@@ -35,17 +47,23 @@ export default function RankAnimation({ rank }: RankAnimationProps) {
     challenger: "/videos/rank-to/tier-promotion-to-challenger.webm",
   };
 
-  const videos = [rankMapFrom["unranked"], rankMapTo[normalizedRank]];
+  // Type guard to safely narrow string → Rank
+  function isRank(value: string): value is Rank {
+    return value in rankMapTo;
+  }
+
+  if (!isRank(normalizedRank)) return null;
+
+  const videos = [
+    rankMapFrom["unranked"],
+    rankMapTo[normalizedRank],
+  ];
 
   // Preload second video while first is playing
   useEffect(() => {
-    const preloadVideo = (url: string) => {
-      const vid = document.createElement("video");
-      vid.src = url;
-      vid.preload = "auto";
-    };
-
-    preloadVideo(videos[1]);
+    const vid = document.createElement("video");
+    vid.src = videos[1];
+    vid.preload = "auto";
   }, [videos]);
 
   useEffect(() => {
@@ -54,7 +72,7 @@ export default function RankAnimation({ rank }: RankAnimationProps) {
 
     const handleEnded = () => {
       if (step === 0) {
-        setStep(1); // move to second video
+        setStep(1);
       }
     };
 

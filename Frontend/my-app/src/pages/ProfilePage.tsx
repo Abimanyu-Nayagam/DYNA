@@ -112,14 +112,28 @@ const Profile = () => {
       const res = await pubgAPI.getStatsByUser(userId);
       setPubgUser(res.username);
       available.push("PUBG");
-    } catch {}
+    } catch {
+      console.error("Error fetching PUBG data:", error);
+    }
 
     // CSGO
     try {
       const res = await csgoAPI.getStatsByUser(userId);
       setCsgoUser(res.username);
       available.push("CSGO");
-    } catch {}
+    } catch {
+      console.error("Error fetching CS GO data:", error);
+    }
+
+      // LOL Check
+    try {
+      const ign = await leagueAPI.getIgnByUserId(userId);
+      const res = await leagueAPI.getStatsByUser(ign);
+      setCsgoUser(res.ign);
+      available.push("LEAGUE OF LEGENDS");
+    } catch {
+      console.error("Error fetching League of Legends data:", error);
+    }
 
     // VALORANT (REAL EXISTENCE CHECK)
     try {
