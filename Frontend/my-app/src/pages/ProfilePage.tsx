@@ -127,9 +127,9 @@ const Profile = () => {
 
       // LOL Check
     try {
-      const ign = await leagueAPI.getIgnByUserId(userId);
-      const res = await leagueAPI.getStatsByUser(ign);
-      setCsgoUser(res.ign);
+      console.log(userId)
+      const res = await leagueAPI.getIgnByUserId(userId);
+      setLolUser(res.ign);
       available.push("LEAGUE OF LEGENDS");
     } catch {
       console.error("Error fetching League of Legends data:", error);

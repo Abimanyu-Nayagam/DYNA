@@ -62,7 +62,8 @@ const LolPlayersPage = () => {
       if (!user?.user_id) return;
   
       try {
-        const existingStats = await leagueAPI.getStatsByUser();
+        const res = await leagueAPI.getIgnByUserId(user.user_id);
+        const existingStats = await leagueAPI.getStatsByUser(res.ign);
         if (existingStats) {
           setIsUpdate(true);
         }

@@ -57,8 +57,10 @@ const CreateLolPortfolioPage = () => {
     const checkExistingPortfolio = async () => {
     try {
       if (!user?.user_name) return;
-
-      const existing = await leagueAPI.getStatsByUser(user.user_name);
+      console.log("user id is: ", user.user_id)
+      const res = await leagueAPI.getIgnByUserId(user.user_id);
+      console.log("res.ign is ", res.ign)
+      const existing = await leagueAPI.getStatsByUser(res.ign);
       if (!existing) return;
 
       setFormData({

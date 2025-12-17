@@ -11,11 +11,13 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollStart, setScrollStart] = useState(0);
-  // const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
-  // const [isAutoScrolling, setIsAutoScrolling] = useState(false);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(false);
 
   // Drag start
   const handleMouseDown = (e: React.MouseEvent) => {
+    console.log(hoveredIdx);
+    console.log(isAutoScrolling);
     if (!trackRef.current) return;
     setIsDragging(true);
     setStartX(e.pageX);
@@ -81,17 +83,17 @@ export default function VideoCarousel({ videos }: VideoCarouselProps) {
   if (!videos.length) return null;
 
   return (
-    <section className="video-carousel">
+    <section className="lol-video-carousel">
       <div
         ref={trackRef}
-        className="video-track"
+        className="lol-video-track"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUpOrLeave}
         onMouseLeave={handleMouseUpOrLeave}
       >
         {videos.map((src, idx) => (
-          <div className="video-card" key={src}>
+          <div className="lol-video-card" key={src}>
             <video
               src={src}
               muted

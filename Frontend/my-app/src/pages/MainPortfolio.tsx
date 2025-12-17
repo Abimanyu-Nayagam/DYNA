@@ -58,7 +58,7 @@ const MainPortfolio = () => {
         {
       title: "LEAGUE OF LEGENDS",
       image: "/lolcard.png",
-      route: lol_user ? `/players/${lol_user}/csgo` : "",
+      route: lol_user ? `/players/${lol_user}/lol` : "",
     },
   ];
 
@@ -133,8 +133,9 @@ const MainPortfolio = () => {
 
     // LOL Check
     try {
-      const ign = await leagueAPI.getIgnByUserId(userId);
-      const res = await leagueAPI.getStatsByUser(ign);
+      console.log(userId)
+      const res = await leagueAPI.getIgnByUserId(userId);
+      console.log(res.ign)
       setLolUser(res.ign);
       available.push("LEAGUE OF LEGENDS");
     } catch {
@@ -150,7 +151,7 @@ const MainPortfolio = () => {
         available.push("VALORANT");
       }
     } catch {
-      console.error("Error fetching League of Legends data:", error);
+      console.error("Error fetching Valorant data:", error);
     }
 
     setAvailableGames(available);

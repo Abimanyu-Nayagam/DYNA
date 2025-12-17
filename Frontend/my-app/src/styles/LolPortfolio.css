@@ -302,12 +302,12 @@
    VIDEO CAROUSEL
    ========================= */
 
-.video-carousel {
+.lol-video-carousel {
   width: 100%;
   margin-top: 60px;
 }
 
-.video-track {
+.lol-video-track {
   display: flex;
   padding-top: 24px;
   padding-bottom: 40px; /* IMPORTANT */
@@ -319,11 +319,11 @@
   cursor: grab;
 }
 
-.video-track.dragging {
+.lol-video-track.dragging {
   cursor: grabbing;
 }
 
-.video-card {
+.lol-video-card {
   flex: 0 0 clamp(720px, 80vw, 1000px);
   aspect-ratio: 16 / 9;
   scroll-snap-align: center;
@@ -334,12 +334,12 @@
   isolation: isolate;
 }
 
-.video-card:hover {
+.lol-video-card:hover {
   transform: translateY(-6px) scale(1.05);
   box-shadow: 0 16px 45px rgba(0,0,0,0.9);
 }
 
-.video-card video {
+.lol-video-card video {
   width: 100%;
   height: 100%;
   object-fit: cover;
