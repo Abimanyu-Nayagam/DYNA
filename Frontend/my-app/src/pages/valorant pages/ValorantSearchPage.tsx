@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ValorantPlayerCard from '@/components/ui/ValorantPlayerCard';
+import ValorantPlayerCard from '@/components/ui/valorant/ValorantPlayerCard';
 import { valorantAPI } from '@/services/api';
 import '@/styles/valorant/valorantsearch.css';
 
