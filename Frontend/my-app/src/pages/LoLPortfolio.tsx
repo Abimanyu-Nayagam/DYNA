@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from 'react-router-dom';
 import Footer from "@/components/Footer";
 import VideoCarousel from "@/components/CarouselScroll";
 import "@/styles/LoLPortfolio.css";
@@ -27,13 +28,13 @@ const rankIconMap: Record<string, string> = {
   challenger: "/images/league-user-stats/Crest_Challenger.png",
 };
 
-const highlightVideos: string[] = [
-  "/videos/highlights/Download.mp4",
-  "/videos/highlights/Flash_Surprise_-_Made_with_Clipchamp.mp4",
-  "/videos/highlights/Messenger_creation_1185985633102759.mp4",
-  "/videos/highlights/vijc90w.mp4"
-  // add/remove freely
-];
+// const highlightVideos: string[] = [
+//   "/videos/highlights/Download.mp4",
+//   "/videos/highlights/Flash_Surprise_-_Made_with_Clipchamp.mp4",
+//   "/videos/highlights/Messenger_creation_1185985633102759.mp4",
+//   "/videos/highlights/vijc90w.mp4"
+//   // add/remove freely
+// ];
 
 
 interface PlayerData {
@@ -59,13 +60,21 @@ const LoLPortfolio: React.FC = () => {
 
   // State for player data and loading status
   const [data, setData] = useState<PlayerData | null>(null);
+  const [highlightVideos, setHighlightVideos] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { user_name } = useParams<{ user_name: string }>();
+
   useEffect(() => {
+    if (!user_name) return;
+
     const fetchData = async () => {
       try {
         setLoading(true);
 
-        const apiData = await leagueAPI.getStatsByUser();
+        const apiData = await leagueAPI.getStatsByUser(user_name);
+
+        const response = await leagueAPI.getHighlightsByUser("newUser", "lol");
+        setHighlightVideos(response.videos)
 
         const derivedData = {
           ...apiData,
@@ -103,8 +112,7 @@ const LoLPortfolio: React.FC = () => {
     };
 
     fetchData();
-  }, []);
-
+  }, [user_name]);
 
   return (
     <div id="LoLPortfolio" className="lol-wrapper">
