@@ -5,7 +5,8 @@ import VideoCarousel from "@/components/CarouselScroll";
 import "@/styles/LoLPortfolio.css";
 import RankAnimation from "@/components/RankAnimation";
 import ScrollFadeIn from "@/components/ScrollFadeIn";
-import { leagueAPI } from "@/services/api";
+import {  leagueAPI } from "@/services/api";
+import { useAuth } from "@/contexts/AuthContext"
 
 const roleIconMap: Record<string, string> = {
   top: "/images/league-user-stats/roleicon_top.png",
@@ -81,8 +82,13 @@ const LoLPortfolio: React.FC = () => {
         // Get main player stats
         const apiData: PlayerAPIData = await leagueAPI.getStatsByUser(user_name);
 
+        // Get user name from ign
+
+        const db_user_name = await leagueAPI.getUserNameByIgn(user_name);
+        console.log(db_user_name.user_name)
         // Get highlight videos
-        const highlightsResponse = await leagueAPI.getHighlightsByUser(user_name, "lol");
+        const highlightsResponse = await leagueAPI.getHighlightsByUser(db_user_name.user_name, "lol");
+        console.log(highlightsResponse.videos);
         setHighlightVideos(highlightsResponse.videos);
 
         // Safely convert nullable fields to numbers

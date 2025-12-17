@@ -52,7 +52,6 @@ const CreateLolPortfolioPage = () => {
   });
 
   const [isUpdate, setIsUpdate] = useState(false);
-  const [setExistingId] = useState<number | null>(null);
 
     const checkExistingPortfolio = async () => {
     try {
@@ -84,9 +83,10 @@ const CreateLolPortfolioPage = () => {
         avg_game_duration: existing.avg_game_duration?.toString() || "",
       });
 
-      setExistingId(existing.id);
       setIsUpdate(true);
-    } catch {}
+    } catch {
+      console.log("There was anm error in execution of checkExistingPortfolio")
+    }
   };
 
   useEffect(() => {
