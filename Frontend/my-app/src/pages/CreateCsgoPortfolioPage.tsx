@@ -109,6 +109,7 @@ const CreateCsgoPortfolioPage = () => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [isUpdate, setIsUpdate] = useState(false);
   const [existingStatsId, setExistingStatsId] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -297,6 +298,8 @@ const CreateCsgoPortfolioPage = () => {
       return;
     }
 
+    setIsSubmitting(true);
+
     try {
       const formDataToSend = new FormData();
       formDataToSend.append("username", formData.username);
@@ -357,6 +360,8 @@ const CreateCsgoPortfolioPage = () => {
           ? error.message
           : "Failed to save portfolio. Please try again."
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -435,8 +440,11 @@ const CreateCsgoPortfolioPage = () => {
             >
               Cancel
             </button>
-            <button type="submit" className="submit-btn">
-              {isUpdate ? "Update Portfolio" : "Create Portfolio"}
+            <button type="submit" className="submit-btn" disabled={isSubmitting}>
+              {isSubmitting 
+                ? (isUpdate ? 'Updating...' : 'Creating...') 
+                : (isUpdate ? 'Update Portfolio' : 'Create Portfolio')
+              }
             </button>
           </div>
         </form>
