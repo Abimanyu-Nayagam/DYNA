@@ -3,13 +3,13 @@ import '@/styles/valorant/valorantcard.css';
 
 // 📝 TypeScript Interface - defines what data this card needs
 interface ValorantPlayerCardProps {
-    playerName: string;      // Display name like "ShadowStrike"
-    riotId: string;          // Riot ID like "Shadow#7890"
-    currentRank: string;     // Rank like "Immortal 2"
-    region: string;          // Region like "Asia-Pacific"
-    bestAgent: string;       // Best agent like "Jett"
-    userName: string;        // DYNA username for profile link
-    onClick?: () => void;    // Function to call when card is clicked
+    playerName: string;          // Display name like "ShadowStrike"
+    riotId: string;              // Riot ID like "Shadow#7890"
+    currentRank: string | null;  // Rank like "Immortal 2"
+    region: string | null;       // Region like "Asia-Pacific"
+    bestAgent: string | null;    // Best agent like "Jett"
+    userName: string;            // DYNA username for profile link
+    onClick?: () => void;        // Function to call when card is clicked
 }
 
 // 🎨 Agent colors for visual styling
@@ -41,7 +41,8 @@ const RANK_COLORS: { [key: string]: string } = {
 };
 
 // 🎯 Helper function to get rank color
-const getRankColor = (rank: string): string => {
+const getRankColor = (rank: string | null): string => {
+    if (!rank) return '#8b5cf6';
     const rankName = rank.split(' ')[0]; // Get "Immortal" from "Immortal 2"
     return RANK_COLORS[rankName] || '#8b5cf6';
 };
@@ -97,7 +98,7 @@ const ValorantPlayerCard: React.FC<ValorantPlayerCardProps> = ({
                             className="badge-value"
                             style={{ color: getRankColor(currentRank) }}
                         >
-                            {currentRank}
+                            {currentRank || 'Unranked'}
                         </span>
                     </div>
                 </div>
@@ -116,9 +117,9 @@ const ValorantPlayerCard: React.FC<ValorantPlayerCardProps> = ({
                         <span className="badge-label">Main</span>
                         <span
                             className="badge-value"
-                            style={{ color: getAgentColor(bestAgent) }}
+                            style={{ color: getAgentColor(bestAgent || '') }}
                         >
-                            {bestAgent}
+                            {bestAgent || 'N/A'}
                         </span>
                     </div>
                 </div>
@@ -128,7 +129,7 @@ const ValorantPlayerCard: React.FC<ValorantPlayerCardProps> = ({
                     <div className="badge-icon">🌍</div>
                     <div className="badge-info">
                         <span className="badge-label">Region</span>
-                        <span className="badge-value">{region}</span>
+                        <span className="badge-value">{region || 'Unknown'}</span>
                     </div>
                 </div>
             </div>

@@ -78,7 +78,7 @@ class TeamHistoryCreate(BaseModel):
     team_name: str = Field(..., max_length=150)
     joined_at: date
     left_at: Optional[date] = None
-    website: Optional[HttpUrl] = None
+    website: Optional[str] = None
 
 
 class TournamentHistoryCreate(BaseModel):
@@ -186,8 +186,8 @@ class ValorantProfileCreate(BaseModel):
     # -------------------------
     # Media
     # -------------------------
-    media_clips: Optional[List[HttpUrl]] = Field(None, max_items=10)
-    banner_url: Optional[HttpUrl] = None
+    media_clips: Optional[List[str]] = Field(None, max_items=10)
+    banner_url: Optional[str] = None
 
     # -------------------------
     # Misc
@@ -273,8 +273,8 @@ class ValorantProfileUpdate(BaseModel):
     been_in_team_before: Optional[bool] = None
     team_history: Optional[List[TeamHistoryCreate]] = None
     tournaments: Optional[List[TournamentHistoryCreate]] = None
-    media_clips: Optional[List[HttpUrl]] = Field(None, max_items=10)
-    banner_url: Optional[HttpUrl] = None
+    media_clips: Optional[List[str]] = Field(None, max_items=10)
+    banner_url: Optional[str] = None
     bio: Optional[str] = Field(None, max_length=1000)
     notes: Optional[str] = None
     is_public: Optional[bool] = None

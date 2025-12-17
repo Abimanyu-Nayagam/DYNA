@@ -53,17 +53,10 @@ def create_profile():
             return jsonify({"error": "Validation failed", "details": e.errors()}), 400
 
 
-        # Convert Pydantic HttpUrl objects to plain strings
         # Build flat fields only
         clean_dict = data.dict(
             exclude={"team_history", "tournaments"}
         )
-
-    # Convert top-level HttpUrl fields to strings
-        if clean_dict.get("banner_url") is not None:
-            clean_dict["banner_url"] = str(clean_dict["banner_url"])
-        if clean_dict.get("media_clips") is not None:
-            clean_dict["media_clips"] = [str(url) for url in clean_dict["media_clips"]]
 
         user = User.query.get(user_id)
 
@@ -78,15 +71,12 @@ def create_profile():
         if data.team_history:
             for th in data.team_history:
                 th_data = th.dict()
-                if th_data.get("website") is not None:
-                    th_data["website"] = str(th_data["website"])
                 profile.team_history.append(TeamHistory(**th_data))
 
         # Add tournament history
         if data.tournaments:
             for tr in data.tournaments:
                 tr_data = tr.dict()
-                # (convert any HttpUrl fields here if added later)
                 profile.tournaments.append(TournamentHistory(**tr_data))
 
 
@@ -145,13 +135,6 @@ def patch_profile():
         team_hist_list = update_dict.pop("team_history", None)
         tourn_hist_list = update_dict.pop("tournaments", None)
 
-        # --- Convert HttpUrl fields in plain fields ---
-        if "banner_url" in update_dict:
-            update_dict["banner_url"] = str(update_dict["banner_url"])
-        if "media_clips" in update_dict:
-            # Make sure list items are strings
-            update_dict["media_clips"] = [str(url) for url in update_dict["media_clips"]]
-
         # Apply flat scalar fields
         for key, value in update_dict.items():
             setattr(profile, key, value)
@@ -160,8 +143,6 @@ def patch_profile():
         if team_hist_list is not None:
             profile.team_history.clear()
             for th_data in team_hist_list:  # <-- already dict
-                if th_data.get("website") is not None:
-                    th_data["website"] = str(th_data["website"])
                 profile.team_history.append(TeamHistory(**th_data))
 
 # --- TOURNAMENT HISTORY (REPLACE ALL) ---
@@ -241,15 +222,23 @@ def search_valorant_profiles():
             q = q.filter(ValorantProfile.region == region)
 
         pagination = q.paginate(page=page, per_page=per_page, error_out=False)
-        results = [{
-            "player_name": p.player_name,
-            "current_rank": p.current_rank.value,
-            "region": p.region.value,
-            "best_agent": p.best_agent.value,
-            "riot_id": p.riot_id,
-            "tagline": p.tagline,
-            "user_name": p.user.user_name
-        } for p in pagination.items]
+        
+        results = []
+        for p in pagination.items:
+            try:
+                result = {
+                    "player_name": p.player_name,
+                    "current_rank": p.current_rank.value if p.current_rank else None,
+                    "region": p.region.value if p.region else None,
+                    "best_agent": p.best_agent.value if p.best_agent else None,
+                    "riot_id": p.riot_id,
+                    "tagline": p.tagline,
+                    "user_name": p.user.user_name if p.user else None
+                }
+                results.append(result)
+            except Exception as item_error:
+                logger.error(f"Error serializing profile {p.id}: {str(item_error)}")
+                continue
 
         logger.info(f"Search returned {len(results)} results (total: {pagination.total})")
         return jsonify({
@@ -263,7 +252,7 @@ def search_valorant_profiles():
         }), 200
 
     except Exception as e:
-        logger.error(f"Search error: {str(e)}")
+        logger.error(f"Search error: {str(e)}", exc_info=True)
         return jsonify({"error": "Search failed"}), 500
     
 # 🔹 6. GET /api/valorant/<user_name> → Full public Valorant profile

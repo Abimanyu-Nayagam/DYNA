@@ -204,8 +204,8 @@ class ValorantProfile(db.Model):
     # ---------------------
     # Region + server (required)
     # ---------------------
-    region = db.Column(db.Enum(RegionEnum), nullable=False)
-    server = db.Column(db.Enum(ServerEnum), nullable=False)
+    region = db.Column(db.Enum(RegionEnum, values_callable=lambda x: [e.value for e in x]), nullable=False)
+    server = db.Column(db.Enum(ServerEnum, values_callable=lambda x: [e.value for e in x]), nullable=False)
 
     # ---------------------
     # When the user started playing (required)
@@ -215,14 +215,14 @@ class ValorantProfile(db.Model):
     # ---------------------
     # Rank information (required fields for current rank + act)
     # ---------------------
-    current_rank = db.Column(db.Enum(RankEnum), nullable=False)
-    current_season = db.Column(db.Enum(SeasonEnum), nullable=False)         # EP01..EP09 or V24..V25
-    current_act_number = db.Column(db.Enum(ActNumberEnum), nullable=False)  # ACT1..ACT6
+    current_rank = db.Column(db.Enum(RankEnum, values_callable=lambda x: [e.value for e in x]), nullable=False)
+    current_season = db.Column(db.Enum(SeasonEnum, values_callable=lambda x: [e.value for e in x]), nullable=False)         # EP01..EP09 or V24..V25
+    current_act_number = db.Column(db.Integer, nullable=False)  # ACT1..ACT6
 
     # Peak rank info (peak rank + related act fields) — peak_rank may be nullable if not supplied
-    peak_rank = db.Column(db.Enum(RankEnum), nullable=True)
-    peak_season = db.Column(db.Enum(SeasonEnum), nullable=True)
-    peak_act_number = db.Column(db.Enum(ActNumberEnum), nullable=True)
+    peak_rank = db.Column(db.Enum(RankEnum, values_callable=lambda x: [e.value for e in x]), nullable=True)
+    peak_season = db.Column(db.Enum(SeasonEnum, values_callable=lambda x: [e.value for e in x]), nullable=True)
+    peak_act_number = db.Column(db.Integer, nullable=True)
     peak_rank_date = db.Column(db.Date, nullable=True)
 
     # ---------------------
@@ -236,7 +236,7 @@ class ValorantProfile(db.Model):
     # ---------------------
     # Playstyle & role (required)
     # ---------------------
-    main_role = db.Column(db.Enum(RoleEnum), nullable=False)
+    main_role = db.Column(db.Enum(RoleEnum, values_callable=lambda x: [e.value for e in x]), nullable=False)
     playstyle_description = db.Column(db.String(300), nullable=False)
 
     # Playstyle ratings (0-10 scale)
@@ -249,7 +249,7 @@ class ValorantProfile(db.Model):
     # ---------------------
     # Agents (required: best_agent + top_agents minimal)
     # ---------------------
-    best_agent = db.Column(db.Enum(AgentEnum), nullable=False)
+    best_agent = db.Column(db.Enum(AgentEnum, values_callable=lambda x: [e.value for e in x]), nullable=False)
     # top_agents stored as JSON list of strings; validate length (1..5) in schema layer
     top_agents = db.Column(db.JSON, nullable=False, default=list)
 
@@ -319,12 +319,12 @@ class ValorantProfile(db.Model):
             "current_rank": self.current_rank.value if self.current_rank else None,
             "current_act": {
                 "season": self.current_season.value if self.current_season else None,
-                "act_number": int(self.current_act_number.value) if self.current_act_number else None,
+                "act_number": self.current_act_number if self.current_act_number else None,
             },
             "peak_rank": self.peak_rank.value if self.peak_rank else None,
             "peak_act": {
                 "season": self.peak_season.value if self.peak_season else None,
-                "act_number": int(self.peak_act_number.value) if self.peak_act_number else None,
+                "act_number": self.peak_act_number if self.peak_act_number else None,
                 "date": self.peak_rank_date.isoformat() if self.peak_rank_date else None,
             },
             "kd": self.kd,

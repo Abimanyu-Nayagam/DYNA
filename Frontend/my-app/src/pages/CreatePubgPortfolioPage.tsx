@@ -43,6 +43,7 @@ const CreatePubgPortfolioPage = () => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [isUpdate, setIsUpdate] = useState(false);
   const [existingStatsId, setExistingStatsId] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -126,6 +127,8 @@ const CreatePubgPortfolioPage = () => {
       return;
     }
 
+    setIsSubmitting(true);
+
     try {
       const form = new FormData();
 
@@ -188,6 +191,8 @@ const CreatePubgPortfolioPage = () => {
           ? error.message
           : "Failed to save portfolio. Please try again."
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -447,8 +452,11 @@ const CreatePubgPortfolioPage = () => {
             <button type="button" className="cancel-btn" onClick={() => navigate('/players/pubg')}>
               Cancel
             </button>
-            <button type="submit" className="submit-btn">
-              {isUpdate ? 'Update Portfolio' : 'Create Portfolio'}
+            <button type="submit" className="submit-btn" disabled={isSubmitting}>
+              {isSubmitting 
+                ? (isUpdate ? 'Updating...' : 'Creating...') 
+                : (isUpdate ? 'Update Portfolio' : 'Create Portfolio')
+              }
             </button>
           </div>
         </form>
