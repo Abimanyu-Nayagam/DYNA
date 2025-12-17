@@ -40,7 +40,7 @@ const CreateLolPortfolioPage = () => {
     peak_rank: "Bronze",
     last_season_rank: "Bronze",
     player_since: "",
-    main_role: "Mid",
+    main_role: "Middle",
 
     cs_per_min: "",
     avg_kills: "",
@@ -72,7 +72,7 @@ const CreateLolPortfolioPage = () => {
         peak_rank: existing.peak_rank || "Bronze",
         last_season_rank: existing.last_season_rank || "Bronze",
         player_since: existing.player_since || "",
-        main_role: existing.main_role || "Mid",
+        main_role: existing.main_role || "Middle",
 
         cs_per_min: existing.cs_per_min?.toString() || "",
         avg_kills: existing.avg_kills?.toString() || "",
@@ -103,7 +103,7 @@ const CreateLolPortfolioPage = () => {
     "Emerald","Diamond","Master","Grandmaster","Challenger",
   ];
 
-  const roles = ["Top", "Jungle", "Mid", "Bottom", "Support"];
+  const roles = ["Top", "Jungle", "Middle", "Bottom", "Support"];
   const servers = ["NA", "EUW", "EUNE", "OCE", "RU", "TR", "BR", "LAN", "LAS", "JP", "TW", "SEA", "TH", "VN", "KR", "CN", "MENA"];
 
   const handleChange = (

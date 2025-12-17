@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from 'react-router-dom';
-import Footer from "@/components/Footer";
 import VideoCarousel from "@/components/CarouselScroll";
 import "@/styles/LoLPortfolio.css";
 import RankAnimation from "@/components/RankAnimation";
 import ScrollFadeIn from "@/components/ScrollFadeIn";
 import {  leagueAPI } from "@/services/api";
-import { useAuth } from "@/contexts/AuthContext"
 
 const roleIconMap: Record<string, string> = {
-  top: "/images/league-user-stats/roleicon_top.png",
-  jungle: "/images/league-user-stats/roleicon_jungle.png",
-  middle: "/images/league-user-stats/roleicon_middle.png",
+  top: "/images/league-user-stats/Top_icon.png",
+  jungle: "/images/league-user-stats/Jungle_icon.png",
+  middle: "/images/league-user-stats/Middle_icon.png",
   bottom: "/images/league-user-stats/Bottom_icon.png",
   support: "/images/league-user-stats/Support_icon.png",
 };
@@ -159,7 +157,8 @@ const LoLPortfolio: React.FC = () => {
                 </p>
               </div>
             </div>
-
+            {/* BACKGROUND SECTION START */}
+            <div className="lol-mid-background">
             {/* Cards */}
             <div className="stats-section mt-12 px-6">
               <h2 className="text-3xl font-bold mb-6 text-white">Summoner Overview</h2>
@@ -220,15 +219,18 @@ const LoLPortfolio: React.FC = () => {
                 <ScrollFadeIn>
                   <div className="stat-text">
                     <h2>Average KDA</h2>
-                    <p className="stat-value">{data!.avg_kda}</p>
+                    <p className="stat-value kda">{data!.avg_kda}</p>
                     <p className="stat-desc">
                       Overall combat efficiency across your recent games
                     </p>
                   </div>
                   <div className="stat-media">
-                    <img
-                      src="/images/league-user-stats/kda_image.png"
-                      alt="Average KDA"
+                    <video
+                      src="/videos/display-on-page/avg_kda.mp4"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
                     />
                   </div>
                 </ScrollFadeIn>
@@ -238,15 +240,18 @@ const LoLPortfolio: React.FC = () => {
                 <ScrollFadeIn>
                   <div className="stat-text">
                     <h2>Combat Participation / Min</h2>
-                    <p className="stat-value">{data!.combat_participation_per_min}</p>
+                    <p className="stat-value combat">{data!.combat_participation_per_min}</p>
                     <p className="stat-desc">
                       How often you contribute to fights every minute
                     </p>
                   </div>
                   <div className="stat-media">
-                    <img
-                      src="/images/league-user-stats/combat_image.png"
-                      alt="Combat Participation"
+                    <video
+                      src="/videos/display-on-page/combat_participation.webm"
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
                     />
                   </div>
                 </ScrollFadeIn>
@@ -265,7 +270,13 @@ const LoLPortfolio: React.FC = () => {
                         <p>Tracks your farming efficiency</p>
                       </div>
                       <div className="stat-media">
-                        <img src="/images/league-user-stats/cs_image.png" alt="CS" />
+                        <video
+                          src="/videos/display-on-page/cs_per_min.webm"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                        />
                       </div>
                     </div>
                   </ScrollFadeIn>
@@ -278,7 +289,13 @@ const LoLPortfolio: React.FC = () => {
                         <p>How much damage you deal every minute</p>
                       </div>
                       <div className="stat-media">
-                        <img src="/images/league-user-stats/dmg_image.png" alt="Damage" />
+                        <video
+                          src="/videos/display-on-page/dmg_per_min.webm"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                        />
                       </div>
                     </div>
                   </ScrollFadeIn>
@@ -293,7 +310,13 @@ const LoLPortfolio: React.FC = () => {
                         <p>Tracks how much you help your team with vision</p>
                       </div>
                       <div className="stat-media">
-                        <img src="/images/league-user-stats/vision_image.png" alt="Vision" />
+                        <video
+                          src="/videos/display-on-page/vision_score_per_min.webm"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                        />
                       </div>
                     </div>
                   </ScrollFadeIn>
@@ -306,18 +329,24 @@ const LoLPortfolio: React.FC = () => {
                         <p>Percentage of kills you assisted in</p>
                       </div>
                       <div className="stat-media">
-                        <img src="/images/league-user-stats/assist_image.png" alt="Assist" />
+                        <video
+                          src="/videos/display-on-page/assist_ratio.mp4"
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                        />
                       </div>
                     </div>
                   </ScrollFadeIn>
                 </>
               )}
             </div>
-
+            </div>
             {/* Highlight Videos */}
             {highlightVideos.length > 0 && (
-              <section className="mt-16 w-full px-6">
-                <h2 className="text-3xl font-bold mb-6 text-white">
+              <section className="w-full pt-24 px-6">
+                <h2 className="text-3xl font-bold mb-6 text-white text-center">
                   Highlights
                 </h2>
                 <ScrollFadeIn>
@@ -325,11 +354,10 @@ const LoLPortfolio: React.FC = () => {
                 </ScrollFadeIn>
               </section>
             )}
-
             {/* Full Stat Breakdown */}
             <section className="full-stats-section mt-16 px-6">
               <div className="stats-section mt-12 px-6">
-                <h2 className="text-3xl font-bold mb-6 text-white">Full Stat Breakdown</h2>
+                <h2 className="text-3xl font-bold mb-6 text-white text-center">Full Stat Breakdown</h2>
               </div>
               <div className="full-stats-grid">
                 <table className="full-stats-table">
@@ -357,8 +385,6 @@ const LoLPortfolio: React.FC = () => {
           </div>
         )}
       </main>
-
-      <Footer />
     </div>
   );
 };
