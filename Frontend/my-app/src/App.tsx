@@ -43,7 +43,7 @@ function App() {
               element={<div>VALORANT Portfolio Coming Soon</div>}
             />
             <Route
-              path="/players/:username/lol"
+              path="/players/:user_name/lol"
               element={ <LoLPortfolio />}
             />
             <Route path="/players/csgo" element={<CsgoPlayersPage />} />

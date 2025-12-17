@@ -12,6 +12,7 @@ interface LeagueFormData {
   cur_rank: string;
   peak_rank: string;
   last_season_rank: string;
+  player_since: string;
   main_role: string;
 
   cs_per_min: number | string;
@@ -27,6 +28,7 @@ interface LeagueFormData {
 const CreateLolPortfolioPage = () => {
   const navigate = useNavigate();
   const { user, token, loading } = useAuth();
+  const [videoFiles, setVideoFiles] = useState<File[]>([]);
 
   const [formData, setFormData] = useState<LeagueFormData>({
     ign: "",
@@ -36,6 +38,7 @@ const CreateLolPortfolioPage = () => {
     cur_rank: "Bronze",
     peak_rank: "Bronze",
     last_season_rank: "Bronze",
+    player_since: "",
     main_role: "Mid",
 
     cs_per_min: "",
@@ -109,18 +112,23 @@ const CreateLolPortfolioPage = () => {
     e.preventDefault();
     if (!user) return;
 
-    const payload = Object.fromEntries(
-      Object.entries(formData).map(([k, v]) => [
-        k,
-        v === "" ? null : Number.isNaN(Number(v)) ? v : Number(v),
-      ])
-    );
+    const form = new FormData();
+
+    // Append all fields
+    Object.entries(formData).forEach(([k, v]) => {
+      form.append(k, v === "" ? "" : v.toString());
+    });
+
+    // Append videos
+    videoFiles.forEach((file) => {
+      form.append("videos", file); // 'videos' matches the backend name
+    });
 
     try {
       if (isUpdate) {
-        await leagueAPI.updateStats(payload);
+        await leagueAPI.updateStats(form);
       } else {
-        await leagueAPI.createStats(payload);
+        await leagueAPI.createStats(form);
       }
 
       navigate("/players/lol");
@@ -161,6 +169,10 @@ const CreateLolPortfolioPage = () => {
                 {servers.map((s) => <option key={s}>{s}</option>)}
               </select>
             </div>
+            <div className="lol-field">
+              <label>Player Since</label>
+              <input name="player_since" value={formData.player_since} onChange={handleChange} />
+            </div>
           </div>
 
           {/* Ranks */}
@@ -199,13 +211,30 @@ const CreateLolPortfolioPage = () => {
           <h3 className="lol-section-title">Stats</h3>
           <div className="lol-grid">
             <div className="lol-field"><label>CS / Min</label><input name="cs_per_min" onChange={handleChange} value={formData.cs_per_min} /></div>
-            <div className="lol-field"><label>Avg Kills</label><input name="avg_kills" onChange={handleChange} value={formData.avg_kills} /></div>
-            <div className="lol-field"><label>Avg Deaths</label><input name="avg_deaths" onChange={handleChange} value={formData.avg_deaths} /></div>
-            <div className="lol-field"><label>Avg Assists</label><input name="avg_assists" onChange={handleChange} value={formData.avg_assists} /></div>
-            <div className="lol-field"><label>Avg Damage</label><input name="avg_dmg" onChange={handleChange} value={formData.avg_dmg} /></div>
-            <div className="lol-field"><label>Vision Score</label><input name="avg_vision_score" onChange={handleChange} value={formData.avg_vision_score} /></div>
-            <div className="lol-field"><label>Game Duration (min)</label><input name="avg_game_duration" onChange={handleChange} value={formData.avg_game_duration} /></div>
+            <div className="lol-field"><label>Average Kills</label><input name="avg_kills" onChange={handleChange} value={formData.avg_kills} /></div>
+            <div className="lol-field"><label>Average Deaths</label><input name="avg_deaths" onChange={handleChange} value={formData.avg_deaths} /></div>
+            <div className="lol-field"><label>Average Assists</label><input name="avg_assists" onChange={handleChange} value={formData.avg_assists} /></div>
+            <div className="lol-field"><label>Average Damage</label><input name="avg_dmg" onChange={handleChange} value={formData.avg_dmg} /></div>
+            <div className="lol-field"><label>Average Vision Score</label><input name="avg_vision_score" onChange={handleChange} value={formData.avg_vision_score} /></div>
+            <div className="lol-field"><label>Average Game Duration (min)</label><input name="avg_game_duration" onChange={handleChange} value={formData.avg_game_duration} /></div>
           </div>
+          <h3 className="lol-section-title">Gameplay Highlights</h3>
+          <div className="lol-grid">
+            <div className="lol-field">
+              <label>Upload Videos</label>
+              <input
+                type="file"
+                name="videos"
+                accept="video/*"
+                multiple
+                onChange={(e) => {
+                  const files = e.target.files;
+                  if (files) setVideoFiles(Array.from(files));
+                }}
+              />
+            </div>
+          </div>
+
 
           <button className="lol-submit-btn" type="submit">
             {isUpdate ? "Update Portfolio" : "Create Portfolio"}

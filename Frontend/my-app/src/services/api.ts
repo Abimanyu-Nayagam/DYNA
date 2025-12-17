@@ -203,8 +203,16 @@ export const csgoAPI = {
 };
 
 export const leagueAPI = {
-  createStats: async (data: Record<string, unknown>) => {
-    const response = await api.post("/api/lol/create-folio", data);
+  createStats: async (data: FormData) => {
+    const response = await api.post(
+      "/api/lol/create-folio",
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     return response.data;
   },
 
@@ -213,13 +221,26 @@ export const leagueAPI = {
     return response.data;
   },
 
-  getStatsByUser: async (): Promise<PlayerLolData> => {
-    const response = await api.get("/api/lol/get-folio");
+  getStatsByUser: async (user_name: string): Promise<PlayerLolData> => {
+    const response = await api.get(`/api/lol/get-folio/${user_name}`);
     return response.data;
   },
 
-  updateStats: async (data: Partial<PlayerLolData>) => {
-    const response = await api.put("/api/lol/update-folio", data);
+  getHighlightsByUser: async (username: string, game_name: string) => {
+    const response = await api.post("/api/lol/videos", { username, game_name });
+    return response.data;
+  },
+
+  updateStats: async (data: FormData) => {
+    const response = await api.put(
+      "/api/lol/update-folio",
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
     return response.data;
   },
 

@@ -14,7 +14,6 @@ class Config:
     
     # URL-encode password to handle special characters like @
     encoded_password = quote_plus(DB_PASSWORD)
-
     SQLALCHEMY_DATABASE_URI = (
         f"mysql+pymysql://{DB_USER}:{encoded_password}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
         )

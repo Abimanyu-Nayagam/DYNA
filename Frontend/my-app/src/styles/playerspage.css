@@ -5,6 +5,13 @@
     position: relative;
 }
 
+.lol-players-page {
+    min-height: 100vh;
+    background: #0d0a15;
+    padding-bottom: 60px;
+    position: relative;
+}
+
 .players-page::before {
     content: '';
     position: absolute;
@@ -36,6 +43,11 @@
 }
 
 .players-page > * {
+    position: relative;
+    z-index: 1;
+}
+
+.lol-players-page > * {
     position: relative;
     z-index: 1;
 }
