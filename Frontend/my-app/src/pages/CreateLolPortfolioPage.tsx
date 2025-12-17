@@ -29,6 +29,7 @@ const CreateLolPortfolioPage = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [videoFiles, setVideoFiles] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState<LeagueFormData>({
     ign: "",
@@ -116,6 +117,8 @@ const CreateLolPortfolioPage = () => {
     e.preventDefault();
     if (!user) return;
 
+    setIsSubmitting(true);
+
     const form = new FormData();
 
     // Append all fields
@@ -138,6 +141,8 @@ const CreateLolPortfolioPage = () => {
       navigate("/players/lol");
     } catch (error) {
       console.error("Failed to save portfolio:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -240,8 +245,11 @@ const CreateLolPortfolioPage = () => {
           </div>
 
 
-          <button className="lol-submit-btn" type="submit">
-            {isUpdate ? "Update Portfolio" : "Create Portfolio"}
+          <button className="lol-submit-btn" type="submit" disabled={isSubmitting}>
+            {isSubmitting 
+              ? (isUpdate ? 'Updating...' : 'Creating...') 
+              : (isUpdate ? 'Update Portfolio' : 'Create Portfolio')
+            }
           </button>
         </form>
       </div>
