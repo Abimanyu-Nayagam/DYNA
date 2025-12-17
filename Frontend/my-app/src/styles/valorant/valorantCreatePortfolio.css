@@ -611,3 +611,47 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
     }
 }
+
+/* Delete button styling */
+.valo-delete-btn {
+    background: rgba(220, 38, 38, 0.1);
+    border: 1px solid rgba(220, 38, 38, 0.4);
+    color: #ff6b6b;
+    padding: 0.7rem 1.6rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.valo-delete-btn:hover {
+    background: rgba(220, 38, 38, 0.2);
+    border-color: #dc2626;
+    color: #ff4444;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
+}
+
+.valo-actions-right {
+    display: flex;
+    gap: 1rem;
+    margin-left: auto;
+}
+
+/* Responsive - stack on mobile */
+@media (max-width: 768px) {
+    .valo-form-actions {
+        flex-direction: column;
+    }
+    
+    .valo-actions-right {
+        width: 100%;
+        flex-direction: column-reverse;
+        margin-left: 0;
+    }
+    
+    .valo-delete-btn {
+        width: 100%;
+    }
+}
