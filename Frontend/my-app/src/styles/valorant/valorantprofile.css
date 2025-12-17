@@ -7,6 +7,26 @@
   min-height: 100vh;
 }
 
+.valo-page::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(124,77,255,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 30%, rgba(217,70,239,0.08) 0%, transparent 40%);
+    animation: ambient-drift 20s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@keyframes ambient-drift {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, -20px); }
+}
+
 /* ======================================================
    LOADING
 ====================================================== */
@@ -47,6 +67,8 @@
   height: 100%;
   object-fit: cover;
   filter: brightness(0.7);
+  transform: translateZ(0); /* Enable GPU acceleration */
+  transition: transform 0.1s ease-out;
 }
 
 .valo-hero-content {
@@ -59,6 +81,7 @@
 /* ======================================================
    HERO TYPOGRAPHY
 ====================================================== */
+
 .valo-name {
   font-size: 96px;
   font-weight: 900;
@@ -66,53 +89,100 @@
   margin-bottom: 8px;
   opacity: 0;
   animation: fadeUp 0.8s ease-out forwards;
+  animation-delay: 1s;
 }
 
 .valo-riot {
   font-size: 32px;
   opacity: 0;
   animation: fadeUp 0.8s ease-out forwards;
-  animation-delay: 0.15s;
+  animation-delay: 2s;
 }
 
 .valo-meta {
-  opacity: 0.7;
+  opacity: 0;
   margin-bottom: 10px;
+  animation: fadeUp 0.8s ease-out forwards;
+  animation-delay: 3s;
 }
 
-.valo-since {
-  opacity: 0.8;
-  font-size: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  border-right: 2px solid rgba(255,255,255,0.6);
-  width: 0;
-  animation: typing 2s steps(30, end) forwards, blink 0.8s infinite;
-  animation-delay: 0.5s;
+.valo-name, .valo-riot {
+    background: linear-gradient(
+        90deg,
+        #fff 0%,
+        #fff 40%,
+        rgba(124,77,255,0.8) 50%,
+        #fff 60%,
+        #fff 100%
+    );
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    transition: background-position 0.5s ease;
+}
+
+.valo-name:hover, .valo-riot:hover {
+    background-position: 100% 0 ;
 }
 
 /* ======================================================
-   HERO ANIMATIONS
+   TYPEWRITER (FIXED 30 CHARS, DELAYED START)
 ====================================================== */
+
+.valo-since {
+  --chars: 30;
+
+  display: inline-block;
+  position: relative;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+
+  opacity: 1;
+  width: 0;
+  margin: 0 auto;
+
+  border-right: 2px solid transparent;
+
+  animation:
+    caret-on 0s linear forwards 4s,
+    caret-blink 0.6s step-end 1 forwards 4s,
+    typing 2s steps(var(--chars)) forwards 5s,
+    caret-off 0s linear forwards 7s;
+}
+
+/* ======================================================
+   TYPEWRITER KEYFRAMES
+====================================================== */
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: calc(var(--chars) * 1ch); }
+}
+
+@keyframes caret-on {
+  to { border-right-color: rgba(255,255,255,0.7); }
+}
+
+@keyframes caret-blink {
+  0% { border-right-color: rgba(255,255,255,0.7); }
+  50% { border-right-color: transparent; }
+  100% { border-right-color: rgba(255,255,255,0.7); }
+}
+
+@keyframes caret-off {
+  to { border-right-color: transparent; }
+}
+
+/* ======================================================
+   SHARED ANIMATIONS
+====================================================== */
+
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes heroFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes typing {
-  from { width: 0; }
-  to { width: 100%; }
-}
-
-@keyframes blink {
-  0%, 50% { border-color: rgba(255,255,255,0.6); }
-  51%, 100% { border-color: transparent; }
-}
 
 /* ======================================================
    EDIT PROFILE BUTTON
@@ -217,6 +287,42 @@
   margin: 0 auto;
   display: block;
   filter: drop-shadow(0 14px 32px rgba(0,0,0,0.6));
+  animation: rank-glow 4s ease-in-out infinite;
+}
+
+.rank-icon:hover{
+  width: 96px;
+  margin: 0 auto;
+  display: block;
+  animation:
+    rank-float 4s ease-in-out infinite,
+    rank-glow 4s ease-in-out infinite;
+  will-change: transform, filter;
+}
+
+@keyframes rank-float {
+  0%, 100% {
+    transform: translateY(-4px)  rotateY(0deg);
+  }
+  /* 25% {
+    transform: translateY(-4px) rotateZ(90deg);
+  } */
+  50% {
+    transform: translateY(-4px) rotateY(360deg);
+  }
+  /* 75% {
+    transform: translateY(-4px) rotateZ(270deg);
+  } */
+}
+
+@keyframes rank-glow {
+    0%, 100% {
+        filter: drop-shadow(0 14px 32px rgba(0,0,0,0.6));
+    }
+    50% {
+        filter: drop-shadow(0 14px 32px rgba(124,77,255,0.8))
+                drop-shadow(0 0 60px rgba(124,77,255,0.4));
+    }
 }
 
 /* Rank Name */
@@ -233,6 +339,8 @@
   opacity: 0.65;
   margin-top: 4px;
 }
+
+
 
 /* ======================================================
    AGENT SHOWCASE
@@ -342,6 +450,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 24px;
+  perspective: 1500px;
 }
 
 .agent-mini-card {
@@ -350,7 +459,8 @@
   border-radius: 16px;
   padding: 20px;
   text-align: center;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform-style: preserve-3d;
 }
 
 .agent-mini-card img {
@@ -382,9 +492,29 @@
 }
 
 .agent-mini-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 18px 42px rgba(0,0,0,0.45);
+  animation: agent-sway 5s ease-in-out infinite;
+  will-change: transform;
+  transform: translateY(-8px) rotateX(6deg) rotateY(-6deg);
+  box-shadow: 
+      0 20px 50px rgba(0,0,0,0.5),
+      0 0 80px rgba(124,77,255,0.3);
 }
+
+@keyframes agent-sway {
+  0%, 100% {
+    transform: translateY(-8px) rotateX(0deg) rotateY(-8deg);
+  }
+  /* 25% {
+    transform: translateY(0px) rotateX(0deg) rotateY(-20deg);
+  } */
+  50% {
+    transform: translateY(-8px) rotateX(0deg) rotateY(8deg);
+  }
+  /* 75% {
+    transform: translateY(0px) rotateX(0deg) rotateY(20deg);
+  } */
+}
+
 
 .agent-mini-card:hover::before {
   opacity: 1;
@@ -410,6 +540,11 @@
   font-size: 18px;
   line-height: 1.8;
   opacity: 0.9;
+
+  /* 🔑 FIX LONG TEXT */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 /* Skill Bars */
@@ -435,6 +570,19 @@
 .skill-bar .bar div {
   height: 100%;
   background: linear-gradient(90deg, #7c4dff, #b68cff);
+  animation: skill-fill 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  transform-origin: left;
+}
+
+@keyframes skill-fill {
+    from {
+        transform: scaleX(0);
+        opacity: 0;
+    }
+    to {
+        transform: scaleX(1);
+        opacity: 1;
+    }
 }
 
 /* ======================================================
@@ -548,6 +696,11 @@
   font-size: 18px;
   line-height: 1.9;
   opacity: 0.9;
+
+  /* 🔑 FIX LONG TEXT */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 /* ======================================================
