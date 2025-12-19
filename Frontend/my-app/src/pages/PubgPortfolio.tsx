@@ -35,7 +35,6 @@ const PubgPortfolio = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [heroImage, setHeroImage] = useState('');
-  // const [userId, setUserId] = useState<number | null>(null);
 
   // Helper function to get rank image path
   const getRankImage = (rank: string | null): string | undefined => {
@@ -67,8 +66,6 @@ const PubgPortfolio = () => {
         if (!user) {
           throw new Error('User not found');
         }
-
-        // setUserId(user.user_id);
 
         // Then fetch PUBG stats using userId
         const data = await pubgAPI.getStatsByUser(user.user_id);
@@ -266,7 +263,6 @@ const PubgPortfolio = () => {
       {/* Video Section */}
       {stats.video_url && (
         <div className="pubg-video-section">
-          {/* {console.log('Rendering video section with URL:', stats.video_url)} */}
           <div className="pubg-video-container">
             <video
               loop

@@ -191,14 +191,14 @@ const ValorantProfilePage = () => {
         <p className="valo-region">
           {profile.region} • {profile.server}
         </p>
-
+{/* 
         <p className="valo-muted">
           Playing since{" "}
           {new Date(profile.started_playing).toLocaleDateString(undefined, {
             year: "numeric",
             month: "long",
           })}
-        </p>
+        </p> */}
 
         {isOwner && (
           <div className="valo-owner-actions">
@@ -220,12 +220,12 @@ const ValorantProfilePage = () => {
           <div>
             <h4>Current</h4>
             <p className="rank">{profile.current_rank}</p>
-            <span>
+            {/* <span>
               {profile.current_act.season} • Act {profile.current_act.act_number}
-            </span>
+            </span> */}
           </div>
 
-          <div>
+          {/* <div>
             <h4>Peak</h4>
             <p className="rank">{profile.peak_rank}</p>
             <span>
@@ -237,7 +237,8 @@ const ValorantProfilePage = () => {
                 {new Date(profile.peak_act.date).toLocaleDateString()}
               </small>
             )}
-          </div>
+          </div> */}
+
         </div>
       </section>
 
@@ -251,27 +252,27 @@ const ValorantProfilePage = () => {
           <div><strong>Matches</strong><span>{profile.total_matches}</span></div>
           <div><strong>Hours</strong><span>{profile.hours_played}</span></div>
         </div>
-
+{/* 
         {profile.last_synced && (
           <p className="valo-muted">
             Last synced: {new Date(profile.last_synced).toLocaleString()}
           </p>
-        )}
+        )} */}
       </section>
 
       {/* PLAYSTYLE */}
       <section className="valo-card">
         <h2>🎮 Playstyle</h2>
         <p className="valo-role">{profile.main_role}</p>
-        <p className="valo-description">{profile.playstyle_description}</p>
+        {/* <p className="valo-description">{profile.playstyle_description}</p> */}
 
-        <div className="valo-playstyle-grid">
+        {/* <div className="valo-playstyle-grid">
           <div>Aggression <span>{profile.aggressiveness}/10</span></div>
           <div>Entry <span>{profile.entry_confidence}/10</span></div>
           <div>Utility <span>{profile.utility_usage}/10</span></div>
           <div>Lurking <span>{profile.lurking_skill}/10</span></div>
           <div>Anchoring <span>{profile.anchoring_skill}/10</span></div>
-        </div>
+        </div> */}
       </section>
 
       {/* AGENTS */}
@@ -286,7 +287,8 @@ const ValorantProfilePage = () => {
       </section>
 
       {/* MEDIA */}
-      {profile.media_clips.length > 0 && (
+
+      {/* {profile.media_clips.length > 0 && (
         <section className="valo-card">
           <h2>🎬 Media</h2>
           <div className="valo-media-grid">
@@ -295,10 +297,10 @@ const ValorantProfilePage = () => {
             ))}
           </div>
         </section>
-      )}
+      )} */}
 
       {/* TEAM HISTORY */}
-      {profile.team_history.length > 0 && (
+      {/* {profile.team_history.length > 0 && (
         <section className="valo-card">
           <h2>👥 Team History</h2>
           {profile.team_history.map((team, i) => (
@@ -318,10 +320,10 @@ const ValorantProfilePage = () => {
             </div>
           ))}
         </section>
-      )}
+      )} */}
 
       {/* TOURNAMENTS */}
-      {profile.tournaments.length > 0 && (
+      {/* {profile.tournaments.length > 0 && (
         <section className="valo-card">
           <h2>🏆 Tournaments</h2>
           {profile.tournaments.map((t, i) => (
@@ -333,15 +335,15 @@ const ValorantProfilePage = () => {
             </div>
           ))}
         </section>
-      )}
+      )} */}
 
       {/* ABOUT */}
-      {profile.bio && (
+      {/* {profile.bio && (
         <section className="valo-card">
           <h2>📝 About</h2>
           <p>{profile.bio}</p>
         </section>
-      )}
+      )} */}
 
     </div>
   );
