@@ -255,7 +255,7 @@ const ValorantProfilePage = () => {
           </p>
         </div>
 
-        {/* 🔒 ONLY show edit button if user is the owner */}
+ {/* 🔒 ONLY show edit button if user is the owner */}
         {isOwner && (
           <button
             className="valo-edit-btn"
@@ -473,7 +473,7 @@ const ValorantProfilePage = () => {
             </div>
           </div>
         </section>
-      )}
+      )} 
 
       {/* BIO */}
       {profile.bio && (

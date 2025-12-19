@@ -32,6 +32,41 @@
   to { transform: rotate(360deg); }
 }
 
+/*
+Background
+*/
+
+.lol-mid-background {
+  width: 100%;
+  position: relative;
+
+  /* Background */
+  background-image: url("/images/main_bg.jpg"); /* change path if needed */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+
+  /* Visual polish */
+  padding-top: 80px;
+  padding-bottom: 120px;
+}
+
+/* Dark overlay for readability */
+.lol-mid-background::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 0;
+}
+
+/* Ensure content is above overlay */
+.lol-mid-background > * {
+  position: relative;
+  z-index: 1;
+}
+
 /* =========================
    Layout
    ========================= */

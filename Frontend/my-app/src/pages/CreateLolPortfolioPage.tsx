@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { leagueAPI } from "@/services/api";
-import "@/styles/CreateLolPortfolio.css";
+import "@/styles/CreateLoLPortfolio.css";
 
 interface LeagueFormData {
   ign: string;
@@ -29,6 +29,7 @@ const CreateLolPortfolioPage = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
   const [videoFiles, setVideoFiles] = useState<File[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState<LeagueFormData>({
     ign: "",
@@ -39,7 +40,7 @@ const CreateLolPortfolioPage = () => {
     peak_rank: "Bronze",
     last_season_rank: "Bronze",
     player_since: "",
-    main_role: "Mid",
+    main_role: "Middle",
 
     cs_per_min: "",
     avg_kills: "",
@@ -52,7 +53,6 @@ const CreateLolPortfolioPage = () => {
   });
 
   const [isUpdate, setIsUpdate] = useState(false);
-  const [setExistingId] = useState<number | null>(null);
 
     const checkExistingPortfolio = async () => {
     try {
@@ -72,7 +72,7 @@ const CreateLolPortfolioPage = () => {
         peak_rank: existing.peak_rank || "Bronze",
         last_season_rank: existing.last_season_rank || "Bronze",
         player_since: existing.player_since || "",
-        main_role: existing.main_role || "Mid",
+        main_role: existing.main_role || "Middle",
 
         cs_per_min: existing.cs_per_min?.toString() || "",
         avg_kills: existing.avg_kills?.toString() || "",
@@ -84,9 +84,10 @@ const CreateLolPortfolioPage = () => {
         avg_game_duration: existing.avg_game_duration?.toString() || "",
       });
 
-      setExistingId(existing.id);
       setIsUpdate(true);
-    } catch {}
+    } catch {
+      console.log("There was anm error in execution of checkExistingPortfolio")
+    }
   };
 
   useEffect(() => {
@@ -102,7 +103,7 @@ const CreateLolPortfolioPage = () => {
     "Emerald","Diamond","Master","Grandmaster","Challenger",
   ];
 
-  const roles = ["Top", "Jungle", "Mid", "Bottom", "Support"];
+  const roles = ["Top", "Jungle", "Middle", "Bottom", "Support"];
   const servers = ["NA", "EUW", "EUNE", "OCE", "RU", "TR", "BR", "LAN", "LAS", "JP", "TW", "SEA", "TH", "VN", "KR", "CN", "MENA"];
 
   const handleChange = (
@@ -115,6 +116,8 @@ const CreateLolPortfolioPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
+
+    setIsSubmitting(true);
 
     const form = new FormData();
 
@@ -138,6 +141,8 @@ const CreateLolPortfolioPage = () => {
       navigate("/players/lol");
     } catch (error) {
       console.error("Failed to save portfolio:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -240,8 +245,11 @@ const CreateLolPortfolioPage = () => {
           </div>
 
 
-          <button className="lol-submit-btn" type="submit">
-            {isUpdate ? "Update Portfolio" : "Create Portfolio"}
+          <button className="lol-submit-btn" type="submit" disabled={isSubmitting}>
+            {isSubmitting 
+              ? (isUpdate ? 'Updating...' : 'Creating...') 
+              : (isUpdate ? 'Update Portfolio' : 'Create Portfolio')
+            }
           </button>
         </form>
       </div>

@@ -226,3 +226,14 @@ def get_ign_from_id(user_id):
         return jsonify({"error": "User does not have a league portfolio"}), 404
 
     return jsonify({"ign": row.ign})
+
+@lol_bp.route('/get-user-name-from-ign/<ign>', methods = ['POST'])
+def get_user_name_from_ign(ign):
+    row = LeagueForm.query.filter_by(ign=ign).first()
+    user_id = row.user_id
+    user = User.query.filter_by(user_id = user_id).first()
+    user_name = user.user_name
+    if not row:
+        return jsonify({"error": "User does not have a league portfolio"}), 404
+
+    return jsonify({"user_name": user_name})
