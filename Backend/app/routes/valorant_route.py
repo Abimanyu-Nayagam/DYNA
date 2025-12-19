@@ -3,8 +3,9 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from sqlalchemy.exc import SQLAlchemyError
 from app import db
-from app.models import ValorantProfile, User, TeamHistory, TournamentHistory
+from app.models import ValorantProfile, User, TeamHistory, TournamentHistory, UserHighlights
 from app.schema.valorant_schema import ValorantProfileCreate, ValorantProfileUpdate
+from app.utils.s3 import upload_video_to_s3, delete_from_s3
 from pydantic import ValidationError
 
 # Setup logger
@@ -12,7 +13,7 @@ logger = logging.getLogger(__name__)
 valorant_bp = Blueprint('valorant', __name__, url_prefix='/api/valorant')
 
 
-# 🔹 1. GET /api/valorant/me
+# 📹 1. GET /api/valorant/me
 @valorant_bp.route('/me', methods=['GET'])
 @jwt_required()
 def get_own_profile():
@@ -30,7 +31,7 @@ def get_own_profile():
         return jsonify({"error": "Failed to fetch profile"}), 500
 
 
-# 🔹 2. POST /api/valorant
+# 📹 2. POST /api/valorant
 @valorant_bp.route('', methods=['POST'])
 @jwt_required()
 def create_profile():
@@ -41,10 +42,31 @@ def create_profile():
             logger.warning(f"User {user_id} tried to create duplicate profile")
             return jsonify({"error": "Valorant profile already exists"}), 400
 
-        json_data = request.get_json()
+        # Handle multipart form data
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            json_data = request.form.to_dict()
+            video_files = request.files.getlist("videos")
+        else:
+            json_data = request.get_json()
+            video_files = []
+
         if not json_data:
             logger.warning(f"User {user_id} sent empty profile data")
             return jsonify({"error": "Request body is missing"}), 400
+
+        # Parse JSON arrays from form data
+        if 'top_agents' in json_data and isinstance(json_data['top_agents'], str):
+            import json
+            json_data['top_agents'] = json.loads(json_data['top_agents'])
+        if 'team_history' in json_data and isinstance(json_data['team_history'], str):
+            import json
+            json_data['team_history'] = json.loads(json_data['team_history'])
+        if 'tournaments' in json_data and isinstance(json_data['tournaments'], str):
+            import json
+            json_data['tournaments'] = json.loads(json_data['tournaments'])
+        if 'media_clips' in json_data and isinstance(json_data['media_clips'], str):
+            import json
+            json_data['media_clips'] = json.loads(json_data['media_clips'])
 
         try:
             data = ValorantProfileCreate(**json_data)
@@ -52,10 +74,9 @@ def create_profile():
             logger.warning(f"Validation failed for user {user_id}: {e}")
             return jsonify({"error": "Validation failed", "details": e.errors()}), 400
 
-
         # Build flat fields only
         clean_dict = data.dict(
-            exclude={"team_history", "tournaments"}
+            exclude={"team_history", "tournaments", "media_clips"}
         )
 
         user = User.query.get(user_id)
@@ -65,7 +86,6 @@ def create_profile():
             player_name=user.user_name,  # 🔒 enforced DYNA name
             **clean_dict
         )
-
 
         # Add team history
         if data.team_history:
@@ -79,9 +99,34 @@ def create_profile():
                 tr_data = tr.dict()
                 profile.tournaments.append(TournamentHistory(**tr_data))
 
-
-
         db.session.add(profile)
+        db.session.flush()  # Get profile.id
+
+        # Upload videos to S3 and store URLs
+        media_urls = []
+        
+        # Handle uploaded video files
+        for video in video_files:
+            try:
+                video_url = upload_video_to_s3(video, str(user_id), "valorant")
+                media_urls.append(video_url)
+                
+                # Also add to UserHighlights table for consistency
+                db.session.add(UserHighlights(
+                    user_id=user_id,
+                    username=user.user_name,
+                    game_name="valorant",
+                    video_url=video_url
+                ))
+            except Exception as e:
+                logger.error(f"Failed to upload video: {str(e)}")
+
+        # Combine with any existing media_clips URLs
+        if data.media_clips:
+            media_urls.extend(data.media_clips)
+
+        profile.media_clips = media_urls
+
         db.session.commit()
 
         logger.info(f"Created Valorant profile for user {user_id}")
@@ -96,7 +141,7 @@ def create_profile():
         return jsonify({"error": "Unexpected error"}), 500
 
 
-# 🔹 3. PATCH /api/valorant/me → Partial update (inline editing)
+# 📹 3. PATCH /api/valorant/me → Partial update (inline editing)
 @valorant_bp.route('/me', methods=['PATCH'])
 @jwt_required()
 def patch_profile():
@@ -109,47 +154,94 @@ def patch_profile():
             logger.warning(f"PATCH failed: user {user_id} has no profile")
             return jsonify({"error": "Profile not found"}), 404
 
-        json_data = request.get_json()
-        if not json_data:
-            logger.warning(f"User {user_id} sent empty JSON body")
+        # Handle multipart form data
+        if request.content_type and 'multipart/form-data' in request.content_type:
+            json_data = request.form.to_dict()
+            video_files = request.files.getlist("videos")
+        else:
+            json_data = request.get_json()
+            video_files = []
+
+        if not json_data and not video_files:
+            logger.warning(f"User {user_id} sent empty update data")
             return jsonify({"error": "No update data provided"}), 400
+
+        # Parse JSON arrays from form data
+        if 'top_agents' in json_data and isinstance(json_data['top_agents'], str):
+            import json
+            json_data['top_agents'] = json.loads(json_data['top_agents'])
+        if 'team_history' in json_data and isinstance(json_data['team_history'], str):
+            import json
+            json_data['team_history'] = json.loads(json_data['team_history'])
+        if 'tournaments' in json_data and isinstance(json_data['tournaments'], str):
+            import json
+            json_data['tournaments'] = json.loads(json_data['tournaments'])
+        if 'media_clips' in json_data and isinstance(json_data['media_clips'], str):
+            import json
+            json_data['media_clips'] = json.loads(json_data['media_clips'])
 
         if "team_history" in json_data:
             json_data["been_in_team_before"] = True
             
         try:
-            data = ValorantProfileUpdate(**json_data)
+            data = ValorantProfileUpdate(**json_data) if json_data else None
         except ValidationError as e:
             logger.warning(f"PATCH validation failed for user {user_id}: {e}")
             return jsonify({"error": "Validation failed", "details": e.errors()}), 400
 
         # Extract only fields that were sent (exclude_unset) and are not None
-        update_dict = data.dict(exclude_unset=True)
+        update_dict = data.dict(exclude_unset=True) if data else {}
         update_dict = {k: v for k, v in update_dict.items() if v is not None}
-
-        if not update_dict:
-            logger.warning(f"User {user_id} sent PATCH with no valid fields to update")
-            return jsonify({"error": "No valid fields provided for update"}), 400
 
         # --- HANDLE nested lists separately ---
         team_hist_list = update_dict.pop("team_history", None)
         tourn_hist_list = update_dict.pop("tournaments", None)
+        media_clips_list = update_dict.pop("media_clips", None)
 
         # Apply flat scalar fields
         for key, value in update_dict.items():
             setattr(profile, key, value)
 
-# --- TEAM HISTORY (REPLACE ALL) ---
+        # --- TEAM HISTORY (REPLACE ALL) ---
         if team_hist_list is not None:
             profile.team_history.clear()
-            for th_data in team_hist_list:  # <-- already dict
+            for th_data in team_hist_list:
                 profile.team_history.append(TeamHistory(**th_data))
 
-# --- TOURNAMENT HISTORY (REPLACE ALL) ---
+        # --- TOURNAMENT HISTORY (REPLACE ALL) ---
         if tourn_hist_list is not None:
             profile.tournaments.clear()
-            for tr_data in tourn_hist_list:  # <-- already dict
+            for tr_data in tourn_hist_list:
                 profile.tournaments.append(TournamentHistory(**tr_data))
+
+        # --- MEDIA CLIPS (UPLOAD NEW + KEEP EXISTING) ---
+        user = User.query.get(user_id)
+        new_media_urls = []
+        
+        # Upload new video files
+        for video in video_files:
+            try:
+                video_url = upload_video_to_s3(video, str(user_id), "valorant")
+                new_media_urls.append(video_url)
+                
+                # Also add to UserHighlights table
+                db.session.add(UserHighlights(
+                    user_id=user_id,
+                    username=user.user_name,
+                    game_name="valorant",
+                    video_url=video_url
+                ))
+            except Exception as e:
+                logger.error(f"Failed to upload video: {str(e)}")
+
+        # Combine existing + new videos
+        if media_clips_list is not None:
+            # User sent explicit list - replace with that + new uploads
+            profile.media_clips = media_clips_list + new_media_urls
+        elif new_media_urls:
+            # Just append new videos to existing
+            existing = profile.media_clips or []
+            profile.media_clips = existing + new_media_urls
 
         db.session.commit()
         logger.info(f"Successfully updated profile for user {user_id}")
@@ -165,7 +257,7 @@ def patch_profile():
         return jsonify({"error": "Update failed"}), 500
 
 
-# 🔹 4. DELETE /api/valorant/me
+# 📹 4. DELETE /api/valorant/me
 @valorant_bp.route('/me', methods=['DELETE'])
 @jwt_required()
 def delete_profile():
@@ -175,6 +267,20 @@ def delete_profile():
         profile = ValorantProfile.query.filter_by(user_id=user_id).first()
         if not profile:
             return jsonify({"error": "Profile not found"}), 404
+
+        # Delete associated videos from S3
+        if profile.media_clips:
+            for video_url in profile.media_clips:
+                try:
+                    delete_from_s3(video_url)
+                except Exception as e:
+                    logger.error(f"Failed to delete video from S3: {str(e)}")
+
+        # Delete UserHighlights entries
+        UserHighlights.query.filter_by(
+            user_id=user_id, 
+            game_name="valorant"
+        ).delete()
 
         db.session.delete(profile)
         db.session.commit()
@@ -190,7 +296,7 @@ def delete_profile():
         return jsonify({"error": "Unexpected error"}), 500
 
 
-# 🔹 5. GET /api/valorant/search (paginated, public)
+# 📹 5. GET /api/valorant/search (paginated, public)
 @valorant_bp.route('/search', methods=['GET'])
 def search_valorant_profiles():
     query = request.args.get('query', '').strip()
@@ -255,7 +361,7 @@ def search_valorant_profiles():
         logger.error(f"Search error: {str(e)}", exc_info=True)
         return jsonify({"error": "Search failed"}), 500
     
-# 🔹 6. GET /api/valorant/<user_name> → Full public Valorant profile
+# 📹 6. GET /api/valorant/<user_name> → Full public Valorant profile
 @valorant_bp.route('/<user_name>', methods=['GET'])
 def get_public_valorant_profile(user_name):
     logger.debug(f"Fetching public Valorant profile for user: {user_name}")
@@ -280,3 +386,19 @@ def get_public_valorant_profile(user_name):
     except Exception as e:
         logger.error(f"Error fetching public Valorant profile for {user_name}: {str(e)}")
         return jsonify({"error": "Failed to load profile"}), 500
+
+
+# 📹 7. GET /api/valorant/videos/<user_id> → Get user's video highlights
+@valorant_bp.route('/videos/<int:user_id>', methods=['GET'])
+def get_user_videos(user_id):
+    try:
+        videos = UserHighlights.query.filter_by(
+            user_id=user_id, 
+            game_name="valorant"
+        ).all()
+        
+        video_list = [v.video_url for v in videos]
+        return jsonify({"videos": video_list}), 200
+    except Exception as e:
+        logger.error(f"Error fetching videos for user {user_id}: {str(e)}")
+        return jsonify({"error": "Failed to fetch videos"}), 500

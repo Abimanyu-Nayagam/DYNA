@@ -148,34 +148,34 @@ export interface CsgoStatsData {
   user_id: number;
   username: string;
   in_game_id: string;
-  video_url:string|null;
+  video_url: string | null;
 
 
-  current_rank: string|null;
-  highest_rank: string|null;
-  mm_rank: string|null;
+  current_rank: string | null;
+  highest_rank: string | null;
+  mm_rank: string | null;
   faceit_level: number | null;
   elo: number | null;
 
 
   kd_ratio: number | null;
   headshot_percentage: number | null;
-  kills: number  |null;
-  deaths: number |null;
-  assists: number|null;
-  mvps: number|null;
+  kills: number | null;
+  deaths: number | null;
+  assists: number | null;
+  mvps: number | null;
 
-  matches_played: number | string|null;
-  wins: number | string |null;
-  win_rate: number |null;
-  
-  avg_damage_per_round: number | string|null;
-  avg_kills_per_round: number | string |null;
-  rounds_played: number | string |null;
+  matches_played: number | string | null;
+  wins: number | string | null;
+  win_rate: number | null;
 
-  bomb_plants: number | string|null;
-  bomb_defuses: number | string |null;
-  flash_assists: number | string |null;
+  avg_damage_per_round: number | string | null;
+  avg_kills_per_round: number | string | null;
+  rounds_played: number | string | null;
+
+  bomb_plants: number | string | null;
+  bomb_defuses: number | string | null;
+  flash_assists: number | string | null;
 }
 
 export const csgoAPI = {
@@ -192,7 +192,7 @@ export const csgoAPI = {
   getStatsByUser: async (userId: number): Promise<CsgoStatsData> => {
     const response = await api.get(`/games/csgo/stats/${userId}`);
     console.log(response);
-    
+
     return response.data;
   },
 
@@ -311,15 +311,65 @@ export const valorantAPI = {
     return res.data;
   },
 
-  // Create profile
-  createProfile: async (data: any) => {
-    const response = await api.post('/api/valorant', data);
+  // Create profile with video upload support
+  createProfile: async (data: any, videoFiles?: File[]) => {
+    const formData = new FormData();
+
+    // Append all JSON data as strings
+    Object.keys(data).forEach(key => {
+      const value = data[key];
+      if (value !== null && value !== undefined) {
+        if (Array.isArray(value) || typeof value === 'object') {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value.toString());
+        }
+      }
+    });
+
+    // Append video files if provided
+    if (videoFiles && videoFiles.length > 0) {
+      videoFiles.forEach(file => {
+        formData.append('videos', file);
+      });
+    }
+
+    const response = await api.post('/api/valorant', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 
-  // Update profile (PATCH for partial updates)
-  updateProfile: async (data: any) => {
-    const response = await api.patch('/api/valorant/me', data);
+  // Update profile with video upload support (PATCH for partial updates)
+  updateProfile: async (data: any, videoFiles?: File[]) => {
+    const formData = new FormData();
+
+    // Append all JSON data as strings
+    Object.keys(data).forEach(key => {
+      const value = data[key];
+      if (value !== null && value !== undefined) {
+        if (Array.isArray(value) || typeof value === 'object') {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value.toString());
+        }
+      }
+    });
+
+    // Append video files if provided
+    if (videoFiles && videoFiles.length > 0) {
+      videoFiles.forEach(file => {
+        formData.append('videos', file);
+      });
+    }
+
+    const response = await api.patch('/api/valorant/me', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   },
 
@@ -328,13 +378,11 @@ export const valorantAPI = {
     const response = await api.delete('/api/valorant/me');
     return response.data;
   },
-};
 
-export const userAPI = {
-  // Get user profile with all games
-  getUserProfile: async (username: string) => {
-    const response = await api.get(`/players/${username}`);
-    return response.data;
+  // Get user's video highlights
+  getUserVideos: async (userId: number): Promise<string[]> => {
+    const response = await api.get(`/api/valorant/videos/${userId}`);
+    return response.data.videos || [];
   },
 };
 

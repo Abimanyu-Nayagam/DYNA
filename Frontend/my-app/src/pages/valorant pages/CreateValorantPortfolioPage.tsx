@@ -74,9 +74,9 @@ const AGENTS = [
     'Sova', 'Viper', 'Yoru', 'Waylay', 'Veto', 'Tejo'
 ] as const;
 
-const RANKS = ['Iron 1', 'Iron 2', 'Iron 3', 'Bronze 1', 'Bronze 2', 'Bronze 3', 
-    'Silver 1', 'Silver 2', 'Silver 3', 'Gold 1', 'Gold 2', 'Gold 3', 
-    'Platinum 1', 'Platinum 2', 'Platinum 3', 'Diamond 1', 'Diamond 2', 'Diamond 3', 
+const RANKS = ['Iron 1', 'Iron 2', 'Iron 3', 'Bronze 1', 'Bronze 2', 'Bronze 3',
+    'Silver 1', 'Silver 2', 'Silver 3', 'Gold 1', 'Gold 2', 'Gold 3',
+    'Platinum 1', 'Platinum 2', 'Platinum 3', 'Diamond 1', 'Diamond 2', 'Diamond 3',
     'Ascendant 1', 'Ascendant 2', 'Ascendant 3', 'Immortal 1', 'Immortal 2', 'Immortal 3', 'Radiant'];
 
 const SEASONS = ['EP01', 'EP02', 'EP03', 'EP04', 'EP05', 'EP06', 'EP07', 'EP08', 'EP09', 'V24', 'V25'];
@@ -129,7 +129,6 @@ const CreateValorantPortfolioPage = () => {
     const [teamHistory, setTeamHistory] = useState<TeamHistoryItem[]>([]);
     const [tournaments, setTournaments] = useState<TournamentItem[]>([]);
     const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-    const [mediaUrls, setMediaUrls] = useState<string[]>(['']);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [profileExists, setProfileExists] = useState(false);
@@ -187,7 +186,7 @@ const CreateValorantPortfolioPage = () => {
     // 📝 Handle input changes
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type } = e.target;
-        
+
         if (type === 'checkbox') {
             const checked = (e.target as HTMLInputElement).checked;
             setFormData(prev => ({ ...prev, [name]: checked }));
@@ -214,7 +213,7 @@ const CreateValorantPortfolioPage = () => {
             }));
         } else {
             setFormData(prev => ({ ...prev, [name]: value }));
-            
+
             // Real-time validation
             if (name === 'riot_id') {
                 const error = validateRiotId(value);
@@ -281,7 +280,7 @@ const CreateValorantPortfolioPage = () => {
     const handleTeamChange = (index: number, field: string, value: string) => {
         const updated = [...teamHistory];
         updated[index] = { ...updated[index], [field]: value };
-        
+
         // Validate dates
         if (field === 'left_at' || field === 'joined_at') {
             const team = updated[index];
@@ -298,7 +297,7 @@ const CreateValorantPortfolioPage = () => {
                 });
             }
         }
-        
+
         setTeamHistory(updated);
     };
 
@@ -328,29 +327,29 @@ const CreateValorantPortfolioPage = () => {
     const handleMediaUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const files = Array.from(e.target.files);
-            const validFiles = files.filter(file => file.size <= 50 * 1024 * 1024);
+            const validFiles = files.filter(file => {
+                // Only allow video files
+                if (!file.type.startsWith('video/')) {
+                    return false;
+                }
+                // Max 50MB per file
+                if (file.size > 50 * 1024 * 1024) {
+                    return false;
+                }
+                return true;
+            });
+
             if (files.length !== validFiles.length) {
-                alert('Some files exceed 50MB limit and were skipped.');
+                alert('Some files were skipped (not videos or exceed 50MB limit).');
             }
+
             setUploadedFiles(prev => [...prev, ...validFiles]);
         }
         if (fileInputRef.current) fileInputRef.current.value = '';
     };
 
-    const addMediaUrl = () => {
-        setMediaUrls(prev => [...prev, '']);
-    };
-
-    const updateMediaUrl = (index: number, value: string) => {
-        setMediaUrls(prev => {
-            const newUrls = [...prev];
-            newUrls[index] = value;
-            return newUrls;
-        });
-    };
-
-    const removeMediaUrl = (index: number) => {
-        setMediaUrls(prev => prev.filter((_, i) => i !== index));
+    const removeUploadedFile = (index: number) => {
+        setUploadedFiles(prev => prev.filter((_, i) => i !== index));
     };
 
     // 📤 Submit handler
@@ -364,10 +363,10 @@ const CreateValorantPortfolioPage = () => {
 
         // Final validation
         const validationErrors: Record<string, string> = {};
-        
+
         const riotIdError = validateRiotId(formData.riot_id);
         if (riotIdError) validationErrors.riot_id = riotIdError;
-        
+
         const taglineError = validateTagline(formData.tagline);
         if (taglineError) validationErrors.tagline = taglineError;
 
@@ -423,10 +422,6 @@ const CreateValorantPortfolioPage = () => {
                 been_in_team_before: formData.been_in_team_before,
                 bio: formData.bio || null,
                 is_public: formData.is_public,
-                media_clips: [
-                    ...mediaUrls.filter(url => url.trim()),
-                    ...uploadedFiles.map((_, idx) => `/uploads/${formData.riot_id}_clip${idx}.mp4`)
-                ]
             };
 
             if (teamHistory.length > 0 && formData.been_in_team_before) {
@@ -449,9 +444,9 @@ const CreateValorantPortfolioPage = () => {
                 }));
             }
 
-            await valorantAPI.createProfile(payload);
+            await valorantAPI.createProfile(payload, uploadedFiles);
             alert('✅ Profile created successfully!');
-            navigate(`/players/valorant/${user.user_name}`);
+            navigate(`/players/valorant/me`);
 
         } catch (error: any) {
             console.error('Error creating profile:', error);
@@ -605,11 +600,11 @@ const CreateValorantPortfolioPage = () => {
                             </div>
                             <div className="valo-form-group">
                                 <label htmlFor="current_act_number">Act Number *</label>
-                                <select 
-                                    id="current_act_number" 
-                                    name="current_act_number" 
-                                    value={formData.current_act_number} 
-                                    onChange={handleChange} 
+                                <select
+                                    id="current_act_number"
+                                    name="current_act_number"
+                                    value={formData.current_act_number}
+                                    onChange={handleChange}
                                     required
                                 >
                                     {Array.from({ length: maxCurrentActs }, (_, i) => i + 1).map(act => (
@@ -643,11 +638,11 @@ const CreateValorantPortfolioPage = () => {
                             </div>
                             <div className="valo-form-group">
                                 <label htmlFor="peak_act_number">Peak Act *</label>
-                                <select 
-                                    id="peak_act_number" 
-                                    name="peak_act_number" 
-                                    value={formData.peak_act_number} 
-                                    onChange={handleChange} 
+                                <select
+                                    id="peak_act_number"
+                                    name="peak_act_number"
+                                    value={formData.peak_act_number}
+                                    onChange={handleChange}
                                     required
                                 >
                                     {Array.from({ length: maxPeakActs }, (_, i) => i + 1).map(act => (
@@ -999,66 +994,46 @@ const CreateValorantPortfolioPage = () => {
                         <h3>🎬 Highlight Clips</h3>
                         <div className="valo-form-row">
                             <div className="valo-form-group valo-full-width">
-                                <label>Upload Video Clips (MP4, WebM) – Max 50MB each</label>
+                                <label>Upload Video Clips (MP4, WebM, AVI) — Max 50MB each</label>
                                 <div className="valo-media-upload">
                                     <input
                                         type="file"
                                         multiple
-                                        accept="video/mp4,video/webm"
+                                        accept="video/*"
                                         onChange={handleMediaUpload}
                                         className="valo-file-input"
                                         ref={fileInputRef}
                                         id="mediaUpload"
                                     />
                                     <label htmlFor="mediaUpload" className="valo-upload-label">
-                                        📎 Drag & drop or click to upload
+                                        📎 Click to select videos or drag & drop here
                                     </label>
-                                    <div className="valo-upload-hint">
-                                        Or enter video URLs below
-                                    </div>
                                 </div>
                                 {errors.media_clips && <span className="valo-field-error">{errors.media_clips}</span>}
                             </div>
                         </div>
-                        <div className="valo-form-row">
-                            <div className="valo-form-group valo-full-width">
-                                <label>Or add video URLs (YouTube, MP4 links)</label>
-                                {mediaUrls.map((url, idx) => (
-                                    <div key={idx} className="valo-url-input-group">
-                                        <input
-                                            type="url"
-                                            value={url}
-                                            onChange={(e) => updateMediaUrl(idx, e.target.value)}
-                                            placeholder="https://example.com/clip.mp4"
-                                            className="valo-url-input"
-                                        />
-                                        {mediaUrls.length > 1 && (
-                                            <button type="button" className="valo-remove-url-btn" onClick={() => removeMediaUrl(idx)}>✕</button>
-                                        )}
-                                    </div>
-                                ))}
-                                <button type="button" className="valo-add-btn" onClick={addMediaUrl} style={{ marginTop: '10px' }}>
-                                    + Add URL
-                                </button>
-                            </div>
-                        </div>
-                        {(uploadedFiles.length > 0 || mediaUrls.filter(u => u).length > 0) && (
+
+                        {uploadedFiles.length > 0 && (
                             <div className="valo-media-preview">
-                                <h4>Preview</h4>
+                                <h4>Selected Videos ({uploadedFiles.length})</h4>
                                 {uploadedFiles.map((file, idx) => (
                                     <div key={idx} className="valo-media-item">
                                         <video controls className="valo-media-video">
                                             <source src={URL.createObjectURL(file)} type={file.type} />
                                         </video>
-                                        <span className="valo-media-name">{file.name}</span>
-                                    </div>
-                                ))}
-                                {mediaUrls.filter(u => u).map((url, idx) => (
-                                    <div key={`url-${idx}`} className="valo-media-item">
-                                        <video controls className="valo-media-video">
-                                            <source src={url} type="video/mp4" />
-                                        </video>
-                                        <span className="valo-media-name">🔗 {url}</span>
+                                        <div className="valo-media-info">
+                                            <span className="valo-media-name">{file.name}</span>
+                                            <span className="valo-media-size">
+                                                {(file.size / (1024 * 1024)).toFixed(2)} MB
+                                            </span>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="valo-media-remove"
+                                            onClick={() => removeUploadedFile(idx)}
+                                        >
+                                            ✕ Remove
+                                        </button>
                                     </div>
                                 ))}
                             </div>

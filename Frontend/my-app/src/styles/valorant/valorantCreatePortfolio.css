@@ -559,6 +559,69 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     cursor: not-allowed;
 }
 
+valo-media-preview {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+
+.valo-media-preview h4 {
+  margin-bottom: 15px;
+  color: #fff;
+}
+
+.valo-media-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 16px 18px;
+}
+
+.valo-media-video {
+  width: 200px;
+  height: 120px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.valo-media-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.valo-media-name {
+  color: #fff;
+  font-weight: 500;
+}
+
+.valo-media-size {
+  color: #aaa;
+  font-size: 0.9em;
+}
+
+.valo-media-remove {
+  margin-left: auto;
+  background: linear-gradient(135deg, #be2828, #720202);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.valo-media-remove:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(190, 40, 40, 0.45);
+  filter: brightness(1.05);
+}
+
 /* ===========================
    LOADING
 =========================== */
