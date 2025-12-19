@@ -3,81 +3,82 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { valorantAPI } from "@/services/api";
 import "@/styles/valorant/valorantprofile.css";
+import type { ValorantProfileData } from "@/services/api";
 
 /* ================= TYPES ================= */
 
-interface ActInfo {
-  season: string;
-  act_number: number;
-  date?: string;
-}
+// interface ActInfo {
+//   season: string;
+//   act_number: number;
+//   date?: string;
+// }
 
-interface TeamHistoryItem {
-  team_name: string;
-  joined_at: string;
-  left_at: string | null;
-  website: string | null;
-}
+// interface TeamHistoryItem {
+//   team_name: string;
+//   joined_at: string;
+//   left_at: string | null;
+//   website: string | null;
+// }
 
-interface TournamentItem {
-  name: string;
-  organizer: string | null;
-  year: number;
-  placement: string | null;
-  role_in_tournament: string | null;
-  notes: string | null;
-}
+// interface TournamentItem {
+//   name: string;
+//   organizer: string | null;
+//   year: number;
+//   placement: string | null;
+//   role_in_tournament: string | null;
+//   notes: string | null;
+// }
 
-interface ValorantProfile {
-  id: number;
-  user_id: number;
+// interface ValorantProfile {
+//   id: number;
+//   user_id: number;
 
-  player_name: string;
-  riot_id?: string;
-  tagline?: string;
-  full_riot_id: string;
+//   player_name: string;
+//   riot_id?: string;
+//   tagline?: string;
+//   full_riot_id: string;
 
-  region: string;
-  server: string;
+//   region: string;
+//   server: string;
 
-  started_playing: string;
-  created_at?: string;
-  updated_at?: string;
-  last_synced: string | null;
+//   started_playing: string;
+//   created_at?: string;
+//   updated_at?: string;
+//   last_synced: string | null;
 
-  current_rank: string;
-  current_act: ActInfo;
+//   current_rank: string;
+//   current_act: ActInfo;
 
-  peak_rank: string;
-  peak_act: ActInfo;
+//   peak_rank: string;
+//   peak_act: ActInfo;
 
-  kd: number;
-  win_rate: number;
-  total_matches: number;
-  hours_played: number;
+//   kd: number;
+//   win_rate: number;
+//   total_matches: number;
+//   hours_played: number;
 
-  main_role: string;
-  playstyle_description: string;
-  aggressiveness: number;
-  utility_usage: number;
-  entry_confidence: number;
-  lurking_skill: number;
-  anchoring_skill: number;
+//   main_role: string;
+//   playstyle_description: string;
+//   aggressiveness: number;
+//   utility_usage: number;
+//   entry_confidence: number;
+//   lurking_skill: number;
+//   anchoring_skill: number;
 
-  best_agent: string;
-  top_agents: string[];
+//   best_agent: string;
+//   top_agents: string[];
 
-  in_team: boolean;
-  current_team: string | null;
-  role_in_team: string | null;
-  team_history: TeamHistoryItem[];
+//   in_team: boolean;
+//   current_team: string | null;
+//   role_in_team: string | null;
+//   team_history: TeamHistoryItem[];
 
-  tournaments: TournamentItem[];
-  media_clips: string[];
-  bio: string | null;
+//   tournaments: TournamentItem[];
+//   media_clips: string[];
+//   bio: string | null;
 
-  is_public: boolean;
-}
+//   is_public: boolean;
+// }
 
 /* ================= COMPONENT ================= */
 
@@ -86,7 +87,7 @@ const ValorantProfilePage = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
 
-  const [profile, setProfile] = useState<ValorantProfile | null>(null);
+  const [profile, setProfile] = useState<ValorantProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [isOwner, setIsOwner] = useState(false);
 
@@ -190,14 +191,14 @@ const ValorantProfilePage = () => {
         <p className="valo-region">
           {profile.region} • {profile.server}
         </p>
-
+{/* 
         <p className="valo-muted">
           Playing since{" "}
           {new Date(profile.started_playing).toLocaleDateString(undefined, {
             year: "numeric",
             month: "long",
           })}
-        </p>
+        </p> */}
 
         {isOwner && (
           <div className="valo-owner-actions">
@@ -219,12 +220,12 @@ const ValorantProfilePage = () => {
           <div>
             <h4>Current</h4>
             <p className="rank">{profile.current_rank}</p>
-            <span>
+            {/* <span>
               {profile.current_act.season} • Act {profile.current_act.act_number}
-            </span>
+            </span> */}
           </div>
 
-          <div>
+          {/* <div>
             <h4>Peak</h4>
             <p className="rank">{profile.peak_rank}</p>
             <span>
@@ -236,7 +237,8 @@ const ValorantProfilePage = () => {
                 {new Date(profile.peak_act.date).toLocaleDateString()}
               </small>
             )}
-          </div>
+          </div> */}
+
         </div>
       </section>
 
@@ -250,27 +252,27 @@ const ValorantProfilePage = () => {
           <div><strong>Matches</strong><span>{profile.total_matches}</span></div>
           <div><strong>Hours</strong><span>{profile.hours_played}</span></div>
         </div>
-
+{/* 
         {profile.last_synced && (
           <p className="valo-muted">
             Last synced: {new Date(profile.last_synced).toLocaleString()}
           </p>
-        )}
+        )} */}
       </section>
 
       {/* PLAYSTYLE */}
       <section className="valo-card">
         <h2>🎮 Playstyle</h2>
         <p className="valo-role">{profile.main_role}</p>
-        <p className="valo-description">{profile.playstyle_description}</p>
+        {/* <p className="valo-description">{profile.playstyle_description}</p> */}
 
-        <div className="valo-playstyle-grid">
+        {/* <div className="valo-playstyle-grid">
           <div>Aggression <span>{profile.aggressiveness}/10</span></div>
           <div>Entry <span>{profile.entry_confidence}/10</span></div>
           <div>Utility <span>{profile.utility_usage}/10</span></div>
           <div>Lurking <span>{profile.lurking_skill}/10</span></div>
           <div>Anchoring <span>{profile.anchoring_skill}/10</span></div>
-        </div>
+        </div> */}
       </section>
 
       {/* AGENTS */}
@@ -285,7 +287,8 @@ const ValorantProfilePage = () => {
       </section>
 
       {/* MEDIA */}
-      {profile.media_clips.length > 0 && (
+
+      {/* {profile.media_clips.length > 0 && (
         <section className="valo-card">
           <h2>🎬 Media</h2>
           <div className="valo-media-grid">
@@ -294,10 +297,10 @@ const ValorantProfilePage = () => {
             ))}
           </div>
         </section>
-      )}
+      )} */}
 
       {/* TEAM HISTORY */}
-      {profile.team_history.length > 0 && (
+      {/* {profile.team_history.length > 0 && (
         <section className="valo-card">
           <h2>👥 Team History</h2>
           {profile.team_history.map((team, i) => (
@@ -317,10 +320,10 @@ const ValorantProfilePage = () => {
             </div>
           ))}
         </section>
-      )}
+      )} */}
 
       {/* TOURNAMENTS */}
-      {profile.tournaments.length > 0 && (
+      {/* {profile.tournaments.length > 0 && (
         <section className="valo-card">
           <h2>🏆 Tournaments</h2>
           {profile.tournaments.map((t, i) => (
@@ -332,15 +335,15 @@ const ValorantProfilePage = () => {
             </div>
           ))}
         </section>
-      )}
+      )} */}
 
       {/* ABOUT */}
-      {profile.bio && (
+      {/* {profile.bio && (
         <section className="valo-card">
           <h2>📝 About</h2>
           <p>{profile.bio}</p>
         </section>
-      )}
+      )} */}
 
     </div>
   );
