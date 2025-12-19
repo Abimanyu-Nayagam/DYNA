@@ -48,7 +48,8 @@ const getRankColor = (rank: string | null): string => {
 };
 
 // 🎯 Helper function to get agent color
-const getAgentColor = (agent: string): string => {
+const getAgentColor = (agent: string | null): string => {
+    if (!agent) return '#8b5cf6';
     return AGENT_COLORS[agent] || '#8b5cf6';
 };
 

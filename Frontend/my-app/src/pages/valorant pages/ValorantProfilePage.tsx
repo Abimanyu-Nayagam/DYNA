@@ -3,81 +3,82 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { valorantAPI } from "@/services/api";
 import "@/styles/valorant/valorantprofile.css";
+import type { ValorantProfileData } from "@/services/api";
 
 /* ================= TYPES ================= */
 
-interface ActInfo {
-  season: string;
-  act_number: number;
-  date?: string;
-}
+// interface ActInfo {
+//   season: string;
+//   act_number: number;
+//   date?: string;
+// }
 
-interface TeamHistoryItem {
-  team_name: string;
-  joined_at: string;
-  left_at: string | null;
-  website: string | null;
-}
+// interface TeamHistoryItem {
+//   team_name: string;
+//   joined_at: string;
+//   left_at: string | null;
+//   website: string | null;
+// }
 
-interface TournamentItem {
-  name: string;
-  organizer: string | null;
-  year: number;
-  placement: string | null;
-  role_in_tournament: string | null;
-  notes: string | null;
-}
+// interface TournamentItem {
+//   name: string;
+//   organizer: string | null;
+//   year: number;
+//   placement: string | null;
+//   role_in_tournament: string | null;
+//   notes: string | null;
+// }
 
-interface ValorantProfile {
-  id: number;
-  user_id: number;
+// interface ValorantProfile {
+//   id: number;
+//   user_id: number;
 
-  player_name: string;
-  riot_id?: string;
-  tagline?: string;
-  full_riot_id: string;
+//   player_name: string;
+//   riot_id?: string;
+//   tagline?: string;
+//   full_riot_id: string;
 
-  region: string;
-  server: string;
+//   region: string;
+//   server: string;
 
-  started_playing: string;
-  created_at?: string;
-  updated_at?: string;
-  last_synced: string | null;
+//   started_playing: string;
+//   created_at?: string;
+//   updated_at?: string;
+//   last_synced: string | null;
 
-  current_rank: string;
-  current_act: ActInfo;
+//   current_rank: string;
+//   current_act: ActInfo;
 
-  peak_rank: string;
-  peak_act: ActInfo;
+//   peak_rank: string;
+//   peak_act: ActInfo;
 
-  kd: number;
-  win_rate: number;
-  total_matches: number;
-  hours_played: number;
+//   kd: number;
+//   win_rate: number;
+//   total_matches: number;
+//   hours_played: number;
 
-  main_role: string;
-  playstyle_description: string;
-  aggressiveness: number;
-  utility_usage: number;
-  entry_confidence: number;
-  lurking_skill: number;
-  anchoring_skill: number;
+//   main_role: string;
+//   playstyle_description: string;
+//   aggressiveness: number;
+//   utility_usage: number;
+//   entry_confidence: number;
+//   lurking_skill: number;
+//   anchoring_skill: number;
 
-  best_agent: string;
-  top_agents: string[];
+//   best_agent: string;
+//   top_agents: string[];
 
-  in_team: boolean;
-  current_team: string | null;
-  role_in_team: string | null;
-  team_history: TeamHistoryItem[];
+//   in_team: boolean;
+//   current_team: string | null;
+//   role_in_team: string | null;
+//   team_history: TeamHistoryItem[];
 
-  tournaments: TournamentItem[];
-  media_clips: string[];
-  bio: string | null;
+//   tournaments: TournamentItem[];
+//   media_clips: string[];
+//   bio: string | null;
 
-  is_public: boolean;
-}
+//   is_public: boolean;
+// }
 
 /* ================= COMPONENT ================= */
 
@@ -86,7 +87,7 @@ const ValorantProfilePage = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
 
-  const [profile, setProfile] = useState<ValorantProfile | null>(null);
+  const [profile, setProfile] = useState<ValorantProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [isOwner, setIsOwner] = useState(false);
 
@@ -140,7 +141,7 @@ const ValorantProfilePage = () => {
         /* =======================
            CASE 3: Public profile
         ======================= */
-        const publicProfile = await valorantAPI.getPublicProfile(username);
+        const publicProfile = await valorantAPI.getPublicProfile(username!);
         setProfile(publicProfile);
         setIsOwner(false);
 

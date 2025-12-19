@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { leagueAPI } from "@/services/api";
-import "@/styles/CreateLolPortfolio.css";
+import "@/styles/CreateLoLPortfolio.css";
 
 interface LeagueFormData {
   ign: string;

@@ -262,27 +262,79 @@ export const leagueAPI = {
 
 
 
+export interface ActInfo {
+  season: string;
+  act_number: number;
+  date?: string;
+}
+
+export interface TeamHistoryItem {
+  team_name: string;
+  joined_at: string;
+  left_at: string | null;
+  website: string | null;
+}
+
+export interface TournamentItem {
+  name: string;
+  organizer: string | null;
+  year: number;
+  placement: string | null;
+  role_in_tournament: string | null;
+  notes: string | null;
+}
+
 export interface ValorantProfileData {
   id: number;
   user_id: number;
+
   player_name: string;
-  riot_id: string;
-  tagline: string;
+  riot_id?: string;
+  tagline?: string;
   full_riot_id: string;
+
   region: string;
   server: string;
+
+  started_playing: string;
+  created_at?: string;
+  updated_at?: string;
+  last_synced: string | null;
+
   current_rank: string;
+  current_act: ActInfo;
+
   peak_rank: string;
+  peak_act: ActInfo;
+
   kd: number;
   win_rate: number;
   total_matches: number;
   hours_played: number;
+
   main_role: string;
+  playstyle_description: string;
+  aggressiveness: number;
+  utility_usage: number;
+  entry_confidence: number;
+  lurking_skill: number;
+  anchoring_skill: number;
+
   best_agent: string;
   top_agents: string[];
+
+  in_team: boolean;
+  current_team: string | null;
+  role_in_team: string | null;
+  team_history: TeamHistoryItem[];
+
+  tournaments: TournamentItem[];
+  media_clips: string[];
+  bio: string | null;
+
   is_public: boolean;
-  // Add more fields as needed
 }
+
 
 export interface ValorantSearchResult {
   player_name: string;
