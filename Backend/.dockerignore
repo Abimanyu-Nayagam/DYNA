@@ -1,0 +1,22 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+
+# Environment files (IMPORTANT)
+.env
+.env.*
+
+# Git
+.git/
+.gitignore
+
+
+# Docker files you don't need inside image
+Dockerfile
+Dockerfile.*

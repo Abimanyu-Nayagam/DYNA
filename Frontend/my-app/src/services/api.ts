@@ -76,6 +76,28 @@ export interface PubgStatsData {
   updated_at: string | null;
 }
 
+export interface PlayerLolData {
+  id: number;
+  user_id: number;
+  ign: string;
+  riot_id: string;
+  server: string;
+  cur_rank: string;
+  peak_rank: string;
+  last_season_rank: string;
+  player_since: string;
+  main_role: string;
+  cs_per_min: number | null;
+  avg_kills: number | null;
+  avg_deaths: number | null;
+  avg_assists: number | null;
+  avg_dmg: number | null;
+  avg_vision_score: number | null;
+  avg_game_duration: number | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
 // API
 export const authAPI = {
   signup: async (data: SignupPayload) => {
@@ -100,7 +122,7 @@ export const authAPI = {
 };
 
 export const pubgAPI = {
-  createStats: async (data: Omit<PubgStatsData, 'id' | 'user_id' | 'ishidden' | 'created_at' | 'updated_at'>) => {
+  createStats: async (data: Omit<PubgStatsData, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
     const response = await api.post("/games/pubg/stats", data);
     return response.data;
   },
@@ -118,6 +140,254 @@ export const pubgAPI = {
   updateStats: async (statsId: number, data: Partial<PubgStatsData>) => {
     const response = await api.patch(`/games/pubg/stats/${statsId}`, data);
     return response.data;
+  },
+};
+
+export interface CsgoStatsData {
+  id: number;
+  user_id: number;
+  username: string;
+  in_game_id: string;
+  video_url: string | null;
+
+
+  current_rank: string | null;
+  highest_rank: string | null;
+  mm_rank: string | null;
+  faceit_level: number | null;
+  elo: number | null;
+
+
+  kd_ratio: number | null;
+  headshot_percentage: number | null;
+  kills: number | null;
+  deaths: number | null;
+  assists: number | null;
+  mvps: number | null;
+
+  matches_played: number | string | null;
+  wins: number | string | null;
+  win_rate: number | null;
+
+  avg_damage_per_round: number | string | null;
+  avg_kills_per_round: number | string | null;
+  rounds_played: number | string | null;
+
+  bomb_plants: number | string | null;
+  bomb_defuses: number | string | null;
+  flash_assists: number | string | null;
+}
+
+export const csgoAPI = {
+  createStats: async (data: Omit<CsgoStatsData, 'id' | 'user_id' | 'created_at' | 'updated_at'>) => {
+    const response = await api.post("/games/csgo/stats", data);
+    return response.data;
+  },
+
+  getAllStats: async (): Promise<CsgoStatsData[]> => {
+    const response = await api.get("/games/csgo/");
+    return response.data;
+  },
+
+  getStatsByUser: async (userId: number): Promise<CsgoStatsData> => {
+    const response = await api.get(`/games/csgo/stats/${userId}`);
+    console.log(response);
+
+    return response.data;
+  },
+
+  updateStats: async (statsId: number, data: Partial<CsgoStatsData>) => {
+    const response = await api.patch(`/games/csgo/stats/${statsId}`, data);
+    return response.data;
+  },
+};
+
+export const leagueAPI = {
+  createStats: async (data: FormData) => {
+    const response = await api.post(
+      "/api/lol/create-folio",
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  },
+
+  getIgnByUserId: async (user_id: number) => {
+    const response = await api.post(`/api/lol/get-ign-from-user-id/${user_id}`);
+    return response.data; // { ign: string } or { error: string }
+  },
+
+  getUserNameByIgn: async (ign: string) => {
+    const response = await api.post(`/api/lol/get-user-name-from-ign/${ign}`);
+    return response.data; // { ign: string } or { error: string }
+  },
+
+  getAllStats: async (): Promise<PlayerLolData[]> => {
+    const response = await api.get("/api/lol/get-all-folios");
+    return response.data;
+  },
+
+  getStatsByUser: async (user_name: string): Promise<PlayerLolData> => {
+    const response = await api.get(`/api/lol/get-folio/${user_name}`);
+    return response.data;
+  },
+
+  getHighlightsByUser: async (username: string, game_name: string) => {
+    const response = await api.post("/api/lol/videos", { username, game_name });
+    return response.data;
+  },
+
+  updateStats: async (data: FormData) => {
+    const response = await api.put(
+      "/api/lol/update-folio",
+      data,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    return response.data;
+  },
+
+  deleteStats: async () => {
+    const response = await api.delete("/api/lol/delete-folio");
+    return response.data;
+  },
+};
+
+
+
+export interface ValorantProfileData {
+  id: number;
+  user_id: number;
+  player_name: string;
+  riot_id: string;
+  tagline: string;
+  full_riot_id: string;
+  region: string;
+  server: string;
+  current_rank: string;
+  peak_rank: string;
+  kd: number;
+  win_rate: number;
+  total_matches: number;
+  hours_played: number;
+  main_role: string;
+  best_agent: string;
+  top_agents: string[];
+  is_public: boolean;
+  // Add more fields as needed
+}
+
+export interface ValorantSearchResult {
+  player_name: string;
+  riot_id: string;
+  tagline: string;
+  current_rank: string;
+  region: string;
+  best_agent: string;
+  user_name: string; // DYNA username to link to profile
+}
+
+export const valorantAPI = {
+  // Search public profiles
+  searchProfiles: async (query: string): Promise<ValorantSearchResult[]> => {
+    const response = await api.get(`/api/valorant/search?query=${query}`);
+    return response.data.results || [];
+  },
+
+  // Get public profile by username
+  getPublicProfile: async (userName: string): Promise<ValorantProfileData> => {
+    const response = await api.get(`/api/valorant/${userName}`);
+    return response.data;
+  },
+
+  // Get own profile
+  getMyProfile: async (): Promise<{
+    exists: boolean;
+    data?: any;
+  }> => {
+    const res = await api.get("/api/valorant/me");
+    return res.data;
+  },
+
+  // Create profile with video upload support
+  createProfile: async (data: any, videoFiles?: File[]) => {
+    const formData = new FormData();
+
+    // Append all JSON data as strings
+    Object.keys(data).forEach(key => {
+      const value = data[key];
+      if (value !== null && value !== undefined) {
+        if (Array.isArray(value) || typeof value === 'object') {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value.toString());
+        }
+      }
+    });
+
+    // Append video files if provided
+    if (videoFiles && videoFiles.length > 0) {
+      videoFiles.forEach(file => {
+        formData.append('videos', file);
+      });
+    }
+
+    const response = await api.post('/api/valorant', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  // Update profile with video upload support (PATCH for partial updates)
+  updateProfile: async (data: any, videoFiles?: File[]) => {
+    const formData = new FormData();
+
+    // Append all JSON data as strings
+    Object.keys(data).forEach(key => {
+      const value = data[key];
+      if (value !== null && value !== undefined) {
+        if (Array.isArray(value) || typeof value === 'object') {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value.toString());
+        }
+      }
+    });
+
+    // Append video files if provided
+    if (videoFiles && videoFiles.length > 0) {
+      videoFiles.forEach(file => {
+        formData.append('videos', file);
+      });
+    }
+
+    const response = await api.patch('/api/valorant/me', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  },
+
+  // Delete profile
+  deleteProfile: async () => {
+    const response = await api.delete('/api/valorant/me');
+    return response.data;
+  },
+
+  // Get user's video highlights
+  getUserVideos: async (userId: number): Promise<string[]> => {
+    const response = await api.get(`/api/valorant/videos/${userId}`);
+    return response.data.videos || [];
   },
 };
 

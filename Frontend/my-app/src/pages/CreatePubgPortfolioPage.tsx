@@ -43,6 +43,7 @@ const CreatePubgPortfolioPage = () => {
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [isUpdate, setIsUpdate] = useState(false);
   const [existingStatsId, setExistingStatsId] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -126,6 +127,8 @@ const CreatePubgPortfolioPage = () => {
       return;
     }
 
+    setIsSubmitting(true);
+
     try {
       const form = new FormData();
 
@@ -158,8 +161,8 @@ const CreatePubgPortfolioPage = () => {
 
       const url =
         isUpdate && existingStatsId
-          ? `http://localhost:5000/games/pubg/stats/${existingStatsId}`
-          : `http://localhost:5000/games/pubg/stats`;
+          ? `${import.meta.env.VITE_API_BASE_URL}/games/pubg/stats/${existingStatsId}`
+          : `${import.meta.env.VITE_API_BASE_URL}/games/pubg/stats`;
 
       const response = await fetch(url, {
         method: isUpdate ? "PATCH" : "POST",
@@ -174,7 +177,7 @@ const CreatePubgPortfolioPage = () => {
         throw new Error(errorData.error || "Failed to save portfolio");
       }
 
-      const data = await response.json();
+      // const data = await response.json();
       alert(
         isUpdate
           ? "Portfolio updated successfully!"
@@ -188,6 +191,8 @@ const CreatePubgPortfolioPage = () => {
           ? error.message
           : "Failed to save portfolio. Please try again."
       );
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -447,8 +452,11 @@ const CreatePubgPortfolioPage = () => {
             <button type="button" className="cancel-btn" onClick={() => navigate('/players/pubg')}>
               Cancel
             </button>
-            <button type="submit" className="submit-btn">
-              {isUpdate ? 'Update Portfolio' : 'Create Portfolio'}
+            <button type="submit" className="submit-btn" disabled={isSubmitting}>
+              {isSubmitting 
+                ? (isUpdate ? 'Updating...' : 'Creating...') 
+                : (isUpdate ? 'Update Portfolio' : 'Create Portfolio')
+              }
             </button>
           </div>
         </form>

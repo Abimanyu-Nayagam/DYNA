@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAuth } from '@/contexts/AuthContext'
-import PlayerCard from '@/components/ui/PlayerCard'
-import '@/styles/playerspage.css'
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import PlayerCard from "@/components/ui/PlayerCard";
+import "@/styles/playerspage.css";
+import { pubgAPI } from "@/services/api";
 
 interface PubgPlayer {
   id: number;
@@ -17,41 +18,57 @@ const PubgPlayersPage = () => {
   const { user } = useAuth();
   const [players, setPlayers] = useState<PubgPlayer[]>([]);
   const [filteredPlayers, setFilteredPlayers] = useState<PubgPlayer[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdate, setIsUpdate] = useState(false);
 
   useEffect(() => {
+    checkExistingPortfolio();
     fetchPlayers();
   }, []);
 
   useEffect(() => {
     // Filter players based on search term
-    if (searchTerm.trim() === '') {
+    if (searchTerm.trim() === "") {
       setFilteredPlayers(players);
     } else {
-      const filtered = players.filter(player =>
-        player.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        player.in_game_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        player.current_rank.toLowerCase().includes(searchTerm.toLowerCase())
+      const filtered = players.filter(
+        (player) =>
+          player.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          player.in_game_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          player.current_rank.toLowerCase().includes(searchTerm.toLowerCase())
       );
       setFilteredPlayers(filtered);
     }
   }, [searchTerm, players]);
 
+  const checkExistingPortfolio = async () => {
+    if (!user?.user_id) return;
+
+    try {
+      const existingStats = await pubgAPI.getStatsByUser(user.user_id);
+      if (existingStats) {
+        setIsUpdate(true);
+      }
+    } catch (error) {
+      console.log("No existing portfolio found, proceeding with creation");
+    }
+  };
+
   const fetchPlayers = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('http://localhost:5000/games/pubg/');
-      
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/games/pubg/`);
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       const data = await response.json();
       setPlayers(data);
       setFilteredPlayers(data);
     } catch (error) {
-      console.error('Error fetching players:', error);
+      console.error("Error fetching players:", error);
       // Fallback to empty array on error
       setPlayers([]);
       setFilteredPlayers([]);
@@ -62,9 +79,9 @@ const PubgPlayersPage = () => {
 
   const handleCreatePortfolio = () => {
     if (!user) {
-      navigate('/login');
+      navigate("/login");
     } else {
-      navigate('/players/pubg/create');
+      navigate("/players/pubg/create");
     }
   };
 
@@ -85,11 +102,14 @@ const PubgPlayersPage = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <p className='search-icon'>🔎︎</p>
+          <p className="search-icon">🔎︎</p>
         </div>
-        
-        <button className="create-portfolio-btn" onClick={handleCreatePortfolio}>
-          + Create Portfolio
+
+        <button
+          className="create-portfolio-btn"
+          onClick={handleCreatePortfolio}
+        >
+          {isUpdate ? " Update Portfolio" : " + Create Portfolio"}
         </button>
       </div>
 
@@ -101,14 +121,15 @@ const PubgPlayersPage = () => {
         <>
           {filteredPlayers.length === 0 ? (
             <div className="no-results">
-             <p>🔎︎</p>
+              <p>🔎︎</p>
               <h3>No players found</h3>
               <p>Try adjusting your search criteria</p>
             </div>
           ) : (
             <>
               <div className="results-count">
-                Showing {filteredPlayers.length} {filteredPlayers.length === 1 ? 'player' : 'players'}
+                Showing {filteredPlayers.length}{" "}
+                {filteredPlayers.length === 1 ? "player" : "players"}
               </div>
               <div className="players-grid">
                 {filteredPlayers.map((player) => (
@@ -118,7 +139,7 @@ const PubgPlayersPage = () => {
                     username={player.username}
                     in_game_id={player.in_game_id}
                     current_rank={player.current_rank}
-                    onClick={() => navigate(`/players/${player.user_id}`)}
+                    onClick={() => navigate(`/players/${player.username}/pubg`)}
                   />
                 ))}
               </div>
@@ -127,7 +148,7 @@ const PubgPlayersPage = () => {
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default PubgPlayersPage
+export default PubgPlayersPage;

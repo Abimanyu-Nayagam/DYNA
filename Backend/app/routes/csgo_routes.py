@@ -29,6 +29,7 @@ def create_csgo_stats():
         return jsonify({'error': str(e)}), 400
 
     in_game_id = data.in_game_id
+    username = data.username
 
     # One portfolio per user
     if CsgoPlayerStats.query.filter_by(user_id=user_id).first():
@@ -36,6 +37,11 @@ def create_csgo_stats():
             'error': 'You already have a CSGO portfolio.'
         }), 400
 
+    # Unique username
+    if CsgoPlayerStats.query.filter_by(username=username).first():
+        return jsonify({
+            'error': 'A portfolio with this User Name already exists.'
+        }), 400
     # Unique in-game ID
     if CsgoPlayerStats.query.filter_by(in_game_id=in_game_id).first():
         return jsonify({
@@ -98,12 +104,15 @@ def get_csgo_stats():
 
 
 @csgo_bp.route('/stats/<int:user_id>', methods=['GET'])
-@jwt_required()
 def get_csgo_stats_by_user(user_id):
     """Retrieve CSGO stats by user ID."""
     stats = CsgoPlayerStats.query.filter_by(user_id=user_id).first()
     if not stats:
-        return jsonify({'error': 'Stats not found'}), 404
+        return jsonify({
+            "error": "CSGO stats not found for this user"
+        }), 404
+    stats_dict = stats.to_dict()
+    logger.info(f"Returning stats with video_url: {stats_dict.get('video_url')}")
     return jsonify(stats.to_dict()), 200
 
 
@@ -133,8 +142,7 @@ def update_csgo_stats(stats_id):
         "mm_rank", "faceit_level", "elo", "kd_ratio", "headshot_percentage",
         "kills", "deaths", "assists", "mvps", "matches_played", "wins",
         "win_rate", "avg_damage_per_round", "avg_kills_per_round",
-        "rounds_played", "bomb_plants", "bomb_defuses", "flash_assists",
-        "ishidden"
+        "rounds_played", "bomb_plants", "bomb_defuses", "flash_assists"
     ]
 
     for field in updatable_fields:

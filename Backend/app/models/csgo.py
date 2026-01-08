@@ -11,7 +11,7 @@ class CsgoPlayerStats(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False,unique=True)
     video_url = db.Column(db.String(1000),nullable=True)
     # Player identification
-    username = db.Column(db.String(100), nullable=False)
+    username = db.Column(db.String(100), nullable=False, unique=True)
     in_game_id = db.Column(db.String(100), nullable=False, unique=True)
     
     # Rankings and ratings
@@ -52,8 +52,6 @@ class CsgoPlayerStats(db.Model):
         onupdate=datetime.now(timezone.utc)
     )
     
-    ishidden = db.Column(db.Boolean, default=False)
-    
     # Relationship to User model
     user = db.relationship('User', backref=db.backref('csgo_stats', lazy=True))
     
@@ -67,6 +65,7 @@ class CsgoPlayerStats(db.Model):
             'user_id': self.user_id,
             'username': self.username,
             'in_game_id': self.in_game_id,
+            'video_url':self.video_url,
             'current_rank': self.current_rank,
             'highest_rank': self.highest_rank,
             'mm_rank': self.mm_rank,
@@ -87,7 +86,6 @@ class CsgoPlayerStats(db.Model):
             'bomb_plants': self.bomb_plants,
             'bomb_defuses': self.bomb_defuses,
             'flash_assists': self.flash_assists,
-            'ishidden': self.ishidden,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }

@@ -30,7 +30,7 @@ ChartJS.register(
 );
 
 const PubgPortfolio = () => {
-  const { userId } = useParams<{ userId: string }>();
+  const { username } = useParams<{ username: string }>();
   const [stats, setStats] = useState<PubgStatsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -45,21 +45,40 @@ const PubgPortfolio = () => {
   };
 
   useEffect(() => {
-    const fetchStats = async () => {
-      if (!userId) return;
+    const fetchUserAndStats = async () => {
+      if (!username) return;
 
       try {
-        const data = await pubgAPI.getStatsByUser(parseInt(userId));
+        // First, fetch all users and find by username
+        const usersResponse = await fetch(`${import.meta.env.VITE_API_BASE_URL}/games/pubg`);
+        if (!usersResponse.ok) {
+          throw new Error('Failed to fetch users');
+        }
+
+        const usersResult = await usersResponse.json();
+        const users = usersResult || [];
+        console.log(usersResult);
+        // Find user by username (case-insensitive)
+        const user = users.find(
+          (u: any) => u.username.toLowerCase() === username.toLowerCase()
+        );
+
+        if (!user) {
+          throw new Error('User not found');
+        }
+
+        // Then fetch PUBG stats using userId
+        const data = await pubgAPI.getStatsByUser(user.user_id);
         console.log('Fetched PUBG stats:', data);
         console.log('Video URL:', data.video_url);
         setStats(data);
       } catch (err) {
-        setError('No PUBG stats Availaible');
+        setError('No PUBG stats Available');
         console.error(err);
       }
     };
 
-    fetchStats();
+    fetchUserAndStats();
 
     const fetchHeroImage = async () => {
       setHeroImage('/pubg-port-bg.jpg');
@@ -67,7 +86,7 @@ const PubgPortfolio = () => {
 
     fetchHeroImage();
 
-  }, [userId]);
+  }, [username]);
 
   if (isLoading) {
     return (
@@ -76,7 +95,7 @@ const PubgPortfolio = () => {
           autoPlay
           muted
           onEnded={() => setIsLoading(false)}
-          className="loading-video"
+          className="pubg-loading-video"
         >
           <source src="/pubg-loading.mp4" type="video/mp4" />
           Your browser does not support the video tag.
@@ -138,12 +157,12 @@ const PubgPortfolio = () => {
       <div className="pubg-hero-section" style={{ backgroundImage: `url(${heroImage})` }}>
         <div className="pubg-hero-overlay"></div>
         <div className="pubg-hero-content">
-          <div className="hero-main">
+          <div className="pubg-hero-main">
             {stats.current_rank && (
-              <img 
-                src={getRankImage(stats.current_rank)} 
+              <img
+                src={getRankImage(stats.current_rank)}
                 alt={`${stats.current_rank} Rank`}
-                className="hero-rank-logo-medium"
+                className="pubg-hero-rank-logo-medium"
                 onError={(e) => {
                   console.log('Failed to load rank image:', stats.current_rank, getRankImage(stats.current_rank));
                   // Try fallback to .jpg
@@ -154,86 +173,86 @@ const PubgPortfolio = () => {
                 }}
               />
             )}
-            <div className="hero-user-section">
+            <div className="pubg-hero-user-section">
               <h1 className="pubg-hero-title">{stats.username?.toUpperCase()}</h1>
               <p className="pubg-hero-subtitle">UID : {stats.in_game_id}</p>
             </div>
           </div>
           <div className="pubg-hero-stats">
             <div className="pubg-hero-stat">
-              <span className="stat-value">{stats.matches_played || 0}</span>
-              <span className="stat-label">Matches Played</span>
+              <span className="pubg-stat-value">{stats.matches_played || 0}</span>
+              <span className="pubg-stat-label">Matches Played</span>
             </div>
             <div className="pubg-hero-stat">
-              <span className="stat-value">{stats.wins || 0}</span>
-              <span className="stat-label">Wins</span>
+              <span className="pubg-stat-value">{stats.wins || 0}</span>
+              <span className="pubg-stat-label">Wins</span>
             </div>
             <div className="pubg-hero-stat">
-              <span className="stat-value">{stats.eliminations || 0}</span>
-              <span className="stat-label">Eliminations</span>
+              <span className="pubg-stat-value">{stats.eliminations || 0}</span>
+              <span className="pubg-stat-label">Eliminations</span>
             </div>
-             <div className="pubg-hero-stat">
-              <span className="stat-value">{stats.fd_ratio || 0}</span>
-              <span className="stat-label">F/D Ratio</span>
+            <div className="pubg-hero-stat">
+              <span className="pubg-stat-value">{stats.fd_ratio || 0}</span>
+              <span className="pubg-stat-label">F/D Ratio</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="stats-section">
-        <h2 className="section-title">Player Statistics</h2>
-        <div className="stats-grid">
-          <div className="stat-card">
-            <div className="card-icon">
+      <div className="pubg-stats-section">
+        <h2 className="pubg-section-title">Player Statistics</h2>
+        <div className="pubg-stats-grid">
+          <div className="pubg-stat-card">
+            <div className="pubg-card-icon">
               <FaCrosshairs />
             </div>
-            <div className="card-content">
+            <div className="pubg-card-content">
               <h3>{stats.eliminations || 0}</h3>
               <p>Total Eliminations</p>
             </div>
           </div>
-          <div className="stat-card">
-            <div className="card-icon">
+          <div className="pubg-stat-card">
+            <div className="pubg-card-icon">
               <FaTrophy />
             </div>
-            <div className="card-content">
+            <div className="pubg-card-content">
               <h3>{stats.wins || 0}</h3>
               <p>Wins</p>
             </div>
           </div>
-          <div className="stat-card">
-            <div className="card-icon">
+          <div className="pubg-stat-card">
+            <div className="pubg-card-icon">
               <FaMedal />
             </div>
-            <div className="card-content">
+            <div className="pubg-card-content">
               <h3>{stats.top_10 || 0}</h3>
               <p>Top 10 Finishes</p>
             </div>
           </div>
-          <div className="stat-card">
-            <div className="card-icon">
+          <div className="pubg-stat-card">
+            <div className="pubg-card-icon">
               <FaSkull />
             </div>
-            <div className="card-content">
+            <div className="pubg-card-content">
               <h3>{stats.headshots || 0}</h3>
               <p>Headshots</p>
             </div>
           </div>
-          <div className="stat-card">
-            <div className="card-icon">
+          <div className="pubg-stat-card">
+            <div className="pubg-card-icon">
               <FaGamepad />
             </div>
-            <div className="card-content">
+            <div className="pubg-card-content">
               <h3>{stats.matches_played || 0}</h3>
               <p>Matches Played</p>
             </div>
           </div>
-          <div className="stat-card">
-            <div className="card-icon">
+          <div className="pubg-stat-card">
+            <div className="pubg-card-icon">
               <FaBolt />
             </div>
-            <div className="card-content">
+            <div className="pubg-card-content">
               <h3>{stats.avg_damage?.toFixed(1) || 'N/A'}</h3>
               <p>Avg Damage</p>
             </div>
@@ -243,13 +262,12 @@ const PubgPortfolio = () => {
 
       {/* Video Section */}
       {stats.video_url && (
-        <div className="video-section">
-          {console.log('Rendering video section with URL:', stats.video_url)}
-          <div className="video-container">
-            <video 
-              loop 
-              autoPlay 
-              muted 
+        <div className="pubg-video-section">
+          <div className="pubg-video-container">
+            <video
+              loop
+              autoPlay
+              muted
               onError={(e) => console.error('Video load error:', e)}
               onLoadStart={() => console.log('Video load start')}
               onCanPlay={() => console.log('Video can play')}
@@ -258,7 +276,7 @@ const PubgPortfolio = () => {
               Your browser does not support the video tag.
             </video>
           </div>
-          <div className="title-container">
+          <div className="pubg-title-container">
             <h2>BEST MOMENTS</h2>
             <h2>OF {stats.username?.toUpperCase()}</h2>
           </div>
@@ -266,18 +284,18 @@ const PubgPortfolio = () => {
       )}
 
       {/* Charts Section */}
-      <div className="charts-section">
-        <h2 className="section-title">Performance Analytics</h2>
-        <div className="charts-grid">
-          <div className="chart-card charts-grid-two">
+      <div className="pubg-charts-section">
+        <h2 className="pubg-section-title">Performance Analytics</h2>
+        <div className="pubg-charts-grid">
+          <div className="pubg-chart-card pubg-charts-grid-two">
             <h3>Key Stats Overview</h3>
             <Bar data={barData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
           </div>
-          <div className="chart-card charts-grid-one">
+          <div className="pubg-chart-card pubg-charts-grid-one">
             <h3>Match Results Distribution</h3>
             <Pie data={pieData} options={{ responsive: true }} />
           </div>
-          <div className="chart-card charts-grid-three">
+          <div className="pubg-chart-card pubg-charts-grid-three">
             <h3>Performance Trend</h3>
             <Line data={lineData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
           </div>
@@ -285,18 +303,18 @@ const PubgPortfolio = () => {
       </div>
 
       {/* Additional Info */}
-      <div className="info-section">
-        <h2 className="section-title">Additional Information</h2>
-        <div className="info-grid">
-          <div className="info-card">
+      <div className="pubg-info-section">
+        <h2 className="pubg-section-title">Additional Information</h2>
+        <div className="pubg-info-grid">
+          <div className="pubg-info-card">
             <h3>Highest Rank</h3>
-            <div className="rank-display">
+            <div className="pubg-rank-display">
               {stats.highest_rank ? (
-                <div className="rank-with-name">
-                  <img 
-                    src={getRankImage(stats.highest_rank)} 
+                <div className="pubg-rank-with-name">
+                  <img
+                    src={getRankImage(stats.highest_rank)}
                     alt={`${stats.highest_rank} Rank`}
-                    className="rank-logo-small"
+                    className="pubg-rank-logo-small"
                     onError={(e) => {
                       console.log('Failed to load highest rank image:', stats.highest_rank, getRankImage(stats.highest_rank));
                       // Try fallback to .jpg
@@ -312,15 +330,15 @@ const PubgPortfolio = () => {
               )}
             </div>
           </div>
-          <div className="info-card">
+          <div className="pubg-info-card">
             <h3>Most Eliminations in a Match</h3>
             <p>{stats.most_eliminations || 'N/A'}</p>
           </div>
-          <div className="info-card">
+          <div className="pubg-info-card">
             <h3>Average Survival Time</h3>
             <p>{stats.avg_survival_time ? `${stats.avg_survival_time} min` : 'N/A'}</p>
           </div>
-          <div className="info-card">
+          <div className="pubg-info-card">
             <h3>Headshot Rate</h3>
             <p>{stats.headshot_rate ? `${stats.headshot_rate.toFixed(1)}%` : 'N/A'}</p>
           </div>

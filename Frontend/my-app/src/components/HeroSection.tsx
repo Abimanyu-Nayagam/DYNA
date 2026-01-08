@@ -1,6 +1,5 @@
-import React from 'react'
 import {Controller} from '../components/Controller'
-import '@/styles/HeroSection.css'
+import '@/styles/herosection.css'
 
 const HeroSection = () => {
   return (

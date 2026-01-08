@@ -5,11 +5,9 @@ class User(db.Model):
     __tablename__ = "users"
 
     user_id = db.Column(db.Integer, primary_key=True)
-    user_name = db.Column(db.String(100), nullable=False)
+    user_name = db.Column(db.String(100), nullable=False, unique=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=True)
-    provider = db.Column(db.String(20), default="local")
-    provider_id = db.Column(db.String(200), nullable=True) 
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
@@ -21,4 +19,4 @@ class User(db.Model):
         return bcrypt.check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return f"<User {self.user_id} - {self.email} ({self.provider})>"
+        return f"<User {self.user_id} - {self.email}>"

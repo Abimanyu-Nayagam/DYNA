@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import PlayerCard from "@/components/ui/PlayerCard";
 import "@/styles/playerspage.css";
+import { csgoAPI } from "@/services/api";
 
 interface CsgoPlayer {
   id: number;
@@ -19,8 +20,9 @@ const CsgoPlayersPage = () => {
   const [filteredPlayers, setFilteredPlayers] = useState<CsgoPlayer[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-
+  const [isUpdate, setIsUpdate] = useState(false);
   useEffect(() => {
+    checkExistingPortfolio();
     fetchPlayers();
   }, []);
 
@@ -39,10 +41,22 @@ const CsgoPlayersPage = () => {
     }
   }, [searchTerm, players]);
 
+  const checkExistingPortfolio = async () => {
+    if (!user?.user_id) return;
+
+    try {
+      const existingStats = await csgoAPI.getStatsByUser(user.user_id);
+      if (existingStats) {
+        setIsUpdate(true);
+      }
+    } catch (error) {
+      console.log("No existing portfolio found, proceeding with creation");
+    }
+  };
   const fetchPlayers = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("http://localhost:5000/games/csgo/");
+      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/games/csgo/`);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -93,7 +107,7 @@ const CsgoPlayersPage = () => {
           className="create-portfolio-btn"
           onClick={handleCreatePortfolio}
         >
-          + Create Portfolio
+          {isUpdate ? "Update Portfolio" : " + Create Portfolio"}
         </button>
       </div>
 
@@ -123,7 +137,7 @@ const CsgoPlayersPage = () => {
                     username={player.username}
                     in_game_id={player.in_game_id}
                     current_rank={player.current_rank}
-                    onClick={() => navigate(`/players/${player.user_id}`)}
+                    onClick={() => navigate(`/players/${player.username}/csgo`)}
                   />
                 ))}
               </div>

@@ -1,6 +1,5 @@
-import React from 'react'
 import { useNavigate } from 'react-router-dom'
-import Gamecard from './ui/gamecard'
+import Gamecard from './ui/Gamecard'
 import '@/styles/games.css'
 
 const Games = () => {

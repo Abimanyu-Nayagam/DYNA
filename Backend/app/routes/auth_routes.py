@@ -24,9 +24,16 @@ def signup():
         return error_response(f"Signup pydantic validation failed: {str(e)}", 400)
     
     existing_user = User.query.filter_by(email=validated_data.email).first()
+
     if existing_user:
         logger.warning(f"Signup failed - email already exists: {validated_data.email}")
         return jsonify({"message": "Email already registered"}), 400
+    
+    existing_username = User.query.filter_by(user_name=validated_data.user_name).first()
+
+    if existing_username:
+        logger.warning(f"Signup failed - email already exists: {validated_data.email}")
+        return jsonify({"message": "Username already registered"}), 400
 
     try:
         new_user = User(user_name=validated_data.user_name, email=validated_data.email)
@@ -91,9 +98,7 @@ def get_current_user():
     return jsonify({
         "user_id": user.user_id,
         "user_name": user.user_name,
-        "email": user.email,
-        "provider": user.provider,     
-        "provider_id": user.provider_id
+        "email": user.email
     }), 200
 
 
